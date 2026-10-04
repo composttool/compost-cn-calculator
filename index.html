@@ -15,7 +15,7 @@
         <header class="border-b border-amber-100 pb-4 mb-6">
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Stadslandbouw Arnhem</span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-2">Compost C/N Rekentool</h1>
-            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
+            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de 18-daagse hete compostmethode).</p>
         </header>
 
         <!-- Instellingen & Doel -->
@@ -84,7 +84,7 @@
 
         <!-- Praktische Spelregels (Informatie) -->
         <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs text-stone-600 leading-relaxed">
-            <h3 class="font-bold text-stone-800 uppercase mb-2 text-xs tracking-wider">Spelregels Berkeley Hete Compostmethode</h3>
+            <h3 class="font-bold text-stone-800 uppercase mb-2 text-xs tracking-wider">Spelregels Hete Compostmethode</h3>
             <ul class="list-disc pl-4 space-y-1">
                 <li><strong>Minimale Omvang:</strong> Bouw een hoop van minimaal 1m x 1m x 1.5m (ca. 12,5 kruiwagens / 1 m³) om hitte (55-65 °C) vast te houden.</li>
                 <li><strong>Vochtgehalte:</strong> Moet aanvoelen als een uitgeknepen spons (1 druppel bij hard knijpen).</li>
@@ -296,7 +296,7 @@
             if (finalCN >= 20 && finalCN <= 32) {
                 boxClass = "border-emerald-300 bg-emerald-50/60 shadow-sm";
                 textClass = "bg-emerald-100/70 text-emerald-900 border border-emerald-200";
-                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de Berkeley 18-daagse hete compostmethode.`;
+                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de 18-daagse hete compostmethode.`;
             } else if (finalCN < 20) {
                 boxClass = "border-amber-300 bg-amber-50/60 shadow-sm";
                 textClass = "bg-amber-100/70 text-amber-900 border border-amber-200";
