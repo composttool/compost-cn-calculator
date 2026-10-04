@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compost C/N Rekentool — Stadslandbouw Arnhem</title>
-    <!-- Tailwind CSS voor een strakke, moderne en responsieve layout -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-amber-50 text-stone-800 font-sans min-h-screen p-4">
@@ -15,7 +14,7 @@
         <header class="border-b border-amber-100 pb-4 mb-6">
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Stadslandbouw Arnhem</span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-2">Compost C/N Rekentool</h1>
-            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de 18-daagse hete compostmethode).</p>
+            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
         </header>
 
         <!-- Instellingen & Doel -->
@@ -108,60 +107,74 @@
             </div>
         </div>
 
-        <!-- Interactief Dagprogramma -->
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-            <h3 class="font-bold text-stone-800 uppercase mb-3 text-xs tracking-wider">18-Daags Compostprogramma (Bijgehouden Status)</h3>
-            <p class="text-xs text-stone-600 mb-4 italic">Voor woensdags & vrijdags-schema: het omzetten gebeurt alleen op deze dagen. Merk je voortgang aan!</p>
-            
-            <div class="space-y-2">
-                <!-- Dag 1 -->
-                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
-                    <input type="checkbox" class="mt-1 cursor-pointer" id="day1">
-                    <div class="flex-1">
-                        <label for="day1" class="font-semibold text-stone-700 cursor-pointer">Dag 1 — Opbouwen (1ste werkdag)</label>
-                        <p class="text-xs text-stone-600 mt-1">Stapel al je materialen in lagen: groen-bruin-groen-bruin. Meng goed door. Controleer vochtgehalte (sponsgevoel).</p>
-                    </div>
-                </div>
+        <!-- Berkeley 18-daagse checklist -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h3 class="font-bold text-stone-800 uppercase mb-4 text-sm tracking-wider flex items-center gap-2">
+                <span class="text-xl">📋</span> Berkeley 18-Daagse Hete Compostmethode - Voortgang
+            </h3>
 
-                <!-- Dag 2-4 -->
-                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
-                    <input type="checkbox" class="mt-1 cursor-pointer" id="day2-4">
-                    <div class="flex-1">
-                        <label for="day2-4" class="font-semibold text-stone-700 cursor-pointer">Dag 2–4 — Rust (Kern voedingsproces)</label>
-                        <p class="text-xs text-stone-600 mt-1">Laat de hoop met rust. De kerntemperatuur stijgt naar 55–65 °C. Controleer dagelijks de temperatuur in de kern met een thermometer. <span class="font-semibold text-amber-700">Let op: Bij jouw woensdags-vrijdags schema kan de temp. flink oplopen. Voeg extra C in de kern toe (houtsnippers) om het iets lager te houden.</span></p>
-                    </div>
-                </div>
+            <div class="mb-4 pb-4 border-b border-blue-200">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="dag0" class="w-5 h-5 accent-emerald-600 cursor-pointer" onchange="updateProgress()">
+                    <span class="font-bold text-stone-800 group-hover:text-emerald-700 transition">Dag 0: Compost opzetten</span>
+                </label>
+                <span class="text-xs text-stone-600 ml-8 block mt-1">Bouw de hoop van minimaal 1m × 1m × 1,5m (ca. 1 m³) en controleer vocht en structuur.</span>
+            </div>
 
-                <!-- Dag 5 -->
-                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
-                    <input type="checkbox" class="mt-1 cursor-pointer" id="day5">
-                    <div class="flex-1">
-                        <label for="day5" class="font-semibold text-stone-700 cursor-pointer">Dag 5 — 1ste Keren (2de werkdag)</label>
-                        <p class="text-xs text-stone-600 mt-1">Draai de hoop binnenstebuiten. Pak materiaal van buiten en leg het naar binnen. Dit geeft zuurstof en versnelt ontbinding.</p>
-                    </div>
-                </div>
+            <div class="mb-4 pb-4 border-b border-blue-200">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="dag1_3" class="w-5 h-5 accent-emerald-600 cursor-pointer" onchange="updateProgress()">
+                    <span class="font-bold text-stone-800 group-hover:text-emerald-700 transition">Dag 1–3: Rust periode</span>
+                </label>
+                <span class="text-xs text-stone-600 ml-8 block mt-1">Laat de hoop met rust; de kern temperatuur stijgt naar 55–65 °C.</span>
+            </div>
 
-                <!-- Dag 6-18 -->
-                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
-                    <input type="checkbox" class="mt-1 cursor-pointer" id="day6-18">
-                    <div class="flex-1">
-                        <label for="day6-18" class="font-semibold text-stone-700 cursor-pointer">Dag 6–18 — Keren om de 2de Werkdag (vrijdag, woensdag...)</label>
-                        <p class="text-xs text-stone-600 mt-1">Elke volgende werkdag: Keer de hoop. Trek alles van buiten naar binnen. De temperatuur zakt geleidelijk, het proces verspreidt zich door het hele mengsel. Na ±18 dagen is het ruwe compost klaar.</p>
-                    </div>
-                </div>
-
-                <!-- Controleren -->
-                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
-                    <input type="checkbox" class="mt-1 cursor-pointer" id="done">
-                    <div class="flex-1">
-                        <label for="done" class="font-semibold text-stone-700 cursor-pointer">✓ Klaar! Controleer & Gebruik</label>
-                        <p class="text-xs text-stone-600 mt-1">Het compost moet bruin, fijn en naar aarde ruiken. Brei uit voor nazeven en eindfinish. Gereed voor gebruik of opslag!</p>
-                    </div>
+            <div>
+                <p class="text-xs font-bold uppercase text-stone-600 mb-3">Omzettingen / keren:</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag4" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 4</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag6" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 6</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag8" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 8</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag10" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 10</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag12" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 12</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag14" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 14</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag16" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 16</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" id="dag18" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
+                        <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 18</span>
+                    </label>
                 </div>
             </div>
 
-            <div class="mt-4 text-xs text-stone-600 bg-white/60 p-2 rounded border border-blue-100">
-                <strong>💡 Tip voor jullie schema:</strong> Omdat je alleen woensdag en vrijdag werkt, duurt het proces langer maar heb je meer controle. Zet een alarm voor die dagen zodat je niet vergeet te keren. Luister ook naar je neus — als het ammoniakachtig ruikt, voeg dan extra bruin toe.
+            <div class="mt-6 pt-4 border-t border-blue-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold uppercase text-stone-600">Voortgang</span>
+                    <span id="progressPercentage" class="text-sm font-bold text-blue-700">0%</span>
+                </div>
+                <div class="w-full bg-stone-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
             </div>
         </div>
 
@@ -178,117 +191,61 @@
     </div>
 
     <script>
-        // Uitgebreide database met 75+ compostmaterialen
         const materialsData = [
-            // === KOOLSTOFRIJK (BRUIN) ===
             { name: "Houtsnippers (grove takken)", cn: 400, category: "Koolstofrijk (Bruin)" },
             { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)" },
             { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)" },
-            { name: "Zagerij-restafval (droog)", cn: 300, category: "Koolstofrijk (Bruin)" },
             { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)" },
             { name: "Boomschors (gehakseld)", cn: 100, category: "Koolstofrijk (Bruin)" },
             { name: "Stro (tarwe / gerst)", cn: 75, category: "Koolstofrijk (Bruin)" },
-            { name: "Roggestro", cn: 90, category: "Koolstofrijk (Bruin)" },
             { name: "Maïsstengels (gedroogd)", cn: 75, category: "Koolstofrijk (Bruin)" },
             { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)" },
-            { name: "Eikenbladeren", cn: 50, category: "Koolstofrijk (Bruin)" },
-            { name: "Berkenbladeren", cn: 55, category: "Koolstofrijk (Bruin)" },
             { name: "Dennennaalden", cn: 80, category: "Koolstofrijk (Bruin)" },
-            { name: "Sparrentakken (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)" },
             { name: "Fruitafval / Appelpulp", cn: 35, category: "Koolstofrijk (Bruin)" },
             { name: "Pindadoppen (gekraakt)", cn: 35, category: "Koolstofrijk (Bruin)" },
-            { name: "Cacaodoppen", cn: 40, category: "Koolstofrijk (Bruin)" },
-            { name: "Kokosvezel / Kokoshoir", cn: 150, category: "Koolstofrijk (Bruin)" },
-            { name: "Zaagzaadschalen", cn: 100, category: "Koolstofrijk (Bruin)" },
-            { name: "Granen-kaf", cn: 80, category: "Koolstofrijk (Bruin)" },
             { name: "Algemeen tuinafval (droog)", cn: 30, category: "Koolstofrijk (Bruin)" },
             { name: "Houtas (onbehandeld hout)", cn: 25, category: "Koolstofrijk (Bruin)" },
-            { name: "Zaagselmix", cn: 200, category: "Koolstofrijk (Bruin)" },
-            { name: "Papiersnippers (ongezelligd)", cn: 160, category: "Koolstofrijk (Bruin)" },
-            { name: "Mulch (onbehandeld hout)", cn: 400, category: "Koolstofrijk (Bruin)" },
-            { name: "Teabagresten (gedroogd)", cn: 15, category: "Koolstofrijk (Bruin)" },
-            { name: "Gedroogde waterkruiden", cn: 30, category: "Koolstofrijk (Bruin)" },
-            { name: "Houten pellets", cn: 350, category: "Koolstofrijk (Bruin)" },
-
-            // === STIKSTOFRIJK (GROEN) ===
-            { name: "Groenteresten van het land", cn: 25, category: "Stikstofrijk (Groen)" },
+            
             { name: "Tuinafval (vers / groen)", cn: 30, category: "Stikstofrijk (Groen)" },
             { name: "Onkruid (vers, zonder zaad)", cn: 30, category: "Stikstofrijk (Groen)" },
             { name: "Groen hout / Vers snoeihout", cn: 25, category: "Stikstofrijk (Groen)" },
-            { name: "Groen bladafval", cn: 20, category: "Stikstofrijk (Groen)" },
             { name: "Hooi (gedroogd gras)", cn: 25, category: "Stikstofrijk (Groen)" },
             { name: "Groenteresten / Keukenafval", cn: 25, category: "Stikstofrijk (Groen)" },
-            { name: "Appel- en perenschillen", cn: 12, category: "Stikstofrijk (Groen)" },
-            { name: "Bananenschillen", cn: 15, category: "Stikstofrijk (Groen)" },
             { name: "Klaver (vers / in bloei)", cn: 23, category: "Stikstofrijk (Groen)" },
-            { name: "Witte klaver", cn: 20, category: "Stikstofrijk (Groen)" },
-            { name: "Rode klaver", cn: 20, category: "Stikstofrijk (Groen)" },
-            { name: "Luzerne (vers / gemaaid)", cn: 12, category: "Stikstofrijk (Groen)" },
             { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)" },
-            { name: "Theebladeren (vers)", cn: 12, category: "Stikstofrijk (Groen)" },
             { name: "Voedselafval (gekoopt / gekookt)", cn: 20, category: "Stikstofrijk (Groen)" },
             { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)" },
             { name: "Zeewier / Algen", cn: 19, category: "Stikstofrijk (Groen)" },
-            { name: "Gedroogde zeewier", cn: 35, category: "Stikstofrijk (Groen)" },
-            { name: "Waternootafval", cn: 25, category: "Stikstofrijk (Groen)" },
-            { name: "Brandnetelsnippers", cn: 10, category: "Stikstofrijk (Groen)" },
-            { name: "Komkommerranken", cn: 15, category: "Stikstofrijk (Groen)" },
-            { name: "Tomatenloof", cn: 18, category: "Stikstofrijk (Groen)" },
-            { name: "Erwtenplanten", cn: 12, category: "Stikstofrijk (Groen)" },
-            { name: "Booneplanten", cn: 15, category: "Stikstofrijk (Groen)" },
-            { name: "Phacelia (vers groen)", cn: 11, category: "Stikstofrijk (Groen)" },
-            { name: "Senf (groen mengteelt)", cn: 10, category: "Stikstofrijk (Groen)" },
-
-            // === MEST & DIERLIJKE AFVALSTOFFEN ===
             { name: "Paardenmest (met stro)", cn: 18, category: "Stikstofrijk (Groen)" },
-            { name: "Paardenmest (zonder stro)", cn: 13, category: "Stikstofrijk (Groen)" },
             { name: "Koemest (vers)", cn: 16, category: "Stikstofrijk (Groen)" },
-            { name: "Koemest (gedroogd)", cn: 20, category: "Stikstofrijk (Groen)" },
             { name: "Champost (champignonmest)", cn: 16, category: "Stikstofrijk (Groen)" },
-            { name: "Schapenmest (vers)", cn: 14, category: "Stikstofrijk (Groen)" },
-            { name: "Geitenmest", cn: 13, category: "Stikstofrijk (Groen)" },
             { name: "Runder potstal (oud)", cn: 14, category: "Stikstofrijk (Groen)" },
+            { name: "Luzerne (vers / gemaaid)", cn: 12, category: "Stikstofrijk (Groen)" },
             { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)" },
-            { name: "Kippenmest (vers)", cn: 7, category: "Stikstofrijk (Groen)" },
-            { name: "Eendenmest", cn: 8, category: "Stikstofrijk (Groen)" },
+            { name: "Phacelia (vers groen)", cn: 11, category: "Stikstofrijk (Groen)" },
             { name: "Duivenmest", cn: 10, category: "Stikstofrijk (Groen)" },
-            { name: "Konijnenmest", cn: 9, category: "Stikstofrijk (Groen)" },
+            { name: "Kippenmest (vers)", cn: 7, category: "Stikstofrijk (Groen)" },
             { name: "Visresten / Visafval", cn: 7, category: "Stikstofrijk (Groen)" },
-            { name: "Vismeelfood", cn: 3, category: "Stikstofrijk (Groen)" },
             { name: "Beendermeel / Bloedmeel", cn: 3, category: "Stikstofrijk (Groen)" },
-            { name: "Menselijke urine (verdund)", cn: 1, category: "Stikstofrijk (Groen)" },
-            { name: "Gastvrijheidsmest", cn: 25, category: "Stikstofrijk (Groen)" },
-            { name: "Kasresten (met dierlijke stof)", cn: 20, category: "Stikstofrijk (Groen)" },
-            { name: "Vogeluitwerpselen", cn: 6, category: "Stikstofrijk (Groen)" }
+            { name: "Menselijke urine (verdund)", cn: 1, category: "Stikstofrijk (Groen)" }
         ];
 
-        // Meest voorkomende materialen die standaard getoond worden (zonder getallen)
-        let defaultMaterials = [
-            "Groenteresten van het land",
-            "Paardenmest (met stro)",
-            "Houtsnippers (grove takken)",
-            "Karton (versnipperd, bruin)",
-            "Groen bladafval",
-            "Onkruid (vers, zonder zaad)",
-            "Herfstbladeren (gedroogd)"
+        let initialRows = [
+            { name: "Paardenmest (met stro)", barrows: 6 },
+            { name: "Groenteresten / Keukenafval", barrows: 4.5 },
+            { name: "Herfstbladeren (gedroogd)", barrows: 2 }
         ];
-
-        function toggleCheckbox(element) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            checkbox.checked = !checkbox.checked;
-        }
 
         function initTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            defaultMaterials.forEach(matName => {
-                addRowToDOM(matName, 0);
+            initialRows.forEach(item => {
+                addRowToDOM(item.name, item.barrows);
             });
             calculate();
         }
 
         function resetTable() {
-            // Zet alle getallen op 0
             const inputs = document.querySelectorAll('.mat-barrows');
             inputs.forEach(input => {
                 input.value = 0;
@@ -296,18 +253,17 @@
             calculate();
         }
 
-        function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 0) {
+        function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 1) {
             addRowToDOM(matName, barrowsCount);
             calculate();
         }
 
-        // Functie om getallen streng te valideren tegen misbruik of negatieve getallen
         function validateNumber(input, fallback) {
             let val = parseFloat(input.value);
             if (isNaN(val) || val < 0) {
                 input.value = fallback;
             } else if (val > 10000) {
-                input.value = 10000; // Maximale grens tegen overflow
+                input.value = 10000;
             }
         }
 
@@ -318,7 +274,6 @@
 
             let optionsHtml = '';
             materialsData.forEach(m => {
-                // Veilig opschonen van opties om HTML-injectie te voorkomen
                 let safeName = m.name.replace(/"/g, '&quot;');
                 let selected = m.name === selectedMatName ? 'selected' : '';
                 optionsHtml += `<option value="${safeName}" ${selected}>${m.name} (${m.category.split(' ')[0]}, C:N ${m.cn})</option>`;
@@ -400,15 +355,15 @@
             if (finalCN >= 20 && finalCN <= 32) {
                 boxClass = "border-emerald-300 bg-emerald-50/60 shadow-sm";
                 textClass = "bg-emerald-100/70 text-emerald-900 border border-emerald-200";
-                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de 18-daagse hete compostmethode.`;
+                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de Berkeley 18-daagse hete compostmethode.`;
             } else if (finalCN < 20) {
                 boxClass = "border-amber-300 bg-amber-50/60 shadow-sm";
                 textClass = "bg-amber-100/70 text-amber-900 border border-amber-200";
-                adviceHTML = `⚠️ <strong>Je mix is te nat en ruikt misschien naar ammoniak.</strong> Voeg meer bruin materiaal toe (zoals houtsnippers, karton of droge bladeren), keer de hoop goed door en laat hem iets drogen.`;
+                adviceHTML = `⚠️ <strong>TE STIKTOFRIJK / NAT (${finalCN.toFixed(1)}:1):</strong> De hoop kan te nat worden, verstikken of ammoniak (stank) produceren. <em>Advies: Voeg extra koolstofrijk materiaal toe (zoals stro, houtsnippers of herfstbladeren).</em>`;
             } else {
                 boxClass = "border-blue-300 bg-blue-50/60 shadow-sm";
                 textClass = "bg-blue-100/70 text-blue-900 border border-blue-200";
-                adviceHTML = `ℹ️ <strong>Je mix is te droog.</strong> Voeg meer groen materiaal toe (zoals vers gras, groenteresten of paardenmest), voeg water toe en meng alles goed door tot het voelt als een uitgeknepen spons.`;
+                adviceHTML = `ℹ️ <strong>TE KOOLSTOFRIJK / DROOG (${finalCN.toFixed(1)}:1):</strong> De compostering zal erg traag verlopen omdat bacteriën te weinig stikstof hebben. <em>Advies: Voeg stikstofrijk materiaal toe (zoals vers gras, groenteresten of kippenmest/urine).</em>`;
             }
 
             if (totalVolumeLiters < 1000) {
@@ -420,7 +375,39 @@
             adviceText.innerHTML = adviceHTML;
         }
 
-        window.onload = initTable;
+        function updateProgress() {
+            const checkboxes = ['dag0', 'dag1_3', 'dag4', 'dag6', 'dag8', 'dag10', 'dag12', 'dag14', 'dag16', 'dag18'];
+            const checked = checkboxes.filter(id => document.getElementById(id).checked).length;
+            const total = checkboxes.length;
+            const percentage = Math.round((checked / total) * 100);
+
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            document.getElementById('progressBar').style.width = percentage + '%';
+
+            localStorage.setItem('compostProgress', JSON.stringify(
+                checkboxes.reduce((acc, id) => {
+                    acc[id] = document.getElementById(id).checked;
+                    return acc;
+                }, {})
+            ));
+        }
+
+        function restoreProgress() {
+            const saved = localStorage.getItem('compostProgress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                Object.keys(progress).forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) input.checked = progress[id];
+                });
+                updateProgress();
+            }
+        }
+
+        window.onload = function() {
+            initTable();
+            restoreProgress();
+        };
     </script>
 </body>
 </html>
