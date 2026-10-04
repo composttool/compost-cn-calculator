@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compost C/N Rekentool — Stadslandbouw Arnhem</title>
+    <!-- Tailwind CSS voor een strakke, moderne en responsieve layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 text-stone-800 font-sans min-h-screen p-4">
+
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 my-6 bg-white rounded-2xl shadow-xl border border-amber-200">
+        
+        <!-- Header -->
+        <header class="border-b border-amber-100 pb-4 mb-6">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Stadslandbouw Arnhem</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-2">Compost C/N Rekentool</h1>
+            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
+        </header>
+
+        <!-- Instellingen & Doel -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+            <div>
+                <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Doel C/N Verhouding (Ideaal):</label>
+                <input type="number" id="targetCN" value="30" min="1" max="100" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 30); calculate();">
+                <span class="text-xs text-stone-500 mt-0.5 block">30:1 voor snelle hete compostering.</span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Standaard Kruiwagen Inhoud (Liters):</label>
+                <input type="number" id="barrowSize" value="80" min="1" max="500" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 80); calculate();">
+                <span class="text-xs text-stone-500 mt-0.5 block">Inhoud van 1 standaard tuinierkruiwagen.</span>
+            </div>
+        </div>
+
+        <!-- Tabel met Materialen -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-bold text-stone-800">Samenstelling Compostmengsel</h2>
+                <button onclick="addRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">+ Materiaal Toevoegen</button>
+            </div>
+            
+            <div class="overflow-x-auto border border-stone-200 rounded-xl">
+                <table id="mixtureTable" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-stone-100 text-stone-700 text-xs uppercase tracking-wider border-b border-stone-200">
+                            <th class="p-3">Materiaal (Keuze uit Database)</th>
+                            <th class="p-3 w-28">C:N Ratio</th>
+                            <th class="p-3 w-32">Aantal Kruiwagens</th>
+                            <th class="p-3 w-28">Volume (L)</th>
+                            <th class="p-3 w-16 text-center">Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-stone-100 text-sm">
+                        <!-- Wordt dynamisch gevuld via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resultaten Container -->
+        <div id="resultBox" class="p-5 rounded-2xl border transition-all mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div class="bg-white/80 p-3 rounded-xl border border-stone-200/60 shadow-sm">
+                    <span class="text-xs uppercase font-bold text-stone-500 block">Totaal Volume</span>
+                    <span id="totalVolume" class="text-2xl font-extrabold text-stone-900">0 L</span>
+                    <span id="totalM3" class="text-xs text-stone-500 block">0.00 m³</span>
+                </div>
+                <div class="bg-white/80 p-3 rounded-xl border border-stone-200/60 shadow-sm">
+                    <span class="text-xs uppercase font-bold text-stone-500 block">Berekende C/N Ratio</span>
+                    <span id="resultCN" class="text-2xl font-extrabold text-stone-900">0:1</span>
+                    <span class="text-xs text-stone-500 block">Gewogen gemiddelde</span>
+                </div>
+                <div class="bg-white/80 p-3 rounded-xl border border-stone-200/60 shadow-sm">
+                    <span class="text-xs uppercase font-bold text-stone-500 block">Vochtbalans Indicatie</span>
+                    <span id="resultVocht" class="text-lg font-bold text-stone-800">-</span>
+                    <span class="text-xs text-stone-500 block">Doel: ~50% (sponsgevoel)</span>
+                </div>
+            </div>
+            
+            <div id="adviceText" class="mt-4 p-4 rounded-xl text-sm font-medium">
+                <!-- Adviesbericht -->
+            </div>
+        </div>
+
+        <!-- Praktische Spelregels (Informatie) -->
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs text-stone-600 leading-relaxed">
+            <h3 class="font-bold text-stone-800 uppercase mb-2 text-xs tracking-wider">Spelregels Berkeley Hete Compostmethode</h3>
+            <ul class="list-disc pl-4 space-y-1">
+                <li><strong>Minimale Omvang:</strong> Bouw een hoop van minimaal 1m x 1m x 1.5m (ca. 12,5 kruiwagens / 1 m³) om hitte (55-65 °C) vast te houden.</li>
+                <li><strong>Vochtgehalte:</strong> Moet aanvoelen als een uitgeknepen spons (1 druppel bij hard knijpen).</li>
+                <li><strong>Keren & Zuurstof:</strong> Dag 1 opbouwen → Rust t/m dag 4 → Dag 5 keren → Daarna om de dag keren (van buiten naar binnen).</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Veilige database met vaste waarden
+        const materialsData = [
+            { name: "Houtsnippers (grove takken)", cn: 400, category: "Koolstofrijk (Bruin)" },
+            { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)" },
+            { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)" },
+            { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)" },
+            { name: "Boomschors (gehakseld)", cn: 100, category: "Koolstofrijk (Bruin)" },
+            { name: "Stro (tarwe / gerst)", cn: 75, category: "Koolstofrijk (Bruin)" },
+            { name: "Maïsstengels (gedroogd)", cn: 75, category: "Koolstofrijk (Bruin)" },
+            { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)" },
+            { name: "Dennennaalden", cn: 80, category: "Koolstofrijk (Bruin)" },
+            { name: "Fruitafval / Appelpulp", cn: 35, category: "Koolstofrijk (Bruin)" },
+            { name: "Pindadoppen (gekraakt)", cn: 35, category: "Koolstofrijk (Bruin)" },
+            { name: "Algemeen tuinafval (droog)", cn: 30, category: "Koolstofrijk (Bruin)" },
+            { name: "Houtas (onbehandeld hout)", cn: 25, category: "Koolstofrijk (Bruin)" },
+            
+            { name: "Tuinafval (vers / groen)", cn: 30, category: "Stikstofrijk (Groen)" },
+            { name: "Onkruid (vers, zonder zaad)", cn: 30, category: "Stikstofrijk (Groen)" },
+            { name: "Groen hout / Vers snoeihout", cn: 25, category: "Stikstofrijk (Groen)" },
+            { name: "Hooi (gedroogd gras)", cn: 25, category: "Stikstofrijk (Groen)" },
+            { name: "Groenteresten / Keukenafval", cn: 25, category: "Stikstofrijk (Groen)" },
+            { name: "Klaver (vers / in bloei)", cn: 23, category: "Stikstofrijk (Groen)" },
+            { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)" },
+            { name: "Voedselafval (gekoopt / gekookt)", cn: 20, category: "Stikstofrijk (Groen)" },
+            { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)" },
+            { name: "Zeewier / Algen", cn: 19, category: "Stikstofrijk (Groen)" },
+            { name: "Paardenmest (met stro)", cn: 18, category: "Stikstofrijk (Groen)" },
+            { name: "Koemest (vers)", cn: 16, category: "Stikstofrijk (Groen)" },
+            { name: "Champost (champignonmest)", cn: 16, category: "Stikstofrijk (Groen)" },
+            { name: "Runder potstal (oud)", cn: 14, category: "Stikstofrijk (Groen)" },
+            { name: "Luzerne (vers / gemaaid)", cn: 12, category: "Stikstofrijk (Groen)" },
+            { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)" },
+            { name: "Phacelia (vers groen)", cn: 11, category: "Stikstofrijk (Groen)" },
+            { name: "Duivenmest", cn: 10, category: "Stikstofrijk (Groen)" },
+            { name: "Kippenmest (vers)", cn: 7, category: "Stikstofrijk (Groen)" },
+            { name: "Visresten / Visafval", cn: 7, category: "Stikstofrijk (Groen)" },
+            { name: "Beendermeel / Bloedmeel", cn: 3, category: "Stikstofrijk (Groen)" },
+            { name: "Menselijke urine (verdund)", cn: 1, category: "Stikstofrijk (Groen)" }
+        ];
+
+        let initialRows = [
+            { name: "Paardenmest (met stro)", barrows: 6 },
+            { name: "Groenteresten / Keukenafval", barrows: 4.5 },
+            { name: "Herfstbladeren (gedroogd)", barrows: 2 }
+        ];
+
+        function initTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            initialRows.forEach(item => {
+                addRowToDOM(item.name, item.barrows);
+            });
+            calculate();
+        }
+
+        function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 1) {
+            addRowToDOM(matName, barrowsCount);
+            calculate();
+        }
+
+        // Functie om getallen streng te valideren tegen misbruik of negatieve getallen
+        function validateNumber(input, fallback) {
+            let val = parseFloat(input.value);
+            if (isNaN(val) || val < 0) {
+                input.value = fallback;
+            } else if (val > 10000) {
+                input.value = 10000; // Maximale grens tegen overflow
+            }
+        }
+
+        function addRowToDOM(selectedMatName, barrowsCount) {
+            const tbody = document.getElementById('tableBody');
+            const row = document.createElement('tr');
+            row.className = "hover:bg-stone-50/80 transition";
+
+            let optionsHtml = '';
+            materialsData.forEach(m => {
+                // Veilig opschonen van opties om HTML-injectie te voorkomen
+                let safeName = m.name.replace(/"/g, '&quot;');
+                let selected = m.name === selectedMatName ? 'selected' : '';
+                optionsHtml += `<option value="${safeName}" ${selected}>${m.name} (${m.category.split(' ')[0]}, C:N ${m.cn})</option>`;
+            });
+
+            row.innerHTML = `
+                <td class="p-3">
+                    <select class="mat-select w-full p-2 border border-stone-200 rounded-lg bg-white text-stone-800 text-sm focus:ring-2 focus:ring-emerald-500" onchange="calculate()">
+                        ${optionsHtml}
+                    </select>
+                </td>
+                <td class="p-3 font-mono text-stone-600 cn-display">0</td>
+                <td class="p-3">
+                    <input type="number" step="0.5" min="0" max="1000" value="${barrowsCount}" class="mat-barrows w-full p-2 border border-stone-200 rounded-lg text-stone-800 text-sm" oninput="validateNumber(this, 0); calculate();">
+                </td>
+                <td class="p-3 font-mono text-stone-600 volume-display">0 L</td>
+                <td class="p-3 text-center">
+                    <button onclick="this.closest('tr').remove(); calculate();" class="text-red-400 hover:text-red-600 font-bold p-1 rounded transition" title="Verwijder rij">✕</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function calculate() {
+            const barrowSizeInput = document.getElementById('barrowSize');
+            validateNumber(barrowSizeInput, 80);
+            const barrowSize = parseFloat(barrowSizeInput.value);
+
+            const rows = document.querySelectorAll('#tableBody tr');
+            
+            let totalWeightedC = 0;
+            let totalBarrows = 0;
+
+            rows.forEach(row => {
+                const select = row.querySelector('.mat-select');
+                const barrowsInput = row.querySelector('.mat-barrows');
+                const cnDisplay = row.querySelector('.cn-display');
+                const volumeDisplay = row.querySelector('.volume-display');
+
+                const matName = select.value;
+                const matObj = materialsData.find(m => m.name === matName) || materialsData[0];
+                
+                let barrows = parseFloat(barrowsInput.value);
+                if (isNaN(barrows) || barrows < 0) barrows = 0;
+
+                const volume = barrows * barrowSize;
+
+                cnDisplay.textContent = matObj.cn;
+                volumeDisplay.textContent = volume + ' L';
+
+                totalWeightedC += volume * matObj.cn;
+                totalBarrows += barrows;
+            });
+
+            const totalVolumeLiters = totalBarrows * barrowSize;
+            const totalVolumeM3 = (totalVolumeLiters / 1000).toFixed(2);
+            
+            let finalCN = totalBarrows > 0 ? (totalWeightedC / totalVolumeLiters) : 0;
+
+            document.getElementById('totalVolume').textContent = totalVolumeLiters + ' L';
+            document.getElementById('totalM3').textContent = totalVolumeM3 + ' m³';
+            document.getElementById('resultCN').textContent = finalCN > 0 ? finalCN.toFixed(1) + ':1' : '0:1';
+            document.getElementById('resultVocht').textContent = totalBarrows > 0 ? "Goed mengbaar" : "Geen input";
+
+            const resultBox = document.getElementById('resultBox');
+            const adviceText = document.getElementById('adviceText');
+
+            if (totalBarrows === 0) {
+                resultBox.className = "p-5 rounded-2xl border border-stone-200 bg-stone-50 transition-all mb-6";
+                adviceText.className = "mt-4 p-4 rounded-xl text-sm font-medium bg-stone-100 text-stone-600";
+                adviceText.innerHTML = "⚠️ Voeg materialen toe om een berekening te starten.";
+                return;
+            }
+
+            let adviceHTML = "";
+            let boxClass = "";
+            let textClass = "";
+
+            if (finalCN >= 20 && finalCN <= 32) {
+                boxClass = "border-emerald-300 bg-emerald-50/60 shadow-sm";
+                textClass = "bg-emerald-100/70 text-emerald-900 border border-emerald-200";
+                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de Berkeley 18-daagse hete compostmethode.`;
+            } else if (finalCN < 20) {
+                boxClass = "border-amber-300 bg-amber-50/60 shadow-sm";
+                textClass = "bg-amber-100/70 text-amber-900 border border-amber-200";
+                adviceHTML = `⚠️ <strong>TE STIKTOFRIJK / NAT (${finalCN.toFixed(1)}:1):</strong> De hoop kan te nat worden, verstikken of ammoniak (stank) produceren. <em>Advies: Voeg extra koolstofrijk materiaal toe (zoals stro, houtsnippers of herfstbladeren).</em>`;
+            } else {
+                boxClass = "border-blue-300 bg-blue-50/60 shadow-sm";
+                textClass = "bg-blue-100/70 text-blue-900 border border-blue-200";
+                adviceHTML = `ℹ️ <strong>TE KOOLSTOFRIJK / DROOG (${finalCN.toFixed(1)}:1):</strong> De compostering zal erg traag verlopen omdat bacteriën te weinig stikstof hebben. <em>Advies: Voeg stikstofrijk materiaal toe (zoals vers gras, groenteresten of kippenmest/urine).</em>`;
+            }
+
+            if (totalVolumeLiters < 1000) {
+                adviceHTML += `<br><span class="block mt-2 text-xs font-semibold text-amber-800">⚠️ Let op: Met ${totalVolumeLiters}L zit je onder de aanbevolen 1.0 m³ (1000L) massa die nodig is om de kerntemperatuur (55-65 °C) lang genoeg vast te houden voor de hete compostmethode!</span>`;
+            }
+
+            resultBox.className = `p-5 rounded-2xl border transition-all mb-6 ${boxClass}`;
+            adviceText.className = `mt-4 p-4 rounded-xl text-sm font-medium ${textClass}`;
+            adviceText.innerHTML = adviceHTML;
+        }
+
+        window.onload = initTable;
+    </script>
+</body>
+</html>
