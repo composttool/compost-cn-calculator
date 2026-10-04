@@ -14,7 +14,7 @@
         <header class="border-b border-amber-100 pb-4 mb-6">
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Stadslandbouw Arnhem</span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-2">Compost C/N Rekentool</h1>
-            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
+            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stiknof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
         </header>
 
         <!-- Instellingen & Doel -->
@@ -113,12 +113,23 @@
                 <span class="text-xl">📋</span> Berkeley 18-Daagse Hete Compostmethode - Voortgang
             </h3>
 
+            <div class="flex justify-between items-center mb-4 gap-3">
+                <div id="allCompleteBadge" class="hidden inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold uppercase tracking-wide">
+                    <span>✓</span> Alle dagen afgerond
+                </div>
+                <button onclick="resetChecklist()" class="bg-stone-500 hover:bg-stone-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
+                    ↻ Reset checklist
+                </button>
+            </div>
+
             <div class="mb-4 pb-4 border-b border-blue-200">
                 <label class="flex items-center gap-3 cursor-pointer group">
                     <input type="checkbox" id="dag0" class="w-5 h-5 accent-emerald-600 cursor-pointer" onchange="updateProgress()">
                     <span class="font-bold text-stone-800 group-hover:text-emerald-700 transition">Dag 0: Compost opzetten</span>
                 </label>
-                <span class="text-xs text-stone-600 ml-8 block mt-1">Bouw de hoop van minimaal 1m × 1m × 1,5m (ca. 1 m³) en controleer vocht en structuur.</span>
+                <div class="mt-2 ml-8 text-xs text-stone-600">
+                    <span class="font-semibold">Opmerking:</span> Check vocht, voeg lucht toe en bouw in lagen van groen en bruin.
+                </div>
             </div>
 
             <div class="mb-4 pb-4 border-b border-blue-200">
@@ -126,7 +137,9 @@
                     <input type="checkbox" id="dag1_3" class="w-5 h-5 accent-emerald-600 cursor-pointer" onchange="updateProgress()">
                     <span class="font-bold text-stone-800 group-hover:text-emerald-700 transition">Dag 1–3: Rust periode</span>
                 </label>
-                <span class="text-xs text-stone-600 ml-8 block mt-1">Laat de hoop met rust; de kern temperatuur stijgt naar 55–65 °C.</span>
+                <div class="mt-2 ml-8 text-xs text-stone-600">
+                    <span class="font-semibold">Opmerking:</span> Laat de hoop met rust. Controleer temperatuur, vocht en geur. Temperatuur >55°C is ideaal.
+                </div>
             </div>
 
             <div>
@@ -164,6 +177,19 @@
                         <input type="checkbox" id="dag18" class="w-4 h-4 accent-blue-600 cursor-pointer" onchange="updateProgress()">
                         <span class="text-sm text-stone-700 group-hover:text-blue-700 transition">Dag 18</span>
                     </label>
+                </div>
+
+                <div class="mt-4 space-y-2 text-xs text-stone-600">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 4:</span> Voer lucht toe en controleer vocht.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 6:</span> Keren van buiten naar binnen; controleer temperatuur.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 8:</span> Controleer vocht en voeg indien nodig bruine materialen toe.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 10:</span> Keren en lucht geven; geur moet neutral zijn.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 12:</span> Controleer of de hoop afkoelt en de structuur homogeen wordt.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 14:</span> Keren opnieuw; controleer vocht en textuur.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 16:</span> Laatste grote keren; controleer de kleur en geur.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 18:</span> Laat de compost rijpen; controleer of het donker, kruimelig en aarde-achtig ruikt.</div>
+                    </div>
                 </div>
             </div>
 
@@ -384,12 +410,28 @@
             document.getElementById('progressPercentage').textContent = percentage + '%';
             document.getElementById('progressBar').style.width = percentage + '%';
 
+            const allCompleteBadge = document.getElementById('allCompleteBadge');
+            if (percentage === 100) {
+                allCompleteBadge.classList.remove('hidden');
+            } else {
+                allCompleteBadge.classList.add('hidden');
+            }
+
             localStorage.setItem('compostProgress', JSON.stringify(
                 checkboxes.reduce((acc, id) => {
                     acc[id] = document.getElementById(id).checked;
                     return acc;
                 }, {})
             ));
+        }
+
+        function resetChecklist() {
+            const checkboxes = ['dag0', 'dag1_3', 'dag4', 'dag6', 'dag8', 'dag10', 'dag12', 'dag14', 'dag16', 'dag18'];
+            checkboxes.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.checked = false;
+            });
+            updateProgress();
         }
 
         function restoreProgress() {
