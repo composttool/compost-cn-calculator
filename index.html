@@ -108,6 +108,63 @@
             </div>
         </div>
 
+        <!-- Interactief Dagprogramma -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <h3 class="font-bold text-stone-800 uppercase mb-3 text-xs tracking-wider">18-Daags Compostprogramma (Bijgehouden Status)</h3>
+            <p class="text-xs text-stone-600 mb-4 italic">Voor woensdags & vrijdags-schema: het omzetten gebeurt alleen op deze dagen. Merk je voortgang aan!</p>
+            
+            <div class="space-y-2">
+                <!-- Dag 1 -->
+                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" class="mt-1 cursor-pointer" id="day1">
+                    <div class="flex-1">
+                        <label for="day1" class="font-semibold text-stone-700 cursor-pointer">Dag 1 — Opbouwen (1ste werkdag)</label>
+                        <p class="text-xs text-stone-600 mt-1">Stapel al je materialen in lagen: groen-bruin-groen-bruin. Meng goed door. Controleer vochtgehalte (sponsgevoel).</p>
+                    </div>
+                </div>
+
+                <!-- Dag 2-4 -->
+                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" class="mt-1 cursor-pointer" id="day2-4">
+                    <div class="flex-1">
+                        <label for="day2-4" class="font-semibold text-stone-700 cursor-pointer">Dag 2–4 — Rust (Kern voedingsproces)</label>
+                        <p class="text-xs text-stone-600 mt-1">Laat de hoop met rust. De kerntemperatuur stijgt naar 55–65 °C. Controleer dagelijks de temperatuur in de kern met een thermometer. <span class="font-semibold text-amber-700">Let op: Bij jouw woensdags-vrijdags schema kan de temp. flink oplopen. Voeg extra C in de kern toe (houtsnippers) om het iets lager te houden.</span></p>
+                    </div>
+                </div>
+
+                <!-- Dag 5 -->
+                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" class="mt-1 cursor-pointer" id="day5">
+                    <div class="flex-1">
+                        <label for="day5" class="font-semibold text-stone-700 cursor-pointer">Dag 5 — 1ste Keren (2de werkdag)</label>
+                        <p class="text-xs text-stone-600 mt-1">Draai de hoop binnenstebuiten. Pak materiaal van buiten en leg het naar binnen. Dit geeft zuurstof en versnelt ontbinding.</p>
+                    </div>
+                </div>
+
+                <!-- Dag 6-18 -->
+                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" class="mt-1 cursor-pointer" id="day6-18">
+                    <div class="flex-1">
+                        <label for="day6-18" class="font-semibold text-stone-700 cursor-pointer">Dag 6–18 — Keren om de 2de Werkdag (vrijdag, woensdag...)</label>
+                        <p class="text-xs text-stone-600 mt-1">Elke volgende werkdag: Keer de hoop. Trek alles van buiten naar binnen. De temperatuur zakt geleidelijk, het proces verspreidt zich door het hele mengsel. Na ±18 dagen is het ruwe compost klaar.</p>
+                    </div>
+                </div>
+
+                <!-- Controleren -->
+                <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-50/30 transition cursor-pointer" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" class="mt-1 cursor-pointer" id="done">
+                    <div class="flex-1">
+                        <label for="done" class="font-semibold text-stone-700 cursor-pointer">✓ Klaar! Controleer & Gebruik</label>
+                        <p class="text-xs text-stone-600 mt-1">Het compost moet bruin, fijn en naar aarde ruiken. Brei uit voor nazeven en eindfinish. Gereed voor gebruik of opslag!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-xs text-stone-600 bg-white/60 p-2 rounded border border-blue-100">
+                <strong>💡 Tip voor jullie schema:</strong> Omdat je alleen woensdag en vrijdag werkt, duurt het proces langer maar heb je meer controle. Zet een alarm voor die dagen zodat je niet vergeet te keren. Luister ook naar je neus — als het ammoniakachtig ruikt, voeg dan extra bruin toe.
+            </div>
+        </div>
+
         <!-- Praktische Spelregels (Informatie) -->
         <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs text-stone-600 leading-relaxed">
             <h3 class="font-bold text-stone-800 uppercase mb-2 text-xs tracking-wider">Spelregels Hete Compostmethode</h3>
@@ -215,6 +272,11 @@
             "Onkruid (vers, zonder zaad)",
             "Herfstbladeren (gedroogd)"
         ];
+
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        }
 
         function initTable() {
             const tbody = document.getElementById('tableBody');
