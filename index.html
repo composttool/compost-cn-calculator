@@ -36,7 +36,10 @@
         <div class="mb-6">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-lg font-bold text-stone-800">Samenstelling Compostmengsel</h2>
-                <button onclick="addRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">+ Materiaal Toevoegen</button>
+                <div class="flex gap-2">
+                    <button onclick="addRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">+ Materiaal Toevoegen</button>
+                    <button onclick="resetTable()" class="bg-stone-400 hover:bg-stone-500 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">↻ Reset</button>
+                </div>
             </div>
             
             <div class="overflow-x-auto border border-stone-200 rounded-xl">
@@ -128,9 +131,11 @@
             { name: "Houten pellets", cn: 350, category: "Koolstofrijk (Bruin)" },
 
             // === STIKSTOFRIJK (GROEN) ===
+            { name: "Groenteresten van het land", cn: 25, category: "Stikstofrijk (Groen)" },
             { name: "Tuinafval (vers / groen)", cn: 30, category: "Stikstofrijk (Groen)" },
             { name: "Onkruid (vers, zonder zaad)", cn: 30, category: "Stikstofrijk (Groen)" },
             { name: "Groen hout / Vers snoeihout", cn: 25, category: "Stikstofrijk (Groen)" },
+            { name: "Groen bladafval", cn: 20, category: "Stikstofrijk (Groen)" },
             { name: "Hooi (gedroogd gras)", cn: 25, category: "Stikstofrijk (Groen)" },
             { name: "Groenteresten / Keukenafval", cn: 25, category: "Stikstofrijk (Groen)" },
             { name: "Appel- en perenschillen", cn: 12, category: "Stikstofrijk (Groen)" },
@@ -177,9 +182,14 @@
             { name: "Vogeluitwerpselen", cn: 6, category: "Stikstofrijk (Groen)" }
         ];
 
+        // Standaard opstelling met meest gebruikte materialen
         let initialRows = [
-            { name: "Paardenmest (met stro)", barrows: 6 },
-            { name: "Groenteresten / Keukenafval", barrows: 4.5 },
+            { name: "Groenteresten van het land", barrows: 3 },
+            { name: "Paardenmest (met stro)", barrows: 4 },
+            { name: "Houtsnippers (grove takken)", barrows: 2 },
+            { name: "Karton (versnipperd, bruin)", barrows: 2 },
+            { name: "Groen bladafval", barrows: 2 },
+            { name: "Onkruid (vers, zonder zaad)", barrows: 2 },
             { name: "Herfstbladeren (gedroogd)", barrows: 2 }
         ];
 
@@ -190,6 +200,10 @@
                 addRowToDOM(item.name, item.barrows);
             });
             calculate();
+        }
+
+        function resetTable() {
+            initTable();
         }
 
         function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 1) {
