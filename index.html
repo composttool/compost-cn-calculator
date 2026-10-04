@@ -14,19 +14,19 @@
         <header class="border-b border-amber-100 pb-4 mb-6">
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Stadslandbouw Arnhem</span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-2">Compost C/N Rekentool</h1>
-            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stiknof-verhouding voor je compostmengsel (geschikt voor de Berkeley 18-daagse hete compostmethode).</p>
+            <p class="text-sm text-stone-600 mt-1">Bereken interactief de gewogen Koolstof/Stikstof-verhouding voor je compostmengsel (geschikt voor de Hete Compostmethode (18 dagen)).</p>
         </header>
 
         <!-- Instellingen & Doel -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-amber-50/50 p-4 rounded-xl border border-amber-100">
             <div>
                 <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Doel C/N Verhouding (Ideaal):</label>
-                <input type="number" id="targetCN" value="30" min="1" max="100" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 30); calculate();">
+                <input type="number" id="targetCN" value="30" min="1" max="100" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 30)">
                 <span class="text-xs text-stone-500 mt-0.5 block">30:1 voor snelle hete compostering.</span>
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Standaard Kruiwagen Inhoud (Liters):</label>
-                <input type="number" id="barrowSize" value="80" min="1" max="500" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 80); calculate();">
+                <input type="number" id="barrowSize" value="80" min="1" max="500" class="w-full p-2 border border-stone-300 rounded-lg bg-white font-semibold text-stone-800" onchange="validateNumber(this, 80)">
                 <span class="text-xs text-stone-500 mt-0.5 block">Inhoud van 1 standaard tuinierkruiwagen.</span>
             </div>
         </div>
@@ -107,14 +107,14 @@
             </div>
         </div>
 
-        <!-- Berkeley 18-daagse checklist -->
+        <!-- Hete Compostmethode (18 dagen) checklist -->
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
             <h3 class="font-bold text-stone-800 uppercase mb-4 text-sm tracking-wider flex items-center gap-2">
-                <span class="text-xl">📋</span> Berkeley 18-Daagse Hete Compostmethode - Voortgang
+                <span class="text-xl">📋</span> Hete Compostmethode (18 dagen) - Voortgang
             </h3>
 
             <div class="flex justify-between items-center mb-4 gap-3">
-                <div id="allCompleteBadge" class="hidden inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold uppercase tracking-wide">
+                <div id="allCompleteBadge" class="hidden inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold uppercase">
                     <span>✓</span> Alle dagen afgerond
                 </div>
                 <button onclick="resetChecklist()" class="bg-stone-500 hover:bg-stone-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
@@ -188,7 +188,7 @@
                         <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 12:</span> Controleer of de hoop afkoelt en de structuur homogeen wordt.</div>
                         <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 14:</span> Keren opnieuw; controleer vocht en textuur.</div>
                         <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 16:</span> Laatste grote keren; controleer de kleur en geur.</div>
-                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 18:</span> Laat de compost rijpen; controleer of het donker, kruimelig en aarde-achtig ruikt.</div>
+                        <div class="bg-white/80 border border-blue-100 rounded-lg p-2"><span class="font-semibold">Dag 18:</span> Laat de compost rijpen; controleer of het donker, kruimelig en aangenaam ruikt.</div>
                     </div>
                 </div>
             </div>
@@ -313,7 +313,7 @@
                 </td>
                 <td class="p-3 font-mono text-stone-600 cn-display">0</td>
                 <td class="p-3">
-                    <input type="number" step="0.5" min="0" max="1000" value="${barrowsCount}" class="mat-barrows w-full p-2 border border-stone-200 rounded-lg text-stone-800 text-sm" oninput="validateNumber(this, 0); calculate();">
+                    <input type="number" step="0.5" min="0" max="1000" value="${barrowsCount}" class="mat-barrows w-full p-2 border border-stone-200 rounded-lg text-stone-800 text-sm" oninput="validateNumber(this, 0)" onchange="calculate()">
                 </td>
                 <td class="p-3 font-mono text-stone-600 volume-display">0 L</td>
                 <td class="p-3 text-center">
@@ -381,19 +381,19 @@
             if (finalCN >= 20 && finalCN <= 32) {
                 boxClass = "border-emerald-300 bg-emerald-50/60 shadow-sm";
                 textClass = "bg-emerald-100/70 text-emerald-900 border border-emerald-200";
-                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de Berkeley 18-daagse hete compostmethode.`;
+                adviceHTML = `✅ <strong>OPTIMALE C/N VERHOUDING (${finalCN.toFixed(1)}:1):</strong> Uitstekende balans! Dit mengsel is ideaal voor de Hete Compostmethode (18 dagen).`;
             } else if (finalCN < 20) {
                 boxClass = "border-amber-300 bg-amber-50/60 shadow-sm";
                 textClass = "bg-amber-100/70 text-amber-900 border border-amber-200";
-                adviceHTML = `⚠️ <strong>TE STIKTOFRIJK / NAT (${finalCN.toFixed(1)}:1):</strong> De hoop kan te nat worden, verstikken of ammoniak (stank) produceren. <em>Advies: Voeg extra koolstofrijk materiaal toe (zoals stro, houtsnippers of herfstbladeren).</em>`;
+                adviceHTML = `⚠️ <strong>TE STIKTOFRIJK / NAT (${finalCN.toFixed(1)}:1):</strong> De hoop kan te nat worden, verstikken of ammoniak (stank) produceren. <em>Advies: Voeg extra bruine materialen toe zoals houtsnippers, karton of bladeren.</em>`;
             } else {
                 boxClass = "border-blue-300 bg-blue-50/60 shadow-sm";
                 textClass = "bg-blue-100/70 text-blue-900 border border-blue-200";
-                adviceHTML = `ℹ️ <strong>TE KOOLSTOFRIJK / DROOG (${finalCN.toFixed(1)}:1):</strong> De compostering zal erg traag verlopen omdat bacteriën te weinig stikstof hebben. <em>Advies: Voeg stikstofrijk materiaal toe (zoals vers gras, groenteresten of kippenmest/urine).</em>`;
+                adviceHTML = `ℹ️ <strong>TE KOOLSTOFRIJK / DROOG (${finalCN.toFixed(1)}:1):</strong> De compostering zal erg traag verlopen omdat bacteriën te weinig stikstof hebben. <em>Advies: Voeg meer groen materiaal toe zoals gras, groenteafval of paardenmest.</em>`;
             }
 
             if (totalVolumeLiters < 1000) {
-                adviceHTML += `<br><span class="block mt-2 text-xs font-semibold text-amber-800">⚠️ Let op: Met ${totalVolumeLiters}L zit je onder de aanbevolen 1.0 m³ (1000L) massa die nodig is om de kerntemperatuur (55-65 °C) lang genoeg vast te houden voor de hete compostmethode!</span>`;
+                adviceHTML += `<br><span class="block mt-2 text-xs font-semibold text-amber-800">⚠️ Let op: Met ${totalVolumeLiters}L zit je onder de aanbevolen 1.0 m³ (1000L) massa die nodig is voor een stabiele, hete compostreactie.</span>`;
             }
 
             resultBox.className = `p-5 rounded-2xl border transition-all mb-6 ${boxClass}`;
