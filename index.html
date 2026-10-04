@@ -85,6 +85,29 @@
             </div>
         </div>
 
+        <!-- Stuurprogramma voor beginners -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-stone-700 leading-relaxed mb-6">
+            <h3 class="font-bold text-stone-800 uppercase mb-3 text-xs tracking-wider">Stuurprogramma voor je composthoop</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white/80 rounded-xl p-3 border border-emerald-100">
+                    <p class="font-bold text-amber-800 mb-2">Je mix is te droog</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li>Voeg meer groen materiaal toe: vers gras, groenteresten, paardenmest.</li>
+                        <li>Voeg water toe totdat het voelt als een uitgeknepen spons.</li>
+                        <li>Mix goed door zodat alles vochtig en samenhangend wordt.</li>
+                    </ul>
+                </div>
+                <div class="bg-white/80 rounded-xl p-3 border border-emerald-100">
+                    <p class="font-bold text-amber-800 mb-2">Je mix is te nat of ruikt naar ammoniak</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li>Voeg meer bruin materiaal toe: houtsnippers, karton, droge bladeren.</li>
+                        <li>Keer de hoop goed om zodat er lucht bij komt.</li>
+                        <li>Laat de hoop iets drogen voordat je verder gaat.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Praktische Spelregels (Informatie) -->
         <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs text-stone-600 leading-relaxed">
             <h3 class="font-bold text-stone-800 uppercase mb-2 text-xs tracking-wider">Spelregels Hete Compostmethode</h3>
@@ -182,31 +205,36 @@
             { name: "Vogeluitwerpselen", cn: 6, category: "Stikstofrijk (Groen)" }
         ];
 
-        // Standaard opstelling met meest gebruikte materialen
-        let initialRows = [
-            { name: "Groenteresten van het land", barrows: 3 },
-            { name: "Paardenmest (met stro)", barrows: 4 },
-            { name: "Houtsnippers (grove takken)", barrows: 2 },
-            { name: "Karton (versnipperd, bruin)", barrows: 2 },
-            { name: "Groen bladafval", barrows: 2 },
-            { name: "Onkruid (vers, zonder zaad)", barrows: 2 },
-            { name: "Herfstbladeren (gedroogd)", barrows: 2 }
+        // Meest voorkomende materialen die standaard getoond worden (zonder getallen)
+        let defaultMaterials = [
+            "Groenteresten van het land",
+            "Paardenmest (met stro)",
+            "Houtsnippers (grove takken)",
+            "Karton (versnipperd, bruin)",
+            "Groen bladafval",
+            "Onkruid (vers, zonder zaad)",
+            "Herfstbladeren (gedroogd)"
         ];
 
         function initTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            initialRows.forEach(item => {
-                addRowToDOM(item.name, item.barrows);
+            defaultMaterials.forEach(matName => {
+                addRowToDOM(matName, 0);
             });
             calculate();
         }
 
         function resetTable() {
-            initTable();
+            // Zet alle getallen op 0
+            const inputs = document.querySelectorAll('.mat-barrows');
+            inputs.forEach(input => {
+                input.value = 0;
+            });
+            calculate();
         }
 
-        function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 1) {
+        function addRow(matName = "Stro (tarwe / gerst)", barrowsCount = 0) {
             addRowToDOM(matName, barrowsCount);
             calculate();
         }
@@ -314,11 +342,11 @@
             } else if (finalCN < 20) {
                 boxClass = "border-amber-300 bg-amber-50/60 shadow-sm";
                 textClass = "bg-amber-100/70 text-amber-900 border border-amber-200";
-                adviceHTML = `⚠️ <strong>TE STIKTOFRIJK / NAT (${finalCN.toFixed(1)}:1):</strong> De hoop kan te nat worden, verstikken of ammoniak (stank) produceren. <em>Advies: Voeg extra koolstofrijk materiaal toe (zoals stro, houtsnippers of herfstbladeren).</em>`;
+                adviceHTML = `⚠️ <strong>Je mix is te nat en ruikt misschien naar ammoniak.</strong> Voeg meer bruin materiaal toe (zoals houtsnippers, karton of droge bladeren), keer de hoop goed door en laat hem iets drogen.`;
             } else {
                 boxClass = "border-blue-300 bg-blue-50/60 shadow-sm";
                 textClass = "bg-blue-100/70 text-blue-900 border border-blue-200";
-                adviceHTML = `ℹ️ <strong>TE KOOLSTOFRIJK / DROOG (${finalCN.toFixed(1)}:1):</strong> De compostering zal erg traag verlopen omdat bacteriën te weinig stikstof hebben. <em>Advies: Voeg stikstofrijk materiaal toe (zoals vers gras, groenteresten of kippenmest/urine).</em>`;
+                adviceHTML = `ℹ️ <strong>Je mix is te droog.</strong> Voeg meer groen materiaal toe (zoals vers gras, groenteresten of paardenmest), voeg water toe en meng alles goed door tot het voelt als een uitgeknepen spons.`;
             }
 
             if (totalVolumeLiters < 1000) {
