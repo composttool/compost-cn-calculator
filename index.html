@@ -271,29 +271,47 @@
             text-align: right;
         }
 
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.88rem;
-            margin-top: 10px;
-            background: white;
+        /* Interactief Determinatieschema Stijlen */
+        .trouble-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .matrix-table th, .matrix-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .matrix-table th {
-            background-color: var(--primary);
-            color: white;
+        .trouble-card {
+            background: #fafafa;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
             font-weight: bold;
+            color: var(--primary-dark);
+            text-align: center;
         }
 
-        .matrix-table tr:nth-child(even) {
-            background-color: #fafafa;
+        .trouble-card:hover {
+            background: #e8f5e9;
+            border-color: var(--primary);
+        }
+
+        .trouble-card.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .solution-box {
+            background: #fff3e0;
+            border-left: 5px solid #ef6c00;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            display: none;
         }
     </style>
 </head>
@@ -380,111 +398,17 @@
         </div>
     </div>
 
-    <!-- Kolom 4: Uitgebreide Storingsgids & Stuurmatrix -->
+    <!-- Kolom 4: Interactief Determinatieschema & Storingsgids -->
     <div class="card">
-        <h2>Storingsgids & Volledige Stuurmatrix</h2>
-        <p style="font-size: 0.9rem; color: #666;">Operationele richtlijnen en correctie-acties conform de Stadslandbouw Arnhem handleiding:</p>
+        <h2>Interactief Determinatieschema (Storingsgids)</h2>
+        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaart voor gerichte oorzaken en oplossingen:</p>
         
-        <div style="overflow-x: auto;">
-            <table class="matrix-table">
-                <thead>
-                    <tr>
-                        <th style="width: 25%;">Symptoom / Probleem</th>
-                        <th style="width: 35%;">Mogelijke Oorzaak</th>
-                        <th style="width: 40%;">Correctie-actie / Maatregel</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Temperatuur blijft te laag (&lt;50 °C)</strong></td>
-                        <td>
-                            1. Materialen te droog.<br>
-                            2. Materialen te nat.<br>
-                            3. Stikstoftekort (C/N &gt; 50:1).<br>
-                            4. Fysiek volume te klein (&lt;1 m³).<br>
-                            5. pH te laag (&lt;5,5; verzuring).
-                        </td>
-                        <td>
-                            1. Water toevoegen tijdens keren tot knijptest 1 druppel geeft.<br>
-                            2. Hoop omzetten en droog, structuurrijk bruin materiaal inmengen.<br>
-                            3. Stikstof toevoegen: vers maaisel, bloedmeel, urine of kippenmest.<br>
-                            4. Hoop vergroten tot minimaal 1m x 1m x 1m (1 m³ fysieke massa).<br>
-                            5. Licht bufferen met wat oude, rijpe compost of kleimeel.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Temperatuur daalt te snel</strong></td>
-                        <td>
-                            1. Zuurstoftekort in de kern.<br>
-                            2. Hoop is te ver uitgedroogd.
-                        </td>
-                        <td>
-                            1. Hoop direct omzetten en luchtig heropbouwen.<br>
-                            2. Gelijkmatig water toevoegen gedurende het omzetten.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Temperatuur te hoog (&gt;65–71 °C)</strong></td>
-                        <td>
-                            1. Te weinig warmteafvoer / massa te compact.<br>
-                            2. Vochtgehalte te laag.<br>
-                            3. Hoop te luchtig of te hoog.
-                        </td>
-                        <td>
-                            1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>
-                            2. Water toevoegen tijdens het keren.<br>
-                            3. Hoop iets lager opbouwen en licht aandrukken met de vork.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Witte "schimmel" / Vuurziekte</strong></td>
-                        <td>Kerntemperatuur &gt;65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).</td>
-                        <td>Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ammoniakgeur (NH₃)</strong></td>
-                        <td>
-                            1. Stikstofoverschot (C/N &lt; 20:1).<br>
-                            2. Te hoge pH (door kalk/eierschalen).<br>
-                            3. Koolstof is te stabiel/houtig.
-                        </td>
-                        <td>
-                            1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>
-                            2. Bufferen met oude compost of klei.<br>
-                            3. Licht verteerbare C-bronnen (zoals fijne droge bladeren) toevoegen.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Rotte eiers geur / Stank (H₂S)</strong></td>
-                        <td>Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.</td>
-                        <td>Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Vliegen of muggen rond de hoop</strong></td>
-                        <td>
-                            1. Verse mest of keukenafval ligt aan het oppervlak.<br>
-                            2. Plasvorming/uitlopend percolaatwater aan de voet.
-                        </td>
-                        <td>
-                            1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>
-                            2. Draineer het compostterrein; voorkom stilstaand water.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Veel grove, onverteerde delen op Dag 18</strong></td>
-                        <td>
-                            1. Materialen vooraf onvoldoende verkleind.<br>
-                            2. Onregelmatige beluchting/menging.<br>
-                            3. Proces nog niet afgerond.
-                        </td>
-                        <td>
-                            1. In het vervolg Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>
-                            2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop.<br>
-                            3. Rijpingsperiode met enkele weken verlengen onder plastic.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="trouble-grid" id="troubleGrid">
+            <!-- Dynamische storingsknoppen -->
+        </div>
+
+        <div id="solutionBox" class="solution-box">
+            <!-- Oplossingen verschijnen hier -->
         </div>
     </div>
 </div>
@@ -512,6 +436,50 @@
         boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 }
     };
 
+    // Gegevens voor het determinatieschema
+    const troubleshootingData = [
+        {
+            symptom: "🌡️ Temperatuur blijft te laag (<50 °C)",
+            causes: "1. Materialen te droog of te nat.<br>2. Stikstoftekort (C/N > 50:1).<br>3. Fysiek volume te klein (<1 m³).<br>4. pH te laag (<5,5; verzuring).",
+            actions: "1. Vochttest uitvoeren (streefdruppel toevoegen indien te droog).<br>2. Omzetten en droog structuurmateriaal of stikstof (urine/maaisel) toevoegen.<br>3. Hoop vergroten tot minimaal 1m x 1m x 1m.<br>4. Licht bufferen met oude compost of kleimeel."
+        },
+        {
+            symptom: "📉 Temperatuur daalt te snel",
+            causes: "1. Zuurstoftekort in de kern.<br>2. Hoop is te ver uitgedroogd.",
+            actions: "1. Hoop direct omzetten en luchtig heropbouwen.<br>2. Gelijkmatig water toevoegen tijdens het omzetten."
+        },
+        {
+            symptom: "🔥 Temperatuur te hoog (>65–71 °C)",
+            causes: "1. Te weinig warmteafvoer / massa te compact.<br>2. Vochtgehalte te laag.<br>3. Hoop te luchtig of te hoog.",
+            actions: "1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>2. Water toevoegen tijdens het keren.<br>3. Hoop iets lager opbouwen en licht aandrukken met de vork."
+        },
+        {
+            symptom: "🦠 Witte 'schimmel' / Vuurziekte",
+            causes: "Kerntemperatuur >65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).",
+            actions: "Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C."
+        },
+        {
+            symptom: "💨 Ammoniakgeur (NH₃)",
+            causes: "1. Stikstofoverschot (C/N < 20:1).<br>2. Te hoge pH (door kalk/eierschalen).<br>3. Koolstof is te stabiel/houtig.",
+            actions: "1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>2. Bufferen met oude compost of klei."
+        },
+        {
+            symptom: "🦨 Rotte eieren geur / Stank (H₂S)",
+            causes: "Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.",
+            actions: "Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen."
+        },
+        {
+            symptom: "🪰 Vliegen of muggen rond de hoop",
+            causes: "1. Verse mest of keukenafval ligt aan het oppervlak.<br>2. Plasvorming/uitlopend percolaatwater aan de voet.",
+            actions: "1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>2. Draineer het compostterrein; voorkom stilstaand water."
+        },
+        {
+            symptom: "🌿 Veel grove delen op Dag 18",
+            causes: "1. Materialen vooraf onvoldoende verkleind.<br>2. Onregelmatige beluchting/menging.<br>3. Proces nog niet afgerond.",
+            actions: "1. Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop."
+        }
+    ];
+
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -521,6 +489,7 @@
 
         renderPileSelector();
         loadPileData(activePile);
+        renderTroubleshootingSchema();
 
         const addRowBtn = document.getElementById('addRowBtn');
         if (addRowBtn) {
@@ -530,371 +499,3 @@
         }
 
         const startDateInput = document.getElementById('startDate');
-        if (startDateInput) {
-            startDateInput.addEventListener('change', function() {
-                savePileData();
-            });
-        }
-
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (scheduleTypeSelect) {
-            scheduleTypeSelect.addEventListener('change', function() {
-                savePileData();
-            });
-        }
-
-        const fridayCheckbox = document.getElementById('fridayProtocol');
-        if (fridayCheckbox) {
-            fridayCheckbox.addEventListener('change', calculateMix);
-        }
-    });
-
-    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen') {
-        const container = document.getElementById('dynamic-materials-container');
-        if (!container) return;
-
-        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
-
-        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
-        let currentCategory = '';
-
-        for (let [key, mat] of Object.entries(materialsData)) {
-            if (mat.category !== currentCategory) {
-                if (currentCategory !== '') optionsHTML += '</optgroup>';
-                currentCategory = mat.category;
-                optionsHTML += `<optgroup label="${currentCategory}">`;
-            }
-            let isSelected = (key === selectedKey) ? 'selected' : '';
-            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
-        }
-        if (currentCategory !== '') optionsHTML += '</optgroup>';
-
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'material-row';
-        rowDiv.id = rowId;
-        rowDiv.innerHTML = `
-            <select class="material-select">
-                ${optionsHTML}
-            </select>
-            <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
-            <select class="unit-select">
-                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
-                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
-            </select>
-            <button type="button" class="delete-row-btn">🗑️</button>
-        `;
-
-        const inputs = rowDiv.querySelectorAll('select, input');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateMix);
-            input.addEventListener('change', calculateMix);
-        });
-
-        const deleteBtn = rowDiv.querySelector('.delete-row-btn');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function() {
-                rowDiv.remove();
-                calculateMix();
-            });
-        }
-
-        container.appendChild(rowDiv);
-        calculateMix();
-    }
-
-    function calculateMix() {
-        let totalCarbonScore = 0;
-        let totalNitrogenScore = 0;
-        let totalItemsEntered = 0;
-        let totalBuckets = 0;
-
-        const rows = document.querySelectorAll('.material-row');
-
-        rows.forEach(row => {
-            let selectElem = row.querySelector('.material-select');
-            let amountElem = row.querySelector('.material-amount');
-            let unitElem = row.querySelector('.unit-select');
-
-            let key = selectElem ? selectElem.value : '';
-            let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
-
-            if (key && amount > 0 && materialsData[key]) {
-                let unit = unitElem ? unitElem.value : 'kruiwagen';
-                let mat = materialsData[key];
-                
-                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
-                let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
-
-                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
-                totalCarbonScore += estimatedWeight * mat.cn;
-                totalNitrogenScore += estimatedWeight;
-                totalItemsEntered += amount;
-                totalBuckets += kruiwagensEq;
-            }
-        });
-
-        const resultBox = document.getElementById('cn-result');
-        if (!resultBox) return;
-
-        if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
-            resultBox.className = 'result-box warning';
-            resultBox.innerHTML = '<strong>Voeg materialen toe om de C:N-ratio live te berekenen.</strong>';
-            return;
-        }
-
-        let finalCN = totalCarbonScore / totalNitrogenScore;
-        let roundedCN = Math.round(finalCN);
-
-        let volumeWarningHTML = '';
-        if (totalBuckets < 12.5) {
-            volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (~${totalBuckets.toFixed(1)} kruiwagens / < 1 m³):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
-        } else {
-            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (~${totalBuckets.toFixed(1)} kruiwagens / ≥ 1 m³):</strong> Voldoende massa voor warmtebehoud.</span>`;
-        }
-
-        let fridayChecked = document.getElementById('fridayProtocol');
-        let fridayHTML = '';
-        if (fridayChecked && fridayChecked.checked) {
-            fridayHTML = `<br><div style="margin-top: 8px; padding: 6px; background: #fff3e0; border-radius: 4px; border-left: 4px solid #ef6c00;"><strong>📅 Vrijdag-protocol actief:</strong> Breng in het hart van de hoop een extra <em>koolstofnest</em> aan (stro/houtsnippers) en dek de hoop strak af met UV-bestendig landbouwplastic ter bescherming tegen het 5-daagse rustweekend (uitsluitend op het compostterrein toepassen!).</div>`;
-        }
-
-        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong>${volumeWarningHTML}<br>`;
-
-        if (roundedCN < 25) {
-            resultBox.className = 'result-box danger';
-            let diffN = 25 - roundedCN;
-            let extraStro = (diffN * 0.5).toFixed(1);
-            let extraSnippers = (diffN * 0.1).toFixed(1);
-            adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg koolstof toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
-        } else if (roundedCN > 30) {
-            resultBox.className = 'result-box warning';
-            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. grasmaaisel, urine of moestuingroenten).`;
-        } else {
-            resultBox.className = 'result-box';
-            adviceHTML += `🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.`;
-        }
-
-        adviceHTML += fridayHTML;
-        resultBox.innerHTML = adviceHTML;
-    }
-
-    function renderPileSelector() {
-        const container = document.getElementById('pileSelectorContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        for (let i = 1; i <= 10; i++) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
-            btn.innerText = `Hoop ${i}`;
-            btn.addEventListener('click', function() {
-                switchPile(i);
-            });
-            container.appendChild(btn);
-        }
-    }
-
-    function switchPile(pileNum) {
-        activePile = pileNum;
-        renderPileSelector();
-        loadPileData(pileNum);
-    }
-
-    function savePileData() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!startDateInput) return;
-
-        const date = startDateInput.value;
-        const scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley';
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-
-        const pileData = { date, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        updateScheduleDisplay(date, scheduleType, checks);
-    }
-
-    function saveCheckboxState() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
-        let pileData = saved ? JSON.parse(saved) : { date: startDateInput ? startDateInput.value : '', scheduleType: scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley' };
-
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-        pileData.checks = checks;
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        
-        updateProgress();
-    }
-
-    function loadPileData(pileNum) {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!dateInput) return;
-
-        if (saved) {
-            const data = JSON.parse(saved);
-            dateInput.value = data.date || '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = data.scheduleType || 'berkeley';
-            updateScheduleDisplay(data.date, data.scheduleType || 'berkeley', data.checks || {});
-        } else {
-            dateInput.value = '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = 'berkeley';
-            updateScheduleDisplay('', 'berkeley', {});
-        }
-    }
-
-    function resetCurrentPile() {
-        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten? Alle vinkjes van deze specifieke hoop worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
-            return;
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (dateInput) dateInput.value = today;
-
-        let scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley';
-        let checks = {};
-        const pileData = { date: today, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-
-        updateScheduleDisplay(today, scheduleType, checks);
-    }
-
-    function updateScheduleDisplay(startDateStr, scheduleType = 'berkeley', checks = {}) {
-        const output = document.getElementById('scheduleOutput');
-        if (!output) return;
-
-        if (!startDateStr) {
-            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het beheerschema te genereren.</em>`;
-            return;
-        }
-
-        let start = new Date(startDateStr);
-        let steps = [];
-
-        if (scheduleType === 'berkeley') {
-            let d1 = new Date(start);
-            let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-            let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-            let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-            let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-            let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-            let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-            steps = [
-                { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
-                { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
-                { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
-                { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
-                { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
-                { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
-                { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
-            ];
-        } else {
-            let d1 = new Date(start);
-            let w1_keer = new Date(start); w1_keer.setDate(start.getDate() + 4);
-            let w2_keer = new Date(start); w2_keer.setDate(start.getDate() + 9);
-            let w3_keer = new Date(start); w3_keer.setDate(start.getDate() + 14);
-            let w4_keer = new Date(start); w4_keer.setDate(start.getDate() + 21);
-            let oogst = new Date(start); oogst.setDate(start.getDate() + 35);
-
-            steps = [
-                { label: `Start (${formatDate(d1)}): Opzetten hoop (Woensdag/Vrijdag protocol)` },
-                { label: `Keer 1 (${formatDate(w1_keer)}): Eerste omzetting & vochttest` },
-                { label: `Keer 2 (${formatDate(w2_keer)}): Tweede omzetting (temperatuurpiek)` },
-                { label: `Keer 3 (${formatDate(w3_keer)}): Derde omzetting` },
-                { label: `Keer 4 (${formatDate(w4_keer)}): Vierde omzetting & rijping` },
-                { label: `Oogst & Zeven (${formatDate(oogst)}): 🟢 Zeven over 2cm maaswijdte` }
-            ];
-        }
-
-        let html = `<strong>Schema (${scheduleType === 'berkeley' ? 'Berkeley 18-daags' : 'Arnhem Wo/Vr'})</strong><ul class="schedule-list">`;
-        
-        steps.forEach((step, index) => {
-            let isChecked = checks[index] ? 'checked' : '';
-            html += `
-                <li>
-                    <input type="checkbox" id="stepChk_${index}" ${isChecked}>
-                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
-                </li>
-            `;
-        });
-
-        html += `</ul>`;
-        
-        html += `
-            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop <em>${activePile}</em>:</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 / ${steps.length} stappen voltooid (0%)</div>
-
-            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset Hoop ${activePile} naar Dag 1</button>
-        `;
-
-        output.innerHTML = html;
-
-        steps.forEach((step, index) => {
-            const chkElem = document.getElementById(`stepChk_${index}`);
-            if (chkElem) {
-                chkElem.addEventListener('change', function() {
-                    saveCheckboxState();
-                });
-            }
-        });
-
-        const resetBtn = document.getElementById('resetPileBtn');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                resetCurrentPile(); // Gecorrigeerd van resetCurrentPlate naar resetCurrentPile
-            });
-        }
-
-        updateProgress();
-    }
-
-    function updateProgress() {
-        let completed = 0;
-        const totalRows = document.querySelectorAll('.schedule-list li').length || 7;
-        
-        for (let i = 0; i < totalRows; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk && chk.checked) {
-                completed++;
-            }
-        }
-
-        let percentage = Math.round((completed / totalRows) * 100);
-        let bar = document.getElementById('progressBar');
-        let text = document.getElementById('progressText');
-
-        if (bar && text) {
-            bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${totalRows} stappen voltooid (${percentage}%)`;
-        }
-    }
-
-    function formatDate(date) {
-        if (!date || isNaN(date)) return '';
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
