@@ -606,13 +606,16 @@
         }
     });
 
-    // Functie om data op te halen uit de Google Sheet
+    // Functie om data op te halen uit de Google Sheet (met robuuste redirect opvolging)
     async function laadAllePijlenData() {
         const output = document.getElementById('scheduleOutput');
         if (output) output.innerHTML = `<strong>Gegevens ophalen uit Google Sheet...</strong>`;
 
         try {
-            let response = await fetch(WEB_APP_URL + "?action=getData");
+            let response = await fetch(WEB_APP_URL + "?action=getData", {
+                method: "GET",
+                redirect: "follow"
+            });
             let data = await response.json();
             allPilesData = data || {};
             loadPileData(activePile);
@@ -622,19 +625,24 @@
         }
     }
 
-    // Functie om data op te slaan naar de Google Sheet
+    // Functie om data op te slaan naar de Google Sheet (met no-cors configuratie)
     async function slaHoopOpNaarSheet(hoopNum, date, scheduleType, checks) {
         try {
-            let formData = new URLSearchParams();
-            formData.append("action", "saveData");
-            formData.append("hoopNum", hoopNum);
-            formData.append("date", date || "");
-            formData.append("scheduleType", scheduleType || "arnhem");
-            formData.append("checks", JSON.stringify(checks || {}));
+            let payload = {
+                action: "saveData",
+                hoopNum: hoopNum,
+                date: date || "",
+                scheduleType: scheduleType || "arnhem",
+                checks: JSON.stringify(checks || {})
+            };
 
             await fetch(WEB_APP_URL, {
                 method: "POST",
-                body: formData
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams(payload)
             });
         } catch (error) {
             console.error("Fout bij opslaan naar Google Sheet:", error);
@@ -834,7 +842,6 @@
             }
         }
 
-        // Sla lokaal op in geheugen en stuur naar Google Sheet
         allPilesData[activePile] = { date, scheduleType, checks };
         slaHoopOpNaarSheet(activePile, date, scheduleType, checks);
 
