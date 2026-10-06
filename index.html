@@ -169,7 +169,7 @@
 
         .pile-selector {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 15px;
             overflow-x: auto;
             padding-bottom: 5px;
@@ -179,12 +179,13 @@
             background: #ddd;
             color: #333;
             border: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
             white-space: nowrap;
             width: auto;
             margin-top: 0;
+            font-size: 0.9rem;
         }
 
         .pile-btn.active {
@@ -192,7 +193,6 @@
             color: white;
         }
 
-        /* Schema lijst & Checkbox styling */
         .schedule-list {
             list-style: none;
             padding: 0;
@@ -216,7 +216,6 @@
             cursor: pointer;
         }
 
-        /* Voortgangsbalk */
         .progress-container {
             background: #e0e0e0;
             border-radius: 4px;
@@ -250,7 +249,7 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met uitgebreide materialenlijst -->
+        <!-- Kolom 1: C:N Calculator -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
             <p style="font-size: 0.9rem; color: #666;">Voer het aantal kruiwagens of emmers per materiaal in.</p>
@@ -279,13 +278,13 @@
                 <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;" onchange="savePileData()">
 
                 <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
-                    <!-- Schema planning info met dynamische titel, checkboxen, progressbar en resetknop -->
+                    <!-- Schema planning info -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Kolom 3: Storingsgids / Kwaliteitscontrole -->
+    <!-- Kolom 3: Storingsgids -->
     <div class="card">
         <h2>Storingsgids & Kwaliteitscontrole</h2>
         <div class="grid-2">
@@ -308,9 +307,7 @@
 </div>
 
 <script>
-    // Uitgebreide database met categorieën en standaard geschat soortelijk gewicht per emmer (kg)
     const materialsData = {
-        // --- KOOLSTOFRIJK (BRUIN) ---
         houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
         karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 1.5 },
         houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
@@ -322,7 +319,6 @@
         maisstengels: { name: "Maïsstengels (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
         pompoenranken: { name: "Pompoen- / Courgetteranken (vezelig)", cn: 35, category: "Koolstofrijk (Bruin)", weightPerBucket: 5.0 },
 
-        // --- STIKSTOFRIJK (GROEN) ---
         groenteresten: { name: "Groenteresten / Oogstresten groentebedden", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
         aardappelloof: { name: "Aardappel- en tomatenloof", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
         keukenafval: { name: "Keukenafval / Snijresten", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
@@ -346,7 +342,7 @@
     window.onload = function() {
         renderMaterialInputs();
         renderPileSelector();
-        loadPileData(1);
+        loadPileData(activePile);
     };
 
     function renderMaterialInputs() {
@@ -415,7 +411,7 @@
 
         if (roundedCN < 25) {
             resultBox.className = 'result-box danger';
-            adviceHTML += '⚠️️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
+            adviceHTML += '⚠️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
         } else if (roundedCN > 35) {
             resultBox.className = 'result-box warning';
             adviceHTML += '⚠️ <em>Te veel koolstof!</em> De hoop komt vermoedelijk traag op temperatuur. Voeg wat grasmaaisel of groenteafval toe.';
@@ -444,7 +440,6 @@
 
     function savePileData() {
         const date = document.getElementById('startDate').value;
-
         let checks = {};
         for (let i = 0; i < 7; i++) {
             let chk = document.getElementById(`stepChk_${i}`);
@@ -454,3 +449,136 @@
         }
 
         const pileData = { date, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        updateScheduleDisplay(date, checks);
+    }
+
+    function saveCheckboxState() {
+        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
+        let pileData = saved ? JSON.parse(saved) : { date: document.getElementById('startDate').value };
+
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+        pileData.checks = checks;
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        
+        updateProgress();
+    }
+
+    function loadPileData(pileNum) {
+        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
+        if (saved) {
+            const data = JSON.parse(saved);
+            document.getElementById('startDate').value = data.date || '';
+            updateScheduleDisplay(data.date, data.checks || {});
+        } else {
+            document.getElementById('startDate').value = '';
+            updateScheduleDisplay('', {});
+        }
+    }
+
+    function resetPile() {
+        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten voor een nieuwe ronde? Alle vinkjes worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').value = today;
+
+        let checks = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+        const pileData = { date: today, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+
+        updateScheduleDisplay(today, checks);
+    }
+
+    function updateScheduleDisplay(startDateStr, checks = {}) {
+        const output = document.getElementById('scheduleOutput');
+
+        if (!startDateStr) {
+            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het Berkeley 18-dagenschema te genereren.</em>`;
+            return;
+        }
+
+        let start = new Date(startDateStr);
+        
+        let d1 = new Date(start);
+        let d4 = new Date(start); d4.setDate(start.getDate() + 3);
+        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
+        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
+        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
+        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
+        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
+
+        const steps = [
+            { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
+            { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
+            { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
+            { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
+            { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
+            { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
+            { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
+        ];
+
+        let html = `<strong>Schema voor Hoop ${activePile}</strong><ul class="schedule-list">`;
+        
+        steps.forEach((step, index) => {
+            let isChecked = checks[index] ? 'checked' : '';
+            html += `
+                <li>
+                    <input type="checkbox" id="stepChk_${index}" ${isChecked} onchange="saveCheckboxState()">
+                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
+                </li>
+            `;
+        });
+
+        html += `</ul>`;
+        
+        html += `
+            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang:</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 7 stappen voltooid (0%)</div>
+
+            <button class="reset-btn" onclick="resetPile()">🔄 Ronde voltooid / Reset hoop naar Dag 1</button>
+        `;
+
+        output.innerHTML = html;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        let completed = 0;
+        const total = 7;
+        
+        for (let i = 0; i < total; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk && chk.checked) {
+                completed++;
+            }
+        }
+
+        let percentage = Math.round((completed / total) * 100);
+        let bar = document.getElementById('progressBar');
+        let text = document.getElementById('progressText');
+
+        if (bar && text) {
+            bar.style.width = percentage + '%';
+            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
+        }
+    }
+
+    function formatDate(date) {
+        if (isNaN(date)) return '';
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
+</script>
+
+</body>
+</html>
