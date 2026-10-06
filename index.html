@@ -3,216 +3,832 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compostcalculator - Stadslandbouw Arnhem</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator</title>
     <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-radius: 8px;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 15px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        h2 { color: #2e7d32; margin-top: 0; }
-        .material-group {
-            margin-bottom: 12px;
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--bg-color);
             padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
         }
+
         .material-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: #fafafa;
+            border-radius: 6px;
+            gap: 10px;
+            border: 1px solid #e0e0e0;
         }
-        label { font-size: 14px; font-weight: bold; }
+
+        .material-select {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
         input[type="number"] {
-            width: 70px;
-            padding: 6px;
-            font-size: 16px;
+            width: 55px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             text-align: center;
+            font-size: 1rem;
         }
-        .checkbox-container {
-            margin: 15px 0;
-            background: #e3f2fd;
-            padding: 10px;
-            border-radius: 6px;
+
+        select.unit-select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.9rem;
         }
-        button {
-            width: 100%;
-            background-color: #2e7d32;
+
+        .delete-row-btn {
+            background-color: #d32f2f;
             color: white;
             border: none;
-            padding: 12px;
-            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .delete-row-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .add-row-btn {
+            background-color: #388e3c;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            width: 100%;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
             font-weight: bold;
+        }
+
+        .add-row-btn:hover {
+            background-color: #2e7d32;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .reset-btn {
+            background-color: #d32f2f;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
             border-radius: 6px;
+            background: #e8f5e9;
+            border-left: 5px solid var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .result-box.warning {
+            background: #fff3e0;
+            border-left-color: #ef6c00;
+        }
+
+        .result-box.danger {
+            background: #ffebee;
+            border-left-color: #c62828;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .material-row {
+                flex-wrap: wrap;
+            }
+            .material-select {
+                flex: 100%;
+            }
+        }
+
+        .pile-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .pile-btn {
+            background: #ddd;
+            color: #333;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            width: auto;
+            margin-top: 0;
+            font-size: 0.9rem;
+        }
+
+        .pile-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 15px 0;
+        }
+
+        .schedule-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            background: white;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .schedule-list input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
         }
-        button:hover { background-color: #1b5e20; }
-        #resultaat { margin-top: 20px; }
-        .tag-groen { color: #2e7d32; font-size: 12px; }
-        .tag-bruin { color: #e65100; font-size: 12px; }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 12px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 10px;
+            background: white;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .matrix-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .matrix-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🌱 Compostcalculator</h2>
-    <p>Vul het aantal kruiwagens per materiaal in:</p>
+    <header>
+        <h1>Stadslandbouw Arnhem</h1>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator</p>
+    </header>
 
-    <form id="compostForm">
-        <!-- STIKSTOFRIJK (GROEN) -->
-        <h3 style="color:#2e7d32; font-size:16px;">Groen (Stikstofrijk)</h3>
+    <div class="grid-2">
+        <!-- Kolom 1: C:N Calculator met live advies -->
+        <div class="card">
+            <h2>C:N Mengsel Calculator</h2>
+            <p style="font-size: 0.9rem; color: #666;">Pas materialen of hoeveelheden aan voor direct live advies:</p>
+            
+            <div id="dynamic-materials-container">
+                <!-- Dynamische rijen komen hier -->
+            </div>
+
+            <button type="button" id="addRowBtn" class="add-row-btn">+ Voeg materiaal toe</button>
+
+            <div id="cn-result" class="result-box">
+                <!-- Live resultaten en advies komen hier -->
+            </div>
+        </div>
+
+        <!-- Kolom 2: 18-daagse Hete Compost (Vaste hopen 1 t/m 10) -->
+        <div class="card">
+            <h2>Hete Composthopen Beheer</h2>
+            <label>Selecteer composthoop:</label>
+            <div class="pile-selector" id="pileSelectorContainer">
+                <!-- Dynamische knoppen voor hopen 1-10 -->
+            </div>
+
+            <div id="pileDetails">
+                <label for="startDate">Startdatum (Dag 1) voor deze hoop:</label>
+                <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
+
+                <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
+                    <!-- Schema planning info -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kolom 3: Veldgids: Hand-Knijptest & Tuinkers-Kiemtest -->
+    <div class="card">
+        <h2>Veldgids: Vochttest & Rijpheidstest</h2>
+        <div class="grid-2">
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">💧 De Hand-Knijptest (50% Vocht)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Neem een handvol compost en knijp krachtig dicht:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li><strong>Correct:</strong> Er verschijnt precies <em>1 druppel water</em> tussen de vingers.</li>
+                    <li><strong>Te nat:</strong> Er stromen stroompjes water uit ➔ <em>Voeg droog structuurmateriaal toe.</em></li>
+                    <li><strong>Te droog:</strong> De massa veert elastisch open zonder vocht ➔ <em>Sproei bij met de gieter.</em></li>
+                </ul>
+            </div>
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">🌱 De Tuinkers-Kiemtest (Dag 18 Check)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Test of de compost vrij is van gifstoffen vóór gebruik:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li>Vul een vlootje met gezeefde compost en zaai <strong>100 tuinkerszaadjes</strong> (7 dagen vochtig houden).</li>
+                    <li><strong>Rijp & Veilig:</strong> Kieming &ge; 90% met frisse groene blaadjes en rechte, witte worteltjes.</li>
+                    <li><strong>Onrijp:</strong> Kieming &lt; 80% of verbrande wortels ➔ <em>Laat nog 3-4 weken rijpen.</em></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kolom 4: Uitgebreide Storingsgids & Stuurmatrix -->
+    <div class="card">
+        <h2>Storingsgids & Volledige Stuurmatrix</h2>
+        <p style="font-size: 0.9rem; color: #666;">Operationele richtlijnen en correctie-acties conform de Stadslandbouw Arnhem handleiding:</p>
         
-        <div class="material-group">
-            <div class="material-row">
-                <label for="groente">Vers Groente- & Fruitafval <br><span class="tag-groen">C:N 15:1</span></label>
-                <input type="number" id="groente" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="gras">Grasmaaisel (vers) <br><span class="tag-groen">C:N 18:1</span></label>
-                <input type="number" id="gras" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="onkruid">Vers Onkruid / Smeerwortel <br><span class="tag-groen">C:N 19:1</span></label>
-                <input type="number" id="onkruid" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="mest_paard">Paardenmest (vers) <br><span class="tag-groen">C:N 25:1</span></label>
-                <input type="number" id="mest_paard" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="kroos">Slootkroos (uitgelekt) <br><span class="tag-groen">C:N 12:1</span></label>
-                <input type="number" id="kroos" min="0" step="0.5" placeholder="0">
-            </div>
+        <div style="overflow-x: auto;">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Symptoom / Probleem</th>
+                        <th style="width: 35%;">Mogelijke Oorzaak</th>
+                        <th style="width: 40%;">Correctie-actie / Maatregel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Temperatuur blijft te laag (&lt;50 °C)</strong></td>
+                        <td>
+                            1. Materialen te droog.<br>
+                            2. Materialen te nat.<br>
+                            3. Stikstoftekort (C/N &gt; 50:1).<br>
+                            4. Fysiek volume te klein (&lt;1 m³).<br>
+                            5. pH te laag (&lt;5,5; verzuring).
+                        </td>
+                        <td>
+                            1. Water toevoegen tijdens keren tot knijptest 1 druppel geeft.<br>
+                            2. Hoop omzetten en droog, structuurrijk bruin materiaal inmengen.<br>
+                            3. Stikstof toevoegen: vers maaisel, bloedmeel, urine of kippenmest.<br>
+                            4. Hoop vergroten tot minimaal 1m x 1m x 1m (1 m³ fysieke massa).<br>
+                            5. Licht bufferen met wat oude, rijpe compost of kleimeel.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temperatuur daalt te snel</strong></td>
+                        <td>
+                            1. Zuurstoftekort in de kern.<br>
+                            2. Hoop is te ver uitgedroogd.
+                        </td>
+                        <td>
+                            1. Hoop direct omzetten en luchtig heropbouwen.<br>
+                            2. Gelijkmatig water toevoegen gedurende het omzetten.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temperatuur te hoog (&gt;65–71 °C)</strong></td>
+                        <td>
+                            1. Te weinig warmteafvoer / massa te compact.<br>
+                            2. Vochtgehalte te laag.<br>
+                            3. Hoop te luchtig of te hoog.
+                        </td>
+                        <td>
+                            1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>
+                            2. Water toevoegen tijdens het keren.<br>
+                            3. Hoop iets lager opbouwen en licht aandrukken met de vork.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Witte "schimmel" / Vuurziekte</strong></td>
+                        <td>Kerntemperatuur &gt;65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).</td>
+                        <td>Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ammoniakgeur (NH₃)</strong></td>
+                        <td>
+                            1. Stikstofoverschot (C/N &lt; 20:1).<br>
+                            2. Te hoge pH (door kalk/eierschalen).<br>
+                            3. Koolstof is te stabiel/houtig.
+                        </td>
+                        <td>
+                            1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>
+                            2. Bufferen met oude compost of klei.<br>
+                            3. Licht verteerbare C-bronnen (zoals fijne droge bladeren) toevoegen.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rotte eieren geur / Stank (H₂S)</strong></td>
+                        <td>Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.</td>
+                        <td>Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vliegen of muggen rond de hoop</strong></td>
+                        <td>
+                            1. Verse mest of keukenafval ligt aan het oppervlak.<br>
+                            2. Plasvorming/uitlopend percolaatwater aan de voet.
+                        </td>
+                        <td>
+                            1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>
+                            2. Draineer het compostterrein; voorkom stilstaand water.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Veel grove, onverteerde delen op Dag 18</strong></td>
+                        <td>
+                            1. Materialen vooraf onvoldoende verkleind.<br>
+                            2. Onregelmatige beluchting/menging.<br>
+                            3. Proces nog niet afgerond.
+                        </td>
+                        <td>
+                            1. In het vervolg Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>
+                            2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop.<br>
+                            3. Rijpingsperiode met enkele weken verlengen onder plastic.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <!-- KOOLSTOFRIJK (BRUIN) -->
-        <h3 style="color:#e65100; font-size:16px;">Bruin (Koolstofrijk)</h3>
-        
-        <div class="material-group">
-            <div class="material-row">
-                <label for="stro">Stro / Gehakseld Riet <br><span class="tag-bruin">C:N 78:1</span></label>
-                <input type="number" id="stro" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="blad">Droge Herfstbladeren <br><span class="tag-bruin">C:N 60:1</span></label>
-                <input type="number" id="blad" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="houtsnippers">Houtsnippers (Eliet 4S) <br><span class="tag-bruin">C:N 400:1</span></label>
-                <input type="number" id="houtsnippers" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="karton">Versnipperd Karton <br><span class="tag-bruin">C:N 350:1</span></label>
-                <input type="number" id="karton" min="0" step="0.5" placeholder="0">
-            </div>
-            <div class="material-row">
-                <label for="zaagsel">Houtzaagsel / Houtkrullen <br><span class="tag-bruin">C:N 400:1</span></label>
-                <input type="number" id="zaagsel" min="0" step="0.5" placeholder="0">
-            </div>
-        </div>
-
-        <div class="checkbox-container">
-            <input type="checkbox" id="isVrijdag">
-            <label for="isVrijdag"> 📌 Wordt deze hoop op <strong>vrijdag</strong> opgebouwd? (Vrijdag-protocol)</label>
-        </div>
-
-        <button type="button" onclick="voerBerekeningUit()">Bereken C:N & Advies</button>
-    </form>
-
-    <div id="resultaat"></div>
+    </div>
 </div>
 
 <script>
-const MATERIALEN = {
-    'groente': { cn: 15, type: 'groen' },
-    'gras': { cn: 18, type: 'groen' },
-    'onkruid': { cn: 19, type: 'groen' },
-    'mest_paard': { cn: 25, type: 'groen' },
-    'kroos': { cn: 12, type: 'groen' },
-    'stro': { cn: 78, type: 'bruin' },
-    'blad': { cn: 60, type: 'bruin' },
-    'houtsnippers': { cn: 400, type: 'bruin' },
-    'karton': { cn: 350, type: 'bruin' },
-    'zaagsel': { cn: 400, type: 'bruin' }
-};
+    const materialsData = {
+        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 1.5 },
+        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
+        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        stro: { name: "Stro (tarwe / gerst)", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
+        dennennaalden: { name: "Dennennaalden", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        herfstbladeren: { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        maisstengels: { name: "Maïsstengels (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        pompoenranken: { name: "Pompoen- / Courgetteranken (vezelig)", cn: 35, category: "Koolstofrijk (Bruin)", weightPerBucket: 5.0 },
 
-function voerBerekeningUit() {
-    let totaalKruiwagens = 0;
-    let totaalGewogenCN = 0;
+        groenteresten: { name: "Groenteresten / Oogstresten groentebedden", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        aardappelloof: { name: "Aardappel- en tomatenloof", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
+        keukenafval: { name: "Keukenafval / Snijresten", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
+        grasmaaisel: { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        bermmaaisel: { name: "Kruidenrijk grasmaaisel / bermmaaisel", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
+        tuinafval: { name: "Algemeen tuinafval (jong / sappig)", cn: 22, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
+        onkruid: { name: "Onkruid (vers, zonder zaad)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        hooi: { name: "Hooi (gedroogd gras / kruiden)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 3.0 },
+        koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        koemest: { name: "Koemest (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        champost: { name: "Champost (champignonmest)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        kippenmest_oud: { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
+        kippenmest_vers: { name: "Kippenmest (vers)", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
+        bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        dolemietenmeel: { name: "Dolemietenmeel (mineraal / pH-buffer)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 12.0 }
+    };
 
-    Object.keys(MATERIALEN).forEach(id => {
-        const inputElem = document.getElementById(id);
-        if (inputElem) {
-            const aantal = parseFloat(inputElem.value) || 0;
-            if (aantal > 0) {
-                totaalKruiwagens += aantal;
-                totaalGewogenCN += (MATERIALEN[id].cn * aantal);
-            }
+    let activePile = 1;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiseer standaard rijen en hopen
+        addMaterialRow('paardenmest', 2, 'kruiwagen');
+        addMaterialRow('houtsnippers', 1, 'kruiwagen');
+
+        renderPileSelector();
+        loadPileData(activePile);
+
+        // Event listener voor 'Voeg materiaal toe' knop
+        const addRowBtn = document.getElementById('addRowBtn');
+        if (addRowBtn) {
+            addRowBtn.addEventListener('click', function() {
+                addMaterialRow();
+            });
+        }
+
+        // Event listener voor startdatum wijziging
+        const startDateInput = document.getElementById('startDate');
+        if (startDateInput) {
+            startDateInput.addEventListener('change', function() {
+                savePileData();
+            });
         }
     });
 
-    const resultaatDiv = document.getElementById('resultaat');
+    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen') {
+        const container = document.getElementById('dynamic-materials-container');
+        if (!container) return;
 
-    if (totaalKruiwagens === 0) {
-        resultaatDiv.innerHTML = "<p style='color:red;'><strong>Voer bij minstens één materiaal een aantal kruiwagens in.</strong></p>";
-        return;
+        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+
+        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
+        let currentCategory = '';
+
+        for (let [key, mat] of Object.entries(materialsData)) {
+            if (mat.category !== currentCategory) {
+                if (currentCategory !== '') optionsHTML += '</optgroup>';
+                currentCategory = mat.category;
+                optionsHTML += `<optgroup label="${currentCategory}">`;
+            }
+            let isSelected = (key === selectedKey) ? 'selected' : '';
+            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
+        }
+        if (currentCategory !== '') optionsHTML += '</optgroup>';
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'material-row';
+        rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <select class="material-select">
+                ${optionsHTML}
+            </select>
+            <input type="number" class="material-amount" value="${amountVal}" min="1" max="500">
+            <select class="unit-select">
+                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
+                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+            </select>
+            <button type="button" class="delete-row-btn">🗑️</button>
+        `;
+
+        const inputs = rowDiv.querySelectorAll('select, input');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateMix);
+            input.addEventListener('change', calculateMix);
+        });
+
+        const deleteBtn = rowDiv.querySelector('.delete-row-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                rowDiv.remove();
+                calculateMix();
+            });
+        }
+
+        container.appendChild(rowDiv);
+        calculateMix();
     }
 
-    const berekendeCN = Math.round(totaalGewogenCN / totaalKruiwagens);
-    const volumeLiters = totaalKruiwagens * 80;
-    const volumeM3 = (volumeLiters / 1000).toFixed(2);
-    const isVrijdag = document.getElementById('isVrijdag').checked;
+    function calculateMix() {
+        let totalCarbonScore = 0;
+        let totalNitrogenScore = 0;
+        let totalItemsEntered = 0;
 
-    let statusKleur = "#2e7d32";
-    let statusTekst = "";
-    let bijstuurAdvies = "";
+        const rows = document.querySelectorAll('.material-row');
 
-    if (berekendeCN < 25) {
-        statusKleur = "#d32f2f";
-        statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op stank, dichtzakken en gierlucht.";
-        const nodigStro = Math.max(1, Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (78 - 28)));
-        const nodigSnippers = (Math.ceil(((28 * totaalKruiwagens - totaalGewogenCN) / (400 - 28)) * 10) / 10).toFixed(1);
-        bijstuurAdvies = `Voeg ca. <strong>${nodigStro} kw stro</strong> OF <strong>${nodigSnippers} kw houtsnippers</strong> toe om op ~28:1 uit te komen.`;
-    } else if (berekendeCN > 30) {
-        statusKleur = "#ed6c02";
-        statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Proces verloopt erg traag of blijft koud.";
-        const nodigGras = Math.max(1, Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18)));
-        bijstuurAdvies = `Voeg ca. <strong>${nodigGras} kw vers gras of mest</strong> toe om op ~28:1 uit te komen.`;
-    } else {
-        statusTekst = "✅ OPTIMAAL BALANS (25:1 - 30:1) — Perfecte verhouding voor hete compostering!";
-        bijstuurAdvies = "Geen bijsturing nodig. Bouw de hoop op in dunne afwisselende lagen.";
+        rows.forEach(row => {
+            let selectElem = row.querySelector('.material-select');
+            let amountElem = row.querySelector('.material-amount');
+            let unitElem = row.querySelector('.unit-select');
+
+            let key = selectElem ? selectElem.value : '';
+            let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
+
+            if (key && amount > 0 && materialsData[key]) {
+                let unit = unitElem ? unitElem.value : 'kruiwagen';
+                let mat = materialsData[key];
+                
+                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
+                totalCarbonScore += estimatedWeight * mat.cn;
+                totalNitrogenScore += estimatedWeight;
+                totalItemsEntered += amount;
+            }
+        });
+
+        const resultBox = document.getElementById('cn-result');
+        if (!resultBox) return;
+
+        if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
+            resultBox.className = 'result-box warning';
+            resultBox.innerHTML = '<strong>Voeg materialen toe om de C:N-ratio live te berekenen.</strong>';
+            return;
+        }
+
+        let finalCN = totalCarbonScore / totalNitrogenScore;
+        let roundedCN = Math.round(finalCN);
+
+        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong><br>`;
+
+        if (roundedCN < 25) {
+            resultBox.className = 'result-box danger';
+            adviceHTML += '⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg meer <em>koolstof (bruin)</em> toe, zoals houtsnippers, stro of karton.';
+        } else if (roundedCN > 30) {
+            resultBox.className = 'result-box warning';
+            adviceHTML += '⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>Voeg meer <em>stikstof (groen)</em> toe, zoals grasmaaisel, groenteresten of mest.';
+        } else {
+            resultBox.className = 'result-box';
+            adviceHTML += '🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.';
+        }
+
+        resultBox.innerHTML = adviceHTML;
     }
 
-    let volumeCheck = volumeM3 < 1.0 
-        ? `<div style="background:#fff3e0; color:#e65100; padding:10px; border-radius:4px; margin-top:8px;">⚠️ <strong>Volume Attentie:</strong> Geschat volume is ${volumeM3} m³ (${totaalKruiwagens} kw). Minimaal <strong>1 m³ (12,5 kruiwagens)</strong> nodig voor een hete hoop!</div>`
-        : `<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:4px; margin-top:8px;">✅ <strong>Volume OK:</strong> ${volumeM3} m³ (${totaalKruiwagens} kw) is voldoende massa voor hete compostering!</div>`;
+    function renderPileSelector() {
+        const container = document.getElementById('pileSelectorContainer');
+        if (!container) return;
 
-    let vrijdagAdvies = isVrijdag 
-        ? `<div style="background:#e3f2fd; color:#0d47a1; padding:10px; border-radius:4px; margin-top:10px; border-left:4px solid #1976d2;">📌 <strong>Vrijdag Protocol:</strong> Breng een extra 'koolstofnest' van stro/houtsnippers aan in de kern en dek de hoop af met <strong>UV-bestendig landbouwplastic</strong> tegen het weekend.</div>`
-        : '';
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
+            btn.innerText = `Hoop ${i}`;
+            btn.addEventListener('click', function() {
+                switchPile(i);
+            });
+            container.appendChild(btn);
+        }
+    }
 
-    resultaatDiv.innerHTML = `
-        <div style="border-left: 5px solid ${statusKleur}; padding-left: 12px; background:#fafafa; padding: 10px; border-radius: 4px;">
-            <h3 style="margin:0 0 5px 0;">Berekende C:N-ratio: <strong>${berekendeCN}:1</strong></h3>
-            <p style="color:${statusKleur}; font-weight:bold; margin:5px 0;">${statusTekst}</p>
-            <p style="margin:5px 0;"><strong>Bijstuuradvies:</strong> ${bijstuurAdvies}</p>
-            ${volumeCheck}
-            ${vrijdagAdvies}
-        </div>
-    `;
-}
+    function switchPile(pileNum) {
+        activePile = pileNum;
+        renderPileSelector();
+        loadPileData(pileNum);
+    }
+
+    function savePileData() {
+        const startDateInput = document.getElementById('startDate');
+        if (!startDateInput) return;
+
+        const date = startDateInput.value;
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+
+        const pileData = { date, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        updateScheduleDisplay(date, checks);
+    }
+
+    function saveCheckboxState() {
+        const startDateInput = document.getElementById('startDate');
+        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
+        let pileData = saved ? JSON.parse(saved) : { date: startDateInput ? startDateInput.value : '' };
+
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+        pileData.checks = checks;
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        
+        updateProgress();
+    }
+
+    function loadPileData(pileNum) {
+        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
+        const dateInput = document.getElementById('startDate');
+        if (!dateInput) return;
+
+        if (saved) {
+            const data = JSON.parse(saved);
+            dateInput.value = data.date || '';
+            updateScheduleDisplay(data.date, data.checks || {});
+        } else {
+            dateInput.value = '';
+            updateScheduleDisplay('', {});
+        }
+    }
+
+    function resetCurrentPile() {
+        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten? Alle vinkjes van deze specifieke hoop worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('startDate');
+        if (dateInput) dateInput.value = today;
+
+        let checks = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+        const pileData = { date: today, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+
+        updateScheduleDisplay(today, checks);
+    }
+
+    function updateScheduleDisplay(startDateStr, checks = {}) {
+        const output = document.getElementById('scheduleOutput');
+        if (!output) return;
+
+        if (!startDateStr) {
+            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het Berkeley 18-dagenschema te genereren.</em>`;
+            return;
+        }
+
+        let start = new Date(startDateStr);
+        
+        let d1 = new Date(start);
+        let d4 = new Date(start); d4.setDate(start.getDate() + 3);
+        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
+        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
+        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
+        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
+        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
+
+        const steps = [
+            { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
+            { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
+            { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
+            { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
+            { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
+            { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
+            { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
+        ];
+
+        let html = `<strong>Schema voor Hoop ${activePile}</strong><ul class="schedule-list">`;
+        
+        steps.forEach((step, index) => {
+            let isChecked = checks[index] ? 'checked' : '';
+            html += `
+                <li>
+                    <input type="checkbox" id="stepChk_${index}" ${isChecked}>
+                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
+                </li>
+            `;
+        });
+
+        html += `</ul>`;
+        
+        html += `
+            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop ${activePile}:</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 7 stappen voltooid (0%)</div>
+
+            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset deze hoop (Hoop ${activePile}) naar Dag 1</button>
+        `;
+
+        output.innerHTML = html;
+
+        steps.forEach((step, index) => {
+            const chkElem = document.getElementById(`stepChk_${index}`);
+            if (chkElem) {
+                chkElem.addEventListener('change', function() {
+                    saveCheckboxState();
+                });
+            }
+        });
+
+        const resetBtn = document.getElementById('resetPileBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                resetCurrentPile();
+            });
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        let completed = 0;
+        const total = 7;
+        
+        for (let i = 0; i < total; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk && chk.checked) {
+                completed++;
+            }
+        }
+
+        let percentage = Math.round((completed / total) * 100);
+        let bar = document.getElementById('progressBar');
+        let text = document.getElementById('progressText');
+
+        if (bar && text) {
+            bar.style.width = percentage + '%';
+            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
+        }
+    }
+
+    function formatDate(date) {
+        if (!date || isNaN(date)) return '';
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
 </script>
 
 </body>
