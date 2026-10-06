@@ -198,7 +198,6 @@
             }
         }
 
-        /* 2 rijen van 5 knoppen voor mobiel en pc */
         .pile-selector {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -271,7 +270,6 @@
             text-align: right;
         }
 
-        /* Interactief Determinatieschema Stijlen */
         .trouble-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -436,7 +434,6 @@
         boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 }
     };
 
-    // Gegevens voor het determinatieschema
     const troubleshootingData = [
         {
             symptom: "🌡️ Temperatuur blijft te laag (<50 °C)",
@@ -840,22 +837,20 @@
 
     function updateProgress() {
         let completed = 0;
-        const totalRows = document.querySelectorAll('.schedule-list li').length || 7;
+        const checkboxes = document.querySelectorAll('.schedule-list input[type="checkbox"]');
+        const total = checkboxes.length || 7;
         
-        for (let i = 0; i < totalRows; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk && chk.checked) {
-                completed++;
-            }
-        }
+        checkboxes.forEach(chk => {
+            if (chk.checked) completed++;
+        });
 
-        let percentage = Math.round((completed / totalRows) * 100);
+        let percentage = Math.round((completed / total) * 100);
         let bar = document.getElementById('progressBar');
         let text = document.getElementById('progressText');
 
         if (bar && text) {
             bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${totalRows} stappen voltooid (${percentage}%)`;
+            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
         }
     }
 
@@ -865,7 +860,7 @@
         if (!grid || !box) return;
 
         grid.innerHTML = '';
-        troubleshootingData.forEach((item, index) => {
+        troubleshootingData.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'trouble-card';
             card.innerText = item.symptom;
