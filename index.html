@@ -457,7 +457,7 @@
                     <li>Voorkomt dat hopen verzuren/verzuipt raken en dat kostbare stikstof uitspoelt.</li>
                 </ul>
                 <a href="https://www.buienradar.nl/weer/arnhem/nl/2759661?radarType=rain&radarLocationVariant=NL" target="_blank" class="weather-link-btn">
-                    🌧️️ Check Actueel Weer Arnhem (Buienradar) ➔
+                    🌧 Check Actueel Weer Arnhem (Buienradar) ➔
                 </a>
             </div>
         </div>
@@ -882,7 +882,20 @@
             ];
         }
 
-        let html = `<strong>Schema (${scheduleType === 'arnhem' ? 'Arnhem Wo/Vr' : 'Berkeley 18-daags'})</strong><ul class="schedule-list">`;
+        // Automatische winterwaarschuwing (Nov, Dec, Jan, Feb)
+        let startMonth = start.getMonth() + 1; // 1 t/m 12
+        let isWinterMonth = [11, 12, 1, 2].includes(startMonth);
+        let winterWarningHTML = '';
+        if (isWinterMonth) {
+            winterWarningHTML = `
+                <div style="margin-bottom: 12px; padding: 10px; background: #e3f2fd; border-left: 4px solid #0288d1; border-radius: 4px; font-size: 0.88rem;">
+                    ❄️ <strong>Winterse periode gedetecteerd (${start.toLocaleDateString('nl-NL', {month: 'long'})}):</strong> 
+                    De buitentemperatuur is laag. Zorg dat de buitenzijde van de hoop extra goed wordt geïsoleerd met een dikke laag <strong>stro</strong> en strak wordt afgedekt met <strong>landbouwplastic</strong> om warmteverlies tegen te gaan!
+                </div>
+            `;
+        }
+
+        let html = winterWarningHTML + `<strong>Schema (${scheduleType === 'arnhem' ? 'Arnhem Wo/Vr' : 'Berkeley 18-daags'})</strong><ul class="schedule-list">`;
         
         steps.forEach((step, index) => {
             let isChecked = checks[index] ? 'checked' : '';
