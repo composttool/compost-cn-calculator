@@ -64,17 +64,25 @@
 
         .material-row {
             display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 10px;
+            flex-direction: column;
+            margin-bottom: 12px;
+            padding: 10px;
             background: #fafafa;
             border-radius: 6px;
-            gap: 10px;
+            gap: 8px;
             border: 1px solid #e0e0e0;
+        }
+
+        .material-main-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .material-select {
             flex: 2;
+            min-width: 180px;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -99,6 +107,24 @@
             font-size: 0.9rem;
         }
 
+        .moisture-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #555;
+            padding-top: 4px;
+            border-top: 1px dashed #e0e0e0;
+        }
+
+        .moisture-select {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.85rem;
+        }
+
         .delete-row-btn {
             background-color: #d32f2f;
             color: white;
@@ -109,6 +135,7 @@
             font-size: 0.9rem;
             width: auto;
             margin-top: 0;
+            margin-left: auto;
         }
 
         .delete-row-btn:hover {
@@ -189,12 +216,6 @@
         @media (max-width: 700px) {
             .grid-2 {
                 grid-template-columns: 1fr;
-            }
-            .material-row {
-                flex-wrap: wrap;
-            }
-            .material-select {
-                flex: 100%;
             }
         }
 
@@ -322,10 +343,10 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met live advies & 1m³ check -->
+        <!-- Kolom 1: C:N Calculator met live advies & Vochtoestand sturing -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Pas materialen of hoeveelheden aan voor direct live advies:</p>
+            <p style="font-size: 0.9rem; color: #666;">Pas materialen, hoeveelheden en vochtoestand aan voor direct live advies:</p>
             
             <div id="dynamic-materials-container">
                 <!-- Dynamische rijen komen hier -->
@@ -413,25 +434,25 @@
 
 <script>
     const materialsData = {
-        moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
+        moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
         groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
-        grasmaaisel: { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        grasmaaisel: { name: "Gemaaid gras", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
         smeerwortel_brandnetel: { name: "Smeerwortel & Brandnetel (blad)", cn: 19, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
         koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
         paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
-        koemest: { name: "Koemest (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
-        kippenmest: { name: "Kippenmest (vers / oud)", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
-        urine: { name: "Humane urine (verduunt 1:5 of puur 1:1 kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        koemest: { name: "Koemest", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        kippenmest: { name: "Kippenmest", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
+        urine: { name: "Humane urine (kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
         bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
 
-        stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
-        riet: { name: "Gehakseld riet", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.2 },
-        herfstbladeren: { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
-        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
-        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 1.5 },
-        houtzaagsel: { name: "Houtzaagsel / Houtkrullen (stank-stopper)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
-        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
-        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 }
+        stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        riet: { name: "Gehakseld riet", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.8 },
+        herfstbladeren: { name: "Herfstbladeren", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 4.5 },
+        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.0 },
+        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 250, category: "Koolstofrijk (Bruin)", weightPerBucket: 8.0 },
+        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.5 }
     };
 
     const troubleshootingData = [
@@ -480,9 +501,8 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        addMaterialRow('moestuingroenten', 5, 'kruiwagen');
-        addMaterialRow('paardenmest', 4, 'kruiwagen');
-        addMaterialRow('stro', 3, 'kruiwagen');
+        addMaterialRow('moestuingroenten', 11, 'kruiwagen', 'nat');
+        addMaterialRow('houtsnippers', 1, 'kruiwagen', 'neutraal');
 
         renderPileSelector();
         loadPileData(activePile);
@@ -515,7 +535,7 @@
         }
     });
 
-    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen') {
+    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen', moistureVal = 'neutraal') {
         const container = document.getElementById('dynamic-materials-container');
         if (!container) return;
 
@@ -539,15 +559,25 @@
         rowDiv.className = 'material-row';
         rowDiv.id = rowId;
         rowDiv.innerHTML = `
-            <select class="material-select">
-                ${optionsHTML}
-            </select>
-            <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
-            <select class="unit-select">
-                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
-                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
-            </select>
-            <button type="button" class="delete-row-btn">🗑️</button>
+            <div class="material-main-line">
+                <select class="material-select">
+                    ${optionsHTML}
+                </select>
+                <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
+                <select class="unit-select">
+                    <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
+                    <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+                </select>
+                <button type="button" class="delete-row-btn">🗑️</button>
+            </div>
+            <div class="moisture-control">
+                <span>Vochtoestand / Status:</span>
+                <select class="moisture-select">
+                    <option value="nat" ${moistureVal === 'nat' ? 'selected' : ''}>💧 Nat / Vers (Meer stikstof)</option>
+                    <option value="neutraal" ${moistureVal === 'neutraal' ? 'selected' : ''}>⚖️ Neutraal / Normaal</option>
+                    <option value="droog" ${moistureVal === 'droog' ? 'selected' : ''}>☀️ Droog / Ouder (Meer koolstof)</option>
+                </select>
+            </div>
         `;
 
         const inputs = rowDiv.querySelectorAll('select, input');
@@ -580,20 +610,35 @@
             let selectElem = row.querySelector('.material-select');
             let amountElem = row.querySelector('.material-amount');
             let unitElem = row.querySelector('.unit-select');
+            let moistureElem = row.querySelector('.moisture-select');
 
             let key = selectElem ? selectElem.value : '';
             let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
 
             if (key && amount > 0 && materialsData[key]) {
                 let unit = unitElem ? unitElem.value : 'kruiwagen';
+                let moisture = moistureElem ? moistureElem.value : 'neutraal';
                 let mat = materialsData[key];
                 
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
                 let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
 
-                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
-                totalCarbonScore += estimatedWeight * mat.cn;
-                totalNitrogenScore += estimatedWeight;
+                // Basis C:N en gewicht aanpassen op basis van handmatige vochtstatus
+                let adjustedCN = mat.cn;
+                let adjustedWeight = effectiveBuckets * mat.weightPerBucket;
+
+                if (moisture === 'nat') {
+                    // Nat / vers: iets actiever / meer stikstof, gewicht zwaarder door vocht
+                    adjustedCN = Math.max(5, mat.cn * 0.85);
+                    adjustedWeight *= 1.15;
+                } else if (moisture === 'droog') {
+                    // Droog / ouder: stikstof is deels weg, effectieve C:N schuift op naar meer koolstof
+                    adjustedCN = mat.cn * 1.35;
+                    adjustedWeight *= 0.80;
+                }
+
+                totalCarbonScore += adjustedWeight * adjustedCN;
+                totalNitrogenScore += adjustedWeight;
                 totalItemsEntered += amount;
                 totalBuckets += kruiwagensEq;
             }
@@ -629,12 +674,12 @@
         if (roundedCN < 25) {
             resultBox.className = 'result-box danger';
             let diffN = 25 - roundedCN;
-            let extraStro = (diffN * 0.5).toFixed(1);
-            let extraSnippers = (diffN * 0.1).toFixed(1);
-            adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg koolstof toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
+            let extraStro = (diffN * 0.4).toFixed(1);
+            let extraSnippers = (diffN * 0.2).toFixed(1);
+            adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg bruin materiaal toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
         } else if (roundedCN > 30) {
             resultBox.className = 'result-box warning';
-            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. grasmaaisel, urine of moestuingroenten).`;
+            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. vers grasmaaisel, urine of moestuingroenten).`;
         } else {
             resultBox.className = 'result-box';
             adviceHTML += `🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.`;
