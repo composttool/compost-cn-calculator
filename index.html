@@ -1,15 +1,24 @@
 <script>
-// 1. Materialendatabank met gecorrigeerde C:N-waarden en gewichten (80L per kruiwagen)
+// 1. Uitgebreide Materialendatabank met C:N-waarden en gewichten (80L per kruiwagen)
 const MATERIALEN = {
+    // STIKSTOFRIJK (GROEN)
+    'urine': { naam: 'Urine (kickstarter/activator)', cn: 1, type: 'groen', gewichtKw: 80 },
+    'bloedmeel': { naam: 'Bloed- / Botmeel', cn: 3.5, type: 'groen', gewichtKw: 10 },
+    'kippenmest': { naam: 'Kippenmest (geconcentreerd)', cn: 10, type: 'groen', gewichtKw: 45 },
+    'kroos': { naam: 'Slootkroos (uitgelekt)', cn: 12, type: 'groen', gewichtKw: 40 },
     'groente': { naam: 'Vers Groente- & Fruitafval', cn: 15, type: 'groen', gewichtKw: 45 },
     'gras': { naam: 'Grasmaaisel (vers)', cn: 18, type: 'groen', gewichtKw: 35 },
-    'onkruid': { naam: 'Vers Onkruid / Plantenresten', cn: 20, type: 'groen', gewichtKw: 30 },
+    'onkruid': { naam: 'Vers Onkruid / Smeerwortel / Brandnetel', cn: 19, type: 'groen', gewichtKw: 30 },
+    'koffiedik': { naam: 'Koffiedik & Theezakjes', cn: 20, type: 'groen', gewichtKw: 40 },
     'mest_paard': { naam: 'Paardenmest (vers met stro)', cn: 25, type: 'groen', gewichtKw: 50 },
-    'kroos': { naam: 'Slootkroos (uitgelekt)', cn: 12, type: 'groen', gewichtKw: 40 },
-    'houtsnippers': { naam: 'Houtsnippers / Takken (Eliet gehakseld)', cn: 400, type: 'bruin', gewichtKw: 25 },
-    'stro': { naam: 'Stro', cn: 80, type: 'bruin', gewichtKw: 12 },
+
+    // KOOLSTOFRIJK (BRUIN)
     'blad': { naam: 'Droge Herfstbladeren', cn: 60, type: 'bruin', gewichtKw: 15 },
-    'karton': { naam: 'Versnipperd Karton / Papier', cn: 350, type: 'bruin', gewichtKw: 15 }
+    'stro': { naam: 'Stro / Gehakseld Riet', cn: 78, type: 'bruin', gewichtKw: 12 },
+    'krantenpapier': { naam: 'Versnipperd Krantenpapier', cn: 175, type: 'bruin', gewichtKw: 15 },
+    'karton': { naam: 'Versnipperd Karton / Papier', cn: 350, type: 'bruin', gewichtKw: 15 },
+    'zaagsel': { naam: 'Houtzaagsel / Houtkrullen (stank-stopper)', cn: 400, type: 'bruin', gewichtKw: 20 },
+    'houtsnippers': { naam: 'Houtsnippers / Takken (Eliet gehakseld)', cn: 400, type: 'bruin', gewichtKw: 25 }
 };
 
 // 2. Hoofdfunctie: Bereken C:N verhouding, Volume en Vrijdag-advies
@@ -46,12 +55,12 @@ function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
         statusKleur = "#d32f2f"; // Rood
         statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op ammoniakstank, dichtzakken en gierlucht.";
         const nodigBruin = Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (80 - 28));
-        bijstuurAdvies = `Voeg ca. <strong>${nodigBruin > 0 ? nodigBruin : 1} kruiwagen(s) stro of houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
+        bijstuurAdvies = `Voeg ca. <strong>${nodigBruin > 0 ? nodigBruin : 1} kruiwagen(s) stro, zaagsel of houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
     } else if (berekendeCN > 30) {
         statusKleur = "#ed6c02"; // Oranje
         statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Het proces zal erg traag verlopen of koud blijven.";
         const nodigGroen = Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18));
-        bijstuurAdvies = `Voeg ca. <strong>${nodigGroen > 0 ? nodigGroen : 1} kruiwagen(s) vers gras of mest</strong> toe om op ~28:1 uit te komen.`;
+        bijstuurAdvies = `Voeg ca. <strong>${nodigGroen > 0 ? nodigGroen : 1} kruiwagen(s) vers gras, mest of een gieter urine (activator)</strong> toe om op ~28:1 uit te komen.`;
     } else {
         statusTekst = "✅ OPTIMAAL BALANS (25:1 - 30:1) — Perfecte verhouding voor hete compostering!";
         bijstuurAdvies = "Geen bijsturing van materialen nodig. Bouw de hoop op in dunne afwisselende lagen.";
@@ -90,7 +99,6 @@ function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
 
 // 3. Stadslandbouw Arnhem Woensdag/Vrijdag Keerschema
 function genereerKeerschema(startDatumStr, methode = 'stadslandbouw') {
-    const d = new Date(startDatumStr);
     let schemaHTML = "<h4>Planning Keerschema:</h4><ul>";
 
     if (methode === 'stadslandbouw') {
