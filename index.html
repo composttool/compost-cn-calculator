@@ -63,29 +63,39 @@
             padding-bottom: 8px;
         }
 
+        .category-header {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin: 15px 0 8px 0;
+            font-size: 1rem;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 4px;
+        }
+
         .material-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            padding: 8px;
+            padding: 8px 10px;
             background: #fafafa;
             border-radius: 6px;
             gap: 10px;
         }
 
-        select.material-select {
-            flex: 2;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.9rem;
+        .material-info {
+            flex: 1;
+        }
+
+        .material-info span {
+            font-size: 0.82rem;
+            color: #666;
+            display: block;
         }
 
         input[type="number"] {
             width: 60px;
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #ccc;
             border-radius: 4px;
             text-align: center;
@@ -93,34 +103,14 @@
         }
 
         select.unit-select {
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background: white;
             font-size: 0.9rem;
         }
 
-        .btn-remove {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 8px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-remove:hover {
-            background: #b71c1c;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        button.primary-btn {
+        button {
             background-color: var(--primary);
             color: white;
             border: none;
@@ -129,45 +119,13 @@
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
-            flex: 2;
-            transition: background 0.2s;
-        }
-
-        button.primary-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        button.secondary-btn {
-            background-color: #78909c;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            flex: 1;
-        }
-
-        button.secondary-btn:hover {
-            background-color: #607d8b;
-        }
-
-        button.outline-btn {
-            background: transparent;
-            color: var(--primary);
-            border: 2px dashed var(--primary);
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
             width: 100%;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 1rem;
+            transition: background 0.2s;
+            margin-top: 15px;
         }
 
-        button.outline-btn:hover {
-            background: #e8f5e9;
+        button:hover {
+            background-color: var(--primary-dark);
         }
 
         .result-box {
@@ -202,7 +160,7 @@
 
         .pile-selector {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 15px;
             overflow-x: auto;
             padding-bottom: 5px;
@@ -217,7 +175,7 @@
             cursor: pointer;
             white-space: nowrap;
             width: auto;
-            font-weight: bold;
+            margin-top: 0;
         }
 
         .pile-btn.active {
@@ -244,21 +202,16 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met dynamische rijen -->
+        <!-- Kolom 1: C:N Calculator met uitgebreide materialenlijst -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Voeg materialen toe, kies de eenheid (standaard kruiwagen) en bereken de balans.</p>
+            <p style="font-size: 0.9rem; color: #666;">Voer het aantal kruiwagens of emmers per materiaal in.</p>
             
-            <div id="materials-inputs">
-                <!-- Dynamische rijen komen hier -->
+            <div id="materials-inputs" style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+                <!-- Wordt dynamisch ingevuld via JS -->
             </div>
 
-            <button class="outline-btn" onclick="addMaterialRow()">+ Materiaal toevoegen</button>
-
-            <div class="action-buttons">
-                <button class="primary-btn" onclick="calculateMix()">Bereken Mengsel</button>
-                <button class="secondary-btn" onclick="resetCalculator()">Reset</button>
-            </div>
+            <button onclick="calculateMix()">Bereken Mengsel</button>
 
             <div id="cn-result" style="display:none;" class="result-box">
                 <!-- Resultaten komen hier -->
@@ -268,7 +221,7 @@
         <!-- Kolom 2: 18-daagse Hete Compost (Max 10 hopen) -->
         <div class="card">
             <h2>Hete Composthopen Beheer</h2>
-            <label>Selecteer hoop (1 t/m 10):</label>
+            <label for="pileSelect">Selecteer hoop (1 t/m 10):</label>
             <div class="pile-selector" id="pileSelectorContainer">
                 <!-- Dynamische knoppen voor hopen 1-10 -->
             </div>
@@ -310,72 +263,74 @@
 </div>
 
 <script>
-    // Volledige database van alle materialen
+    // Uitgebreide database met categorieën en standaard geschat soortelijk gewicht per emmer (kg)
     const materialsData = {
-        grasmaaisel: { name: "Grasmaaisel (vers)", cn: 20, weightPerBucket: 7 },
-        groenteafval: { name: "Groente- en fruitafval", cn: 15, weightPerBucket: 8 },
-        houtsnippers: { name: "Houtsnippers (loofhout)", cn: 400, weightPerBucket: 2.5 },
-        bladeren: { name: "Herfstblad (droog)", cn: 60, weightPerBucket: 3 },
-        stalmest: { name: "Stalmest (met stro)", cn: 25, weightPerBucket: 9 },
-        paardenmest: { name: "Paardenmest (met stro/zaagsel)", cn: 30, weightPerBucket: 8.5 },
-        Karton_versnipperd: { name: "Karton (versnipperd)", cn: 350, weightPerBucket: 1.5 },
-        stro: { name: "Stro (tarwe/gerst)", cn: 80, weightPerBucket: 2 },
-        onkruid_zonder_zaad: { name: "Onkruid (zonder rijp zaad)", cn: 25, weightPerBucket: 7 },
-        snoeihout_fijn: { name: "Snoeihout (fijn / bladrijk)", cn: 100, weightPerBucket: 3 },
-        koffiedik: { name: "Koffiedik / Filters", cn: 20, weightPerBucket: 8 }
+        // --- KOOLSTOFRIJK (BRUIN) ---
+        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 1.5 },
+        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
+        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        stro: { name: "Stro (tarwe / gerst)", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
+        dennennaalden: { name: "Dennennaalden", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        herfstbladeren: { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        maisstengels: { name: "Maïsstengels (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        pompoenranken: { name: "Pompoen- / Courgetteranken (vezelig)", cn: 35, category: "Koolstofrijk (Bruin)", weightPerBucket: 5.0 },
+
+        // --- STIKSTOFRIJK (GROEN) ---
+        groenteresten: { name: "Groenteresten / Oogstresten groentebedden", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        aardappelloof: { name: "Aardappel- en tomatenloof", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
+        keukenafval: { name: "Keukenafval / Snijresten", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
+        grasmaaisel: { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        bermmaaisel: { name: "Kruidenrijk grasmaaisel / bermmaaisel", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
+        tuinafval: { name: "Algemeen tuinafval (jong / sappig)", cn: 22, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
+        onkruid: { name: "Onkruid (vers, zonder zaad)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        hooi: { name: "Hooi (gedroogd gras / kruiden)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 3.0 },
+        koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        koemest: { name: "Koemest (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        champost: { name: "Champost (champignonmest)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        kippenmest_oud: { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
+        kippenmest_vers: { name: "Kippenmest (vers)", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
+        bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        dolemietenmeel: { name: "Dolemietenmeel (mineraal / pH-buffer)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 12.0 }
     };
 
     let activePile = 1;
 
     window.onload = function() {
-        initCalculator();
+        renderMaterialInputs();
         renderPileSelector();
         loadPileData(1);
     };
 
-    // Start met 5 rijen en de meest gebruikte materialen vooraf ingevuld
-    function initCalculator() {
+    function renderMaterialInputs() {
         const container = document.getElementById('materials-inputs');
-        container.innerHTML = '';
-        
-        const defaultSelections = ['grasmaaisel', 'groenteafval', 'houtsnippers', 'bladeren', 'stalmest'];
-        
-        defaultSelections.forEach((matKey, index) => {
-            // Geef de eerste rij standaard 1 kruiwagen als handig voorbeeld, de rest 0
-            addMaterialRow(matKey, index === 0 ? 1 : 0, 'kruiwagen');
-        });
-    }
+        let html = '';
+        let currentCategory = '';
 
-    function addMaterialRow(selectedMat = 'grasmaaisel', amountVal = 0, unitVal = 'kruiwagen') {
-        const container = document.getElementById('materials-inputs');
-        const uniqueId = 'row_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-        
-        let optionsHTML = '';
         for (let [key, mat] of Object.entries(materialsData)) {
-            let selected = (key === selectedMat) ? 'selected' : '';
-            optionsHTML += `<option value="${key}" ${selected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
+            // Voeg een categoriekop toe als deze verandert
+            if (mat.category !== currentCategory) {
+                currentCategory = mat.category;
+                html += `<div class="category-header">${currentCategory}</div>`;
+            }
+
+            html += `
+                <div class="material-row">
+                    <div class="material-info">
+                        <strong>${mat.name}</strong>
+                        <span>C:N ${mat.cn}:1</span>
+                    </div>
+                    <input type="number" id="input_${key}" value="0" min="0" max="500">
+                    <select class="unit-select" id="unit_${key}">
+                        <option value="kruiwagen" selected>kruiwagen(s)</option>
+                        <option value="emmer">emmer(s)</option>
+                    </select>
+                </div>
+            `;
         }
-
-        let rowDiv = document.createElement('div');
-        rowDiv.className = 'material-row';
-        rowDiv.id = uniqueId;
-        rowDiv.innerHTML = `
-            <select class="material-select" id="mat_${uniqueId}">
-                ${optionsHTML}
-            </select>
-            <input type="number" id="amount_${uniqueId}" value="${amountVal}" min="0" max="500">
-            <select class="unit-select" id="unit_${uniqueId}">
-                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
-                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
-            </select>
-            <button class="btn-remove" onclick="document.getElementById('${uniqueId}').remove()">✕</button>
-        `;
-        container.appendChild(rowDiv);
-    }
-
-    function resetCalculator() {
-        initCalculator();
-        document.getElementById('cn-result').style.display = 'none';
+        container.innerHTML = html;
     }
 
     function calculateMix() {
@@ -383,31 +338,24 @@
         let totalNitrogenScore = 0;
         let totalItemsEntered = 0;
 
-        const rows = document.querySelectorAll('.material-row');
+        for (let key of Object.keys(materialsData)) {
+            let inputElem = document.getElementById(`input_${key}`);
+            if (!inputElem) continue;
 
-        rows.forEach(row => {
-            const uniqueId = row.id;
-            const matSelect = document.getElementById(`mat_${uniqueId}`);
-            const amountInput = document.getElementById(`amount_${uniqueId}`);
-            const unitSelect = document.getElementById(`unit_${uniqueId}`);
+            let amount = parseFloat(inputElem.value) || 0;
+            if (amount > 0) {
+                let unit = document.getElementById(`unit_${key}`).value;
+                let mat = materialsData[key];
+                
+                // Omrekening: 1 kruiwagen = ~3.5 emmers volume
+                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
 
-            if (matSelect && amountInput && unitSelect) {
-                const matKey = matSelect.value;
-                const amount = parseFloat(amountInput.value) || 0;
-                const unit = unitSelect.value;
-
-                if (amount > 0) {
-                    let mat = materialsData[matKey];
-                    // Omrekening: 1 kruiwagen = ~3.5 emmers volume naar gewicht
-                    let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
-
-                    let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
-                    totalCarbonScore += estimatedWeight * mat.cn;
-                    totalNitrogenScore += estimatedWeight;
-                    totalItemsEntered += amount;
-                }
+                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
+                totalCarbonScore += estimatedWeight * mat.cn;
+                totalNitrogenScore += estimatedWeight;
+                totalItemsEntered += amount;
             }
-        });
+        }
 
         const resultBox = document.getElementById('cn-result');
         resultBox.style.display = 'block';
