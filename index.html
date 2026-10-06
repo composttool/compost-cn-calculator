@@ -353,4 +353,308 @@
         paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
         koemest: { name: "Koemest (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
         champost: { name: "Champost (champignonmest)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
-        kippenmest_oud: { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)",
+        kippenmest_oud: { name: "Kippenmest (oud / droog)", cn: 12, category: "Stikstofrijk (Groen)", weightPerBucket: 8.0 },
+        kippenmest_vers: { name: "Kippenmest (vers)", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
+        bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        dolemietenmeel: { name: "Dolemietenmeel (mineraal / pH-buffer)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 12.0 }
+    };
+
+    let activePile = 1;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        addMaterialRow();
+        renderPileSelector();
+        loadPileData(activePile);
+
+        document.getElementById('addRowBtn').addEventListener('click', function() {
+            addMaterialRow();
+        });
+
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            calculateMix();
+        });
+
+        document.getElementById('startDate').addEventListener('change', function() {
+            savePileData();
+        });
+    });
+
+    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen') {
+        const container = document.getElementById('dynamic-materials-container');
+        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+
+        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
+        let currentCategory = '';
+
+        for (let [key, mat] of Object.entries(materialsData)) {
+            if (mat.category !== currentCategory) {
+                if (currentCategory !== '') optionsHTML += '</optgroup>';
+                currentCategory = mat.category;
+                optionsHTML += `<optgroup label="${currentCategory}">`;
+            }
+            let isSelected = (key === selectedKey) ? 'selected' : '';
+            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
+        }
+        if (currentCategory !== '') optionsHTML += '</optgroup>';
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'material-row';
+        rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <select class="material-select">
+                ${optionsHTML}
+            </select>
+            <input type="number" class="material-amount" value="${amountVal}" min="1" max="500">
+            <select class="unit-select">
+                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
+                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+            </select>
+            <button type="button" class="delete-row-btn">🗑️</button>
+        `;
+
+        rowDiv.querySelector('.delete-row-btn').addEventListener('click', function() {
+            rowDiv.remove();
+        });
+
+        container.appendChild(rowDiv);
+    }
+
+    function calculateMix() {
+        let totalCarbonScore = 0;
+        let totalNitrogenScore = 0;
+        let totalItemsEntered = 0;
+
+        const rows = document.querySelectorAll('.material-row');
+
+        rows.forEach(row => {
+            let selectElem = row.querySelector('.material-select');
+            let amountElem = row.querySelector('.material-amount');
+            let unitElem = row.querySelector('.unit-select');
+
+            let key = selectElem.value;
+            let amount = parseFloat(amountElem.value) || 0;
+
+            if (key && amount > 0 && materialsData[key]) {
+                let unit = unitElem.value;
+                let mat = materialsData[key];
+                
+                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
+                totalCarbonScore += estimatedWeight * mat.cn;
+                totalNitrogenScore += estimatedWeight;
+                totalItemsEntered += amount;
+            }
+        });
+
+        const resultBox = document.getElementById('cn-result');
+        resultBox.style.display = 'block';
+
+        if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
+            resultBox.className = 'result-box warning';
+            resultBox.innerHTML = '<strong>Voeg minimaal één materiaal en geldige hoeveelheid toe!</strong>';
+            return;
+        }
+
+        let finalCN = totalCarbonScore / totalNitrogenScore;
+        let roundedCN = Math.round(finalCN);
+
+        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel: ~${roundedCN}:1</strong><br>`;
+
+        if (roundedCN < 25) {
+            resultBox.className = 'result-box danger';
+            adviceHTML += '⚠️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
+        } else if (roundedCN > 35) {
+            resultBox.className = 'result-box warning';
+            adviceHTML += '⚠️ <em>Te veel koolstof!</em> De hoop komt vermoedelijk traag op temperatuur. Voeg wat grasmaaisel of groenteafval toe.';
+        } else {
+            resultBox.className = 'result-box';
+            adviceHTML += '🎉 <em>Ideale C:N-ratio!</em> Perfecte balans voor een snelle, actieve composthoop.';
+        }
+
+        resultBox.innerHTML = adviceHTML;
+    }
+
+    function renderPileSelector() {
+        const container = document.getElementById('pileSelectorContainer');
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
+            btn.innerText = `Hoop ${i}`;
+            btn.addEventListener('click', function() {
+                switchPile(i);
+            });
+            container.appendChild(btn);
+        }
+    }
+
+    function switchPile(pileNum) {
+        activePile = pileNum;
+        renderPileSelector();
+        loadPileData(pileNum);
+    }
+
+    function savePileData() {
+        const date = document.getElementById('startDate').value;
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+
+        const pileData = { date, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        updateScheduleDisplay(date, checks);
+    }
+
+    function saveCheckboxState() {
+        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
+        let pileData = saved ? JSON.parse(saved) : { date: document.getElementById('startDate').value };
+
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+        pileData.checks = checks;
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        
+        updateProgress();
+    }
+
+    function loadPileData(pileNum) {
+        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
+        const dateInput = document.getElementById('startDate');
+        if (saved) {
+            const data = JSON.parse(saved);
+            dateInput.value = data.date || '';
+            updateScheduleDisplay(data.date, data.checks || {});
+        } else {
+            dateInput.value = '';
+            updateScheduleDisplay('', {});
+        }
+    }
+
+    function resetCurrentPile() {
+        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten? Alle vinkjes van deze specifieke hoop worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').value = today;
+
+        let checks = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+        const pileData = { date: today, checks };
+        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+
+        updateScheduleDisplay(today, checks);
+    }
+
+    function updateScheduleDisplay(startDateStr, checks = {}) {
+        const output = document.getElementById('scheduleOutput');
+
+        if (!startDateStr) {
+            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het Berkeley 18-dagenschema te genereren.</em>`;
+            return;
+        }
+
+        let start = new Date(startDateStr);
+        
+        let d1 = new Date(start);
+        let d4 = new Date(start); d4.setDate(start.getDate() + 3);
+        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
+        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
+        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
+        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
+        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
+
+        const steps = [
+            { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
+            { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
+            { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
+            { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
+            { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
+            { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
+            { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
+        ];
+
+        let html = `<strong>Schema voor Hoop ${activePile}</strong><ul class="schedule-list">`;
+        
+        steps.forEach((step, index) => {
+            let isChecked = checks[index] ? 'checked' : '';
+            html += `
+                <li>
+                    <input type="checkbox" id="stepChk_${index}" ${isChecked}>
+                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
+                </li>
+            `;
+        });
+
+        html += `</ul>`;
+        
+        html += `
+            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop ${activePile}:</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 7 stappen voltooid (0%)</div>
+
+            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset deze hoop (Hoop ${activePile}) naar Dag 1</button>
+        `;
+
+        output.innerHTML = html;
+
+        // Event listeners koppelen voor de actieve hoop
+        steps.forEach((step, index) => {
+            const chkElem = document.getElementById(`stepChk_${index}`);
+            if (chkElem) {
+                chkElem.addEventListener('change', function() {
+                    saveCheckboxState();
+                });
+            }
+        });
+
+        const resetBtn = document.getElementById('resetPileBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                resetCurrentPile();
+            });
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        let completed = 0;
+        const total = 7;
+        
+        for (let i = 0; i < total; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk && chk.checked) {
+                completed++;
+            }
+        }
+
+        let percentage = Math.round((completed / total) * 100);
+        let bar = document.getElementById('progressBar');
+        let text = document.getElementById('progressText');
+
+        if (bar && text) {
+            bar.style.width = percentage + '%';
+            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
+        }
+    }
+
+    function formatDate(date) {
+        if (!date || isNaN(date)) return '';
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
+</script>
+
+</body>
+</html>
