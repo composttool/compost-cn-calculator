@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 17:02)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -495,6 +495,12 @@
 </div>
 
 <script>
+    // Jouw unieke Google Apps Script Web App URL voor centrale synchronisatie
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxqDLa2yAw2RL_XYewi5UzRCq71lBW4ZZsNLqIBSOlGzT4JaXDi7PQ_c8I6GFK0N3zgng/exec";
+
+    // Cache object om alle hopen lokaal in het geheugen te houden na de eerste laadbeurt
+    let allPilesData = {};
+
     const materialsData = {
         moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
         groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
@@ -562,12 +568,15 @@
 
     let activePile = 1;
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         addMaterialRow('moestuingroenten', 11, 'kruiwagen', 'nat');
         addMaterialRow('houtsnippers', 1, 'kruiwagen', 'neutraal');
 
         renderPileSelector();
-        loadPileData(activePile);
+        
+        // Haal direct alle gegevens op uit de Google Sheet bij het laden
+        await laadAllePijlenData();
+
         renderTroubleshootingSchema();
 
         const addRowBtn = document.getElementById('addRowBtn');
@@ -596,6 +605,41 @@
             fridayCheckbox.addEventListener('change', calculateMix);
         }
     });
+
+    // Functie om data op te halen uit de Google Sheet
+    async function laadAllePijlenData() {
+        const output = document.getElementById('scheduleOutput');
+        if (output) output.innerHTML = `<strong>Gegevens ophalen uit Google Sheet...</strong>`;
+
+        try {
+            let response = await fetch(WEB_APP_URL + "?action=getData");
+            let data = await response.json();
+            allPilesData = data || {};
+            loadPileData(activePile);
+        } catch (error) {
+            console.error("Fout bij ophalen Google Sheet:", error);
+            if (output) output.innerHTML = `<span style="color:red;">Kon geen verbinding maken met de Google Sheet. Controleer internet.</span>`;
+        }
+    }
+
+    // Functie om data op te slaan naar de Google Sheet
+    async function slaHoopOpNaarSheet(hoopNum, date, scheduleType, checks) {
+        try {
+            let formData = new URLSearchParams();
+            formData.append("action", "saveData");
+            formData.append("hoopNum", hoopNum);
+            formData.append("date", date || "");
+            formData.append("scheduleType", scheduleType || "arnhem");
+            formData.append("checks", JSON.stringify(checks || {}));
+
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: formData
+            });
+        } catch (error) {
+            console.error("Fout bij opslaan naar Google Sheet:", error);
+        }
+    }
 
     function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen', moistureVal = 'nat') {
         const container = document.getElementById('dynamic-materials-container');
@@ -790,16 +834,17 @@
             }
         }
 
-        const pileData = { date, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        // Sla lokaal op in geheugen en stuur naar Google Sheet
+        allPilesData[activePile] = { date, scheduleType, checks };
+        slaHoopOpNaarSheet(activePile, date, scheduleType, checks);
+
         updateScheduleDisplay(date, scheduleType, checks);
     }
 
     function saveCheckboxState() {
         const startDateInput = document.getElementById('startDate');
         const scheduleTypeSelect = document.getElementById('scheduleType');
-        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
-        let pileData = saved ? JSON.parse(saved) : { date: startDateInput ? startDateInput.value : '', scheduleType: scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem' };
+        let pileData = allPilesData[activePile] || { date: startDateInput ? startDateInput.value : '', scheduleType: scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem' };
 
         let checks = {};
         for (let i = 0; i < 10; i++) {
@@ -809,19 +854,19 @@
             }
         }
         pileData.checks = checks;
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        
+        allPilesData[activePile] = pileData;
+
+        slaHoopOpNaarSheet(activePile, pileData.date, pileData.scheduleType, checks);
         updateProgress();
     }
 
     function loadPileData(pileNum) {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
+        const data = allPilesData[pileNum];
         const dateInput = document.getElementById('startDate');
         const scheduleTypeSelect = document.getElementById('scheduleType');
         if (!dateInput) return;
 
-        if (saved) {
-            const data = JSON.parse(saved);
+        if (data) {
             dateInput.value = data.date || '';
             if (scheduleTypeSelect) scheduleTypeSelect.value = data.scheduleType || 'arnhem';
             updateScheduleDisplay(data.date, data.scheduleType || 'arnhem', data.checks || {});
@@ -844,8 +889,9 @@
 
         let scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem';
         let checks = {};
-        const pileData = { date: today, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
+        
+        allPilesData[activePile] = { date: today, scheduleType, checks };
+        slaHoopOpNaarSheet(activePile, today, scheduleType, checks);
 
         updateScheduleDisplay(today, scheduleType, checks);
     }
