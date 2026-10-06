@@ -128,6 +128,15 @@
             background-color: var(--primary-dark);
         }
 
+        .reset-btn {
+            background-color: #d32f2f;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            background-color: #b71c1c;
+        }
+
         .result-box {
             margin-top: 15px;
             padding: 15px;
@@ -183,13 +192,52 @@
             color: white;
         }
 
-        ul {
-            padding-left: 20px;
-            margin: 5px 0;
+        /* Schema lijst & Checkbox styling */
+        .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 15px 0;
         }
 
-        li {
-            margin-bottom: 6px;
+        .schedule-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            background: white;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .schedule-list input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Voortgangsbalk */
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 12px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
         }
     </style>
 </head>
@@ -233,8 +281,8 @@
                 <label for="startDate">Startdatum (Dag 1):</label>
                 <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;" onchange="savePileData()">
 
-                <div id="scheduleOutput" style="background: #fafafa; padding: 10px; border-radius: 6px; font-size: 0.9rem;">
-                    <!-- Schema planning info -->
+                <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
+                    <!-- Schema planning info met checkboxen, progressbar en resetknop -->
                 </div>
             </div>
         </div>
@@ -310,7 +358,6 @@
         let currentCategory = '';
 
         for (let [key, mat] of Object.entries(materialsData)) {
-            // Voeg een categoriekop toe als deze verandert
             if (mat.category !== currentCategory) {
                 currentCategory = mat.category;
                 html += `<div class="category-header">${currentCategory}</div>`;
@@ -347,9 +394,7 @@
                 let unit = document.getElementById(`unit_${key}`).value;
                 let mat = materialsData[key];
                 
-                // Omrekening: 1 kruiwagen = ~3.5 emmers volume
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
-
                 let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
                 totalCarbonScore += estimatedWeight * mat.cn;
                 totalNitrogenScore += estimatedWeight;
@@ -369,94 +414,4 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel: ~${roundedCN}:1</strong><br>`;
-
-        if (roundedCN < 25) {
-            resultBox.className = 'result-box danger';
-            adviceHTML += '⚠️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
-        } else if (roundedCN > 35) {
-            resultBox.className = 'result-box warning';
-            adviceHTML += '⚠️ <em>Te veel koolstof!</em> De hoop komt vermoedelijk traag op temperatuur. Voeg wat grasmaaisel of groenteafval toe.';
-        } else {
-            resultBox.className = 'result-box';
-            adviceHTML += '🎉 <em>Ideale C:N-ratio!</em> Perfecte balans voor een snelle, actieve composthoop.';
-        }
-
-        resultBox.innerHTML = adviceHTML;
-    }
-
-    function renderPileSelector() {
-        const container = document.getElementById('pileSelectorContainer');
-        let html = '';
-        for (let i = 1; i <= 10; i++) {
-            html += `<button class="pile-btn ${i === activePile ? 'active' : ''}" onclick="switchPile(${i})">Hoop ${i}</button>`;
-        }
-        container.innerHTML = html;
-    }
-
-    function switchPile(pileNum) {
-        activePile = pileNum;
-        renderPileSelector();
-        loadPileData(pileNum);
-    }
-
-    function savePileData() {
-        const name = document.getElementById('pileName').value;
-        const date = document.getElementById('startDate').value;
-
-        const pileData = { name, date };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        updateScheduleDisplay(date);
-    }
-
-    function loadPileData(pileNum) {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
-        if (saved) {
-            const data = JSON.parse(saved);
-            document.getElementById('pileName').value = data.name || '';
-            document.getElementById('startDate').value = data.date || '';
-            updateScheduleDisplay(data.date);
-        } else {
-            document.getElementById('pileName').value = `Composthoop ${pileNum}`;
-            document.getElementById('startDate').value = '';
-            updateScheduleDisplay('');
-        }
-    }
-
-    function updateScheduleDisplay(startDateStr) {
-        const output = document.getElementById('scheduleOutput');
-        if (!startDateStr) {
-            output.innerHTML = '<em>Kies een startdatum om het Berkeley 18-dagenschema te genereren.</em>';
-            return;
-        }
-
-        let start = new Date(startDateStr);
-        
-        let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-        output.innerHTML = `
-            <strong>Berkeley 18-dagen Schema (Hoop ${activePile}):</strong>
-            <ul style="margin-top:5px; padding-left:15px;">
-                <li><strong>Dag 1:</strong> Opzetten hoop (C:N ~30:1, vochtig)</li>
-                <li><strong>Dag 4 (${formatDate(d4)}):</strong> 1e keer omzetten</li>
-                <li><strong>Dag 7 (${formatDate(d7)}):</strong> 2e keer omzetten</li>
-                <li><strong>Dag 10 (${formatDate(d10)}):</strong> 3e keer omzetten</li>
-                <li><strong>Dag 13 (${formatDate(d13)}):</strong> 4e keer omzetten</li>
-                <li><strong>Dag 16 (${formatDate(d16)}):</strong> 5e keer omzetten</li>
-                <li><strong>Dag 18 (${formatDate(d18)}):</strong> 🟢 Rijpe compost gereed!</li>
-            </ul>
-        `;
-    }
-
-    function formatDate(date) {
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
+        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel:
