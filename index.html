@@ -308,14 +308,19 @@
 </div>
 
 <script>
-    // Database van materialen met C:N ratio en gewicht per emmer als basis
+    // Uitgebreide database van alle materialen
     const materialsData = {
-        groenteafval: { name: "Groente- en fruitafval", cn: 15, weightPerBucket: 8 },
         grasmaaisel: { name: "Grasmaaisel (vers)", cn: 20, weightPerBucket: 7 },
+        groenteafval: { name: "Groente- en fruitafval", cn: 15, weightPerBucket: 8 },
         houtsnippers: { name: "Houtsnippers (loofhout)", cn: 400, weightPerBucket: 2.5 },
         bladeren: { name: "Herfstblad (droog)", cn: 60, weightPerBucket: 3 },
+        stalmest: { name: "Stalmest (met stro)", cn: 25, weightPerBucket: 9 },
+        paardenmest: { name: "Paardenmest (met stro/zaagsel)", cn: 30, weightPerBucket: 8.5 },
         Karton_versnipperd: { name: "Karton (versnipperd)", cn: 350, weightPerBucket: 1.5 },
-        stalmest: { name: "Stalmest (met stro)", cn: 25, weightPerBucket: 9 }
+        stro: { name: "Stro (tarwe/gerst)", cn: 80, weightPerBucket: 2 },
+        onkruid_zonder_zaad: { name: "Onkruid (zonder rijp zaad)", cn: 25, weightPerBucket: 7 },
+        snoeihout_fijn: { name: "Snoeihout (fijn / bladrijk)", cn: 100, weightPerBucket: 3 },
+        koffiedik: { name: "Koffiedik / Filters", cn: 20, weightPerBucket: 8 }
     };
 
     let activePile = 1;
@@ -334,7 +339,7 @@
         const defaultSelections = ['grasmaaisel', 'groenteafval', 'houtsnippers', 'bladeren', 'stalmest'];
         
         defaultSelections.forEach((matKey, index) => {
-            addMaterialRow(matKey, index === 0 ? 1 : 0); // Geef de eerste (grasmaaisel) standaard 1 kruiwagen mee als voorbeeld
+            addMaterialRow(matKey, index === 0 ? 1 : 0);
         });
     }
 
@@ -385,7 +390,6 @@
 
             if (amount > 0) {
                 let mat = materialsData[matKey];
-                // 1 kruiwagen = ~3.5 emmers volume-omrekening naar gewicht
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
 
                 let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
@@ -471,30 +475,3 @@
         let start = new Date(startDateStr);
         
         let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-        output.innerHTML = `
-            <strong>Berkeley 18-dagen Schema (Hoop ${activePile}):</strong>
-            <ul style="margin-top:5px; padding-left:15px;">
-                <li><strong>Dag 1:</strong> Opzetten hoop (C:N ~30:1, vochtig)</li>
-                <li><strong>Dag 4 (${formatDate(d4)}):</strong> 1e keer omzetten</li>
-                <li><strong>Dag 7 (${formatDate(d7)}):</strong> 2e keer omzetten</li>
-                <li><strong>Dag 10 (${formatDate(d10)}):</strong> 3e keer omzetten</li>
-                <li><strong>Dag 13 (${formatDate(d13)}):</strong> 4e keer omzetten</li>
-                <li><strong>Dag 16 (${formatDate(d16)}):</strong> 5e keer omzetten</li>
-                <li><strong>Dag 18 (${formatDate(d18)}):</strong> 🟢 Rijpe compost gereed!</li>
-            </ul>
-        `;
-    }
-
-    function formatDate(date) {
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
