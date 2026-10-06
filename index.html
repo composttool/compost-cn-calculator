@@ -63,39 +63,29 @@
             padding-bottom: 8px;
         }
 
-        .category-header {
-            font-weight: bold;
-            color: var(--primary-dark);
-            margin: 15px 0 8px 0;
-            font-size: 1rem;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 4px;
-        }
-
         .material-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
             padding: 8px 10px;
             background: #fafafa;
             border-radius: 6px;
             gap: 10px;
+            border: 1px solid #e0e0e0;
         }
 
-        .material-info {
-            flex: 1;
-        }
-
-        .material-info span {
-            font-size: 0.82rem;
-            color: #666;
-            display: block;
+        .material-select {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.9rem;
         }
 
         input[type="number"] {
-            width: 60px;
-            padding: 6px;
+            width: 55px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             text-align: center;
@@ -103,11 +93,37 @@
         }
 
         select.unit-select {
-            padding: 6px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background: white;
             font-size: 0.9rem;
+        }
+
+        .delete-row-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0;
+            width: auto;
+        }
+
+        .delete-row-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .add-row-btn {
+            background-color: #388e3c;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .add-row-btn:hover {
+            background-color: #2e7d32;
         }
 
         button {
@@ -161,9 +177,15 @@
             gap: 20px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .grid-2 {
                 grid-template-columns: 1fr;
+            }
+            .material-row {
+                flex-wrap: wrap;
+            }
+            .material-select {
+                flex: 100%;
             }
         }
 
@@ -249,15 +271,16 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator -->
+        <!-- Kolom 1: C:N Calculator met dynamische rijen -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Voer het aantal kruiwagens of emmers per materiaal in.</p>
+            <p style="font-size: 0.9rem; color: #666;">Voeg materialen toe en selecteer de hoeveelheid.</p>
             
-            <div id="materials-inputs" style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
-                <!-- Wordt dynamisch ingevuld via JS -->
+            <div id="dynamic-materials-container">
+                <!-- Dynamische rijen komen hier -->
             </div>
 
+            <button type="button" class="add-row-btn" onclick="addMaterialRow()">+ Voeg materiaal toe</button>
             <button onclick="calculateMix()">Bereken Mengsel</button>
 
             <div id="cn-result" style="display:none;" class="result-box">
@@ -340,37 +363,45 @@
     let activePile = 1;
 
     window.onload = function() {
-        renderMaterialInputs();
+        addMaterialRow(); // Start met 1 lege rij
         renderPileSelector();
         loadPileData(activePile);
     };
 
-    function renderMaterialInputs() {
-        const container = document.getElementById('materials-inputs');
-        let html = '';
+    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen') {
+        const container = document.getElementById('dynamic-materials-container');
+        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+
+        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
         let currentCategory = '';
 
         for (let [key, mat] of Object.entries(materialsData)) {
             if (mat.category !== currentCategory) {
+                if (currentCategory !== '') optionsHTML += '</optgroup>';
                 currentCategory = mat.category;
-                html += `<div class="category-header">${currentCategory}</div>`;
+                optionsHTML += `<optgroup label="${currentCategory}">`;
             }
-
-            html += `
-                <div class="material-row">
-                    <div class="material-info">
-                        <strong>${mat.name}</strong>
-                        <span>C:N ${mat.cn}:1</span>
-                    </div>
-                    <input type="number" id="input_${key}" value="0" min="0" max="500">
-                    <select class="unit-select" id="unit_${key}">
-                        <option value="kruiwagen" selected>kruiwagen(s)</option>
-                        <option value="emmer">emmer(s)</option>
-                    </select>
-                </div>
-            `;
+            let isSelected = (key === selectedKey) ? 'selected' : '';
+            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N${mat.cn}:1)</option>`;
         }
-        container.innerHTML = html;
+        if (currentCategory !== '') optionsHTML += '</optgroup>';
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'material-row';
+        rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <select class="material-select">
+                ${optionsHTML}
+            </select>
+            <input type="number" class="material-amount" value="${amountVal}" min="1" max="500">
+            <select class="unit-select">
+                <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
+                <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+            </select>
+            <button type="button" class="delete-row-btn" onclick="document.getElementById('${rowId}').remove()">🗑️</button>
+        `;
+
+        container.appendChild(rowDiv);
     }
 
     function calculateMix() {
@@ -378,13 +409,18 @@
         let totalNitrogenScore = 0;
         let totalItemsEntered = 0;
 
-        for (let key of Object.keys(materialsData)) {
-            let inputElem = document.getElementById(`input_${key}`);
-            if (!inputElem) continue;
+        const rows = document.querySelectorAll('.material-row');
 
-            let amount = parseFloat(inputElem.value) || 0;
-            if (amount > 0) {
-                let unit = document.getElementById(`unit_${key}`).value;
+        rows.forEach(row => {
+            let selectElem = row.querySelector('.material-select');
+            let amountElem = row.querySelector('.material-amount');
+            let unitElem = row.querySelector('.unit-select');
+
+            let key = selectElem.value;
+            let amount = parseFloat(amountElem.value) || 0;
+
+            if (key && amount > 0 && materialsData[key]) {
+                let unit = unitElem.value;
                 let mat = materialsData[key];
                 
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
@@ -393,14 +429,14 @@
                 totalNitrogenScore += estimatedWeight;
                 totalItemsEntered += amount;
             }
-        }
+        });
 
         const resultBox = document.getElementById('cn-result');
         resultBox.style.display = 'block';
 
         if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
             resultBox.className = 'result-box warning';
-            resultBox.innerHTML = '<strong>Voer minimaal één hoeveelheid in!</strong>';
+            resultBox.innerHTML = '<strong>Voeg minimaal één materiaal en geldige hoeveelheid toe!</strong>';
             return;
         }
 
@@ -427,158 +463,4 @@
         const container = document.getElementById('pileSelectorContainer');
         let html = '';
         for (let i = 1; i <= 10; i++) {
-            html += `<button class="pile-btn ${i === activePile ? 'active' : ''}" onclick="switchPile(${i})">Hoop ${i}</button>`;
-        }
-        container.innerHTML = html;
-    }
-
-    function switchPile(pileNum) {
-        activePile = pileNum;
-        renderPileSelector();
-        loadPileData(pileNum);
-    }
-
-    function savePileData() {
-        const date = document.getElementById('startDate').value;
-        let checks = {};
-        for (let i = 0; i < 7; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-
-        const pileData = { date, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        updateScheduleDisplay(date, checks);
-    }
-
-    function saveCheckboxState() {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
-        let pileData = saved ? JSON.parse(saved) : { date: document.getElementById('startDate').value };
-
-        let checks = {};
-        for (let i = 0; i < 7; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-        pileData.checks = checks;
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        
-        updateProgress();
-    }
-
-    function loadPileData(pileNum) {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
-        if (saved) {
-            const data = JSON.parse(saved);
-            document.getElementById('startDate').value = data.date || '';
-            updateScheduleDisplay(data.date, data.checks || {});
-        } else {
-            document.getElementById('startDate').value = '';
-            updateScheduleDisplay('', {});
-        }
-    }
-
-    function resetPile() {
-        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten voor een nieuwe ronde? Alle vinkjes worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
-            return;
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').value = today;
-
-        let checks = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-        const pileData = { date: today, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-
-        updateScheduleDisplay(today, checks);
-    }
-
-    function updateScheduleDisplay(startDateStr, checks = {}) {
-        const output = document.getElementById('scheduleOutput');
-
-        if (!startDateStr) {
-            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het Berkeley 18-dagenschema te genereren.</em>`;
-            return;
-        }
-
-        let start = new Date(startDateStr);
-        
-        let d1 = new Date(start);
-        let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-        const steps = [
-            { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
-            { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
-            { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
-            { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
-            { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
-            { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
-            { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
-        ];
-
-        let html = `<strong>Schema voor Hoop ${activePile}</strong><ul class="schedule-list">`;
-        
-        steps.forEach((step, index) => {
-            let isChecked = checks[index] ? 'checked' : '';
-            html += `
-                <li>
-                    <input type="checkbox" id="stepChk_${index}" ${isChecked} onchange="saveCheckboxState()">
-                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
-                </li>
-            `;
-        });
-
-        html += `</ul>`;
-        
-        html += `
-            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang:</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 / 7 stappen voltooid (0%)</div>
-
-            <button class="reset-btn" onclick="resetPile()">🔄 Ronde voltooid / Reset hoop naar Dag 1</button>
-        `;
-
-        output.innerHTML = html;
-        updateProgress();
-    }
-
-    function updateProgress() {
-        let completed = 0;
-        const total = 7;
-        
-        for (let i = 0; i < total; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk && chk.checked) {
-                completed++;
-            }
-        }
-
-        let percentage = Math.round((completed / total) * 100);
-        let bar = document.getElementById('progressBar');
-        let text = document.getElementById('progressText');
-
-        if (bar && text) {
-            bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
-        }
-    }
-
-    function formatDate(date) {
-        if (isNaN(date)) return '';
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
+            html += `<button class="pile-btn ${i === activePile ? 'active' : ''}" onclick="switchPile(${i})">Ho
