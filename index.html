@@ -118,7 +118,15 @@
         .add-row-btn {
             background-color: #388e3c;
             margin-top: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
+            width: 100%;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
         }
 
         .add-row-btn:hover {
@@ -270,20 +278,19 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met dynamische rijen -->
+        <!-- Kolom 1: C:N Calculator met dynamische rijen & live berekening -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Voeg materialen toe en selecteer de hoeveelheid.</p>
+            <p style="font-size: 0.9rem; color: #666;">Voeg materialen toe. Het resultaat berekent automatisch live mee.</p>
             
             <div id="dynamic-materials-container">
                 <!-- Dynamische rijen komen hier -->
             </div>
 
             <button type="button" id="addRowBtn" class="add-row-btn">+ Voeg materiaal toe</button>
-            <button type="button" id="calculateBtn">Bereken Mengsel</button>
 
-            <div id="cn-result" style="display:none;" class="result-box">
-                <!-- Resultaten komen hier -->
+            <div id="cn-result" class="result-box">
+                <!-- Live resultaten komen hier -->
             </div>
         </div>
 
@@ -362,16 +369,15 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        addMaterialRow();
+        // Start met twee standaard rijen gevuld voor direct gebruiksgemak
+        addMaterialRow('paardenmest', 2, 'kruiwagen');
+        addMaterialRow('houtsnippers', 1, 'kruiwagen');
+
         renderPileSelector();
         loadPileData(activePile);
 
         document.getElementById('addRowBtn').addEventListener('click', function() {
             addMaterialRow();
-        });
-
-        document.getElementById('calculateBtn').addEventListener('click', function() {
-            calculateMix();
         });
 
         document.getElementById('startDate').addEventListener('change', function() {
@@ -412,11 +418,21 @@
             <button type="button" class="delete-row-btn">🗑️</button>
         `;
 
+        // Live triggers bij wijzigingen in deze rij
+        const inputs = rowDiv.querySelectorAll('select, input');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateMix);
+            input.addEventListener('change', calculateMix);
+        });
+
+        // Verwijder-knop functionaliteit
         rowDiv.querySelector('.delete-row-btn').addEventListener('click', function() {
             rowDiv.remove();
+            calculateMix();
         });
 
         container.appendChild(rowDiv);
+        calculateMix(); // Direct doorrekenen na toevoegen
     }
 
     function calculateMix() {
@@ -431,11 +447,11 @@
             let amountElem = row.querySelector('.material-amount');
             let unitElem = row.querySelector('.unit-select');
 
-            let key = selectElem.value;
-            let amount = parseFloat(amountElem.value) || 0;
+            let key = selectElem ? selectElem.value : '';
+            let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
 
             if (key && amount > 0 && materialsData[key]) {
-                let unit = unitElem.value;
+                let unit = unitElem ? unitElem.value : 'kruiwagen';
                 let mat = materialsData[key];
                 
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
@@ -447,11 +463,10 @@
         });
 
         const resultBox = document.getElementById('cn-result');
-        resultBox.style.display = 'block';
 
         if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
             resultBox.className = 'result-box warning';
-            resultBox.innerHTML = '<strong>Voeg minimaal één materiaal en geldige hoeveelheid toe!</strong>';
+            resultBox.innerHTML = '<strong>Voeg minimaal één materiaal en geldige hoeveelheid toe.</strong>';
             return;
         }
 
