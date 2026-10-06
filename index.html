@@ -266,23 +266,20 @@
             </div>
         </div>
 
-        <!-- Kolom 2: 18-daagse Hete Compost (Max 10 hopen) -->
+        <!-- Kolom 2: 18-daagse Hete Compost (Vaste hopen 1 t/m 10) -->
         <div class="card">
             <h2>Hete Composthopen Beheer</h2>
-            <label for="pileSelect">Selecteer hoop (1 t/m 10):</label>
+            <label>Selecteer composthoop:</label>
             <div class="pile-selector" id="pileSelectorContainer">
                 <!-- Dynamische knoppen voor hopen 1-10 -->
             </div>
 
             <div id="pileDetails">
-                <label for="pileName">Naam / Locatie van de hoop:</label>
-                <input type="text" id="pileName" placeholder="Bijv. Hoop Veld A - Maart" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;" oninput="savePileData()">
-
                 <label for="startDate">Startdatum (Dag 1):</label>
                 <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;" onchange="savePileData()">
 
                 <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
-                    <!-- Schema planning info met checkboxen, progressbar en resetknop -->
+                    <!-- Schema planning info met dynamische titel, checkboxen, progressbar en resetknop -->
                 </div>
             </div>
         </div>
@@ -414,4 +411,46 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel:
+        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel: ~${roundedCN}:1</strong><br>`;
+
+        if (roundedCN < 25) {
+            resultBox.className = 'result-box danger';
+            adviceHTML += '⚠️️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
+        } else if (roundedCN > 35) {
+            resultBox.className = 'result-box warning';
+            adviceHTML += '⚠️ <em>Te veel koolstof!</em> De hoop komt vermoedelijk traag op temperatuur. Voeg wat grasmaaisel of groenteafval toe.';
+        } else {
+            resultBox.className = 'result-box';
+            adviceHTML += '🎉 <em>Ideale C:N-ratio!</em> Perfecte balans voor een snelle, actieve composthoop.';
+        }
+
+        resultBox.innerHTML = adviceHTML;
+    }
+
+    function renderPileSelector() {
+        const container = document.getElementById('pileSelectorContainer');
+        let html = '';
+        for (let i = 1; i <= 10; i++) {
+            html += `<button class="pile-btn ${i === activePile ? 'active' : ''}" onclick="switchPile(${i})">Hoop ${i}</button>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function switchPile(pileNum) {
+        activePile = pileNum;
+        renderPileSelector();
+        loadPileData(pileNum);
+    }
+
+    function savePileData() {
+        const date = document.getElementById('startDate').value;
+
+        let checks = {};
+        for (let i = 0; i < 7; i++) {
+            let chk = document.getElementById(`stepChk_${i}`);
+            if (chk) {
+                checks[i] = chk.checked;
+            }
+        }
+
+        const pileData = { date, checks };
