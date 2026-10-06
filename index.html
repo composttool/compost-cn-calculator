@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:48)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:55)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -359,7 +359,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:48</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:55</span></p>
     </header>
 
     <div class="grid-2">
@@ -648,7 +648,7 @@
         let totalCarbonScore = 0;
         let totalNitrogenScore = 0;
         let totalItemsEntered = 0;
-        let totalBuckets = 0;
+        let totalKruiwagens = 0;
 
         const rows = document.querySelectorAll('.material-row');
 
@@ -666,8 +666,9 @@
                 let moisture = moistureElem ? moistureElem.value : 'neutraal';
                 let mat = materialsData[key];
                 
-                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+                // Reken emmers om naar kruiwagens (ervan uitgaande dat 1 kruiwagen ca. 3,5 emmers is, of direct optellen indien kruiwagen)
                 let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
+                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
 
                 let adjustedCN = mat.cn;
                 let adjustedWeight = effectiveBuckets * mat.weightPerBucket;
@@ -683,7 +684,7 @@
                 totalCarbonScore += adjustedWeight * adjustedCN;
                 totalNitrogenScore += adjustedWeight;
                 totalItemsEntered += amount;
-                totalBuckets += kruiwagensEq;
+                totalKruiwagens += kruiwagensEq;
             }
         });
 
@@ -699,16 +700,16 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        // Bereken totaal volume in kuub (1 kruiwagen is ca. 0.28 m³ / 3.5 kruiwagen = 1 m³)
-        let totalCubicMeters = (totalBuckets / 3.5).toFixed(2);
+        // Correcte volumeberekening: 12,5 kruiwagens = 1 m³
+        let totalCubicMeters = (totalKruiwagens / 12.5).toFixed(2);
 
-        let volumeInfoHTML = `<br>📦 <strong>Totale hoeveelheid:</strong> ~${totalBuckets.toFixed(1)} kruiwagens (~<strong>${totalCubicMeters} m³</strong>)`;
+        let volumeInfoHTML = `<br>📦 <strong>Totale hoeveelheid:</strong> ~${totalKruiwagens.toFixed(1)} kruiwagens (~<strong>${totalCubicMeters} m³</strong>)`;
 
         let volumeWarningHTML = '';
-        if (totalBuckets < 12.5) {
-            volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (< 1 m³):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
+        if (totalKruiwagens < 12.5) {
+            volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (< 1 m³ / < 12,5 kr.):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
         } else {
-            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (≥ 1 m³):</strong> Voldoende massa voor warmtebehoud.</span>`;
+            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (≥ 1 m³ / ≥ 12,5 kr.):</strong> Voldoende massa voor warmtebehoud.</span>`;
         }
 
         let fridayChecked = document.getElementById('fridayProtocol');
@@ -965,7 +966,7 @@
                 box.innerHTML = `
                     <strong style="color: #c62828; font-size: 1rem;">${item.symptom}</strong><br><br>
                     <strong>🔍 Mogelijke Oorzaak:</strong><br>${item.causes}<br><br>
-                    <strong>🛠️ Correctie-actie / Oplossing:</strong><br>${item.actions}
+                    <strong>🛠️️ Correctie-actie / Oplossing:</strong><br>${item.actions}
                 `;
             });
             grid.appendChild(card);
