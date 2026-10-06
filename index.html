@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:20)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:41)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -359,7 +359,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:20</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:41</span></p>
     </header>
 
     <div class="grid-2">
@@ -401,8 +401,8 @@
 
                 <label for="scheduleType" style="font-size: 0.9rem; font-weight: bold; color: var(--primary-dark);">Keerschema / Methode:</label>
                 <select id="scheduleType" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px; background:white;">
-                    <option value="berkeley">Berkeley-methode (18 dagen - elke 2 dagen keren)</option>
                     <option value="arnhem">Stadslandbouw Arnhem Schema (Wo/Vr - 4 tot 6 weken)</option>
+                    <option value="berkeley">Berkeley-methode (18 dagen - elke 2 dagen keren)</option>
                 </select>
 
                 <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
@@ -718,260 +718,4 @@
             resultBox.className = 'result-box danger';
             let diffN = 25 - roundedCN;
             let extraStro = (diffN * 0.4).toFixed(1);
-            let extraSnippers = (diffN * 0.2).toFixed(1);
-            adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg bruin materiaal toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
-        } else if (roundedCN > 30) {
-            resultBox.className = 'result-box warning';
-            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. vers grasmaaisel, urine of moestuingroenten).`;
-        } else {
-            resultBox.className = 'result-box';
-            adviceHTML += `🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.`;
-        }
-
-        adviceHTML += fridayHTML;
-        resultBox.innerHTML = adviceHTML;
-    }
-
-    function renderPileSelector() {
-        const container = document.getElementById('pileSelectorContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        for (let i = 1; i <= 10; i++) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
-            btn.innerText = `Hoop ${i}`;
-            btn.addEventListener('click', function() {
-                switchPile(i);
-            });
-            container.appendChild(btn);
-        }
-    }
-
-    function switchPile(pileNum) {
-        activePile = pileNum;
-        renderPileSelector();
-        loadPileData(pileNum);
-    }
-
-    function savePileData() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!startDateInput) return;
-
-        const date = startDateInput.value;
-        const scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley';
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-
-        const pileData = { date, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        updateScheduleDisplay(date, scheduleType, checks);
-    }
-
-    function saveCheckboxState() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        const saved = localStorage.getItem(`stadslandbouw_pile_${activePile}`);
-        let pileData = saved ? JSON.parse(saved) : { date: startDateInput ? startDateInput.value : '', scheduleType: scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley' };
-
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-        pileData.checks = checks;
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-        
-        updateProgress();
-    }
-
-    function loadPileData(pileNum) {
-        const saved = localStorage.getItem(`stadslandbouw_pile_${pileNum}`);
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!dateInput) return;
-
-        if (saved) {
-            const data = JSON.parse(saved);
-            dateInput.value = data.date || '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = data.scheduleType || 'berkeley';
-            updateScheduleDisplay(data.date, data.scheduleType || 'berkeley', data.checks || {});
-        } else {
-            dateInput.value = '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = 'berkeley';
-            updateScheduleDisplay('', 'berkeley', {});
-        }
-    }
-
-    function resetCurrentPile() {
-        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten? Alle vinkjes van deze specifieke hoop worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
-            return;
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (dateInput) dateInput.value = today;
-
-        let scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'berkeley';
-        let checks = {};
-        const pileData = { date: today, scheduleType, checks };
-        localStorage.setItem(`stadslandbouw_pile_${activePile}`, JSON.stringify(pileData));
-
-        updateScheduleDisplay(today, scheduleType, checks);
-    }
-
-    function updateScheduleDisplay(startDateStr, scheduleType = 'berkeley', checks = {}) {
-        const output = document.getElementById('scheduleOutput');
-        if (!output) return;
-
-        if (!startDateStr) {
-            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het beheerschema te genereren.</em>`;
-            return;
-        }
-
-        let start = new Date(startDateStr);
-        let steps = [];
-
-        if (scheduleType === 'berkeley') {
-            let d1 = new Date(start);
-            let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-            let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-            let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-            let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-            let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-            let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-            steps = [
-                { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
-                { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
-                { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
-                { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
-                { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
-                { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
-                { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
-            ];
-        } else {
-            let d1 = new Date(start);
-            let w1_keer = new Date(start); w1_keer.setDate(start.getDate() + 4);
-            let w2_keer = new Date(start); w2_keer.setDate(start.getDate() + 9);
-            let w3_keer = new Date(start); w3_keer.setDate(start.getDate() + 14);
-            let w4_keer = new Date(start); w4_keer.setDate(start.getDate() + 21);
-            let oogst = new Date(start); oogst.setDate(start.getDate() + 35);
-
-            steps = [
-                { label: `Start (${formatDate(d1)}): Opzetten hoop (Woensdag/Vrijdag protocol)` },
-                { label: `Keer 1 (${formatDate(w1_keer)}): Eerste omzetting & vochttest` },
-                { label: `Keer 2 (${formatDate(w2_keer)}): Tweede omzetting (temperatuurpiek)` },
-                { label: `Keer 3 (${formatDate(w3_keer)}): Derde omzetting` },
-                { label: `Keer 4 (${formatDate(w4_keer)}): Vierde omzetting & rijping` },
-                { label: `Oogst & Zeven (${formatDate(oogst)}): 🟢 Zeven over 2cm maaswijdte` }
-            ];
-        }
-
-        let html = `<strong>Schema (${scheduleType === 'berkeley' ? 'Berkeley 18-daags' : 'Arnhem Wo/Vr'})</strong><ul class="schedule-list">`;
-        
-        steps.forEach((step, index) => {
-            let isChecked = checks[index] ? 'checked' : '';
-            html += `
-                <li>
-                    <input type="checkbox" id="stepChk_${index}" ${isChecked}>
-                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
-                </li>
-            `;
-        });
-
-        html += `</ul>`;
-        
-        html += `
-            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop <em>${activePile}</em>:</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 / ${steps.length} stappen voltooid (0%)</div>
-
-            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset Hoop ${activePile} naar Dag 1</button>
-        `;
-
-        output.innerHTML = html;
-
-        steps.forEach((step, index) => {
-            const chkElem = document.getElementById(`stepChk_${index}`);
-            if (chkElem) {
-                chkElem.addEventListener('change', function() {
-                    saveCheckboxState();
-                });
-            }
-        });
-
-        const resetBtn = document.getElementById('resetPileBtn');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                resetCurrentPile();
-            });
-        }
-
-        updateProgress();
-    }
-
-    function updateProgress() {
-        let completed = 0;
-        const checkboxes = document.querySelectorAll('.schedule-list input[type="checkbox"]');
-        const total = checkboxes.length || 7;
-        
-        checkboxes.forEach(chk => {
-            if (chk.checked) completed++;
-        });
-
-        let percentage = Math.round((completed / total) * 100);
-        let bar = document.getElementById('progressBar');
-        let text = document.getElementById('progressText');
-
-        if (bar && text) {
-            bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
-        }
-    }
-
-    function renderTroubleshootingSchema() {
-        const grid = document.getElementById('troubleGrid');
-        const box = document.getElementById('solutionBox');
-        if (!grid || !box) return;
-
-        grid.innerHTML = '';
-        troubleshootingData.forEach((item) => {
-            const card = document.createElement('div');
-            card.className = 'trouble-card';
-            card.innerText = item.symptom;
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.trouble-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-
-                box.style.display = 'block';
-                box.innerHTML = `
-                    <strong style="color: #c62828; font-size: 1rem;">${item.symptom}</strong><br><br>
-                    <strong>🔍 Mogelijke Oorzaak:</strong><br>${item.causes}<br><br>
-                    <strong>🛠️ Correctie-actie / Oplossing:</strong><br>${item.actions}
-                `;
-            });
-            grid.appendChild(card);
-        });
-    }
-
-    function formatDate(date) {
-        if (!date || isNaN(date)) return '';
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
+            let extraSnippers
