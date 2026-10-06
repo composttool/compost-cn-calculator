@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:55)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 14:02)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -359,7 +359,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:55</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 14:02</span></p>
     </header>
 
     <div class="grid-2">
@@ -442,8 +442,8 @@
         <h2>📋 Praktijkregels & Terreinbeheer Arnhem</h2>
         <div class="grid-2">
             <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-                <strong style="color: var(--primary-dark);">👥 Prioriteit bij lage opkomst (Wo/Vr)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Wanneer de opkomst op het terrein een keer lager is:</p>
+                <strong style="color: var(--primary-dark);">👥 Prioriteit bij lage opkomst van mensen (Wo/Vr)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Wanneer de hoeveelheid mensen bij de composthoek een keer lager is:</p>
                 <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
                     <li>Geef absolute prioriteit aan het keren van de <strong>hete actieve hopen (Fase 1 & 2)</strong>.</li>
                     <li>Hopen die al in de afkoelings- of afrijpingsfase zitten (Fase 3) kunnen prima een keerbeurt overstaan.</li>
@@ -457,7 +457,7 @@
                     <li>Voorkomt dat hopen verzuren/verzuipt raken en dat kostbare stikstof uitspoelt.</li>
                 </ul>
                 <a href="https://www.buienradar.nl/weer/arnhem/nl/2759661?radarType=rain&radarLocationVariant=NL" target="_blank" class="weather-link-btn">
-                    🌧️ Check Actueel Weer Arnhem (Buienradar) ➔
+                    🌧️️ Check Actueel Weer Arnhem (Buienradar) ➔
                 </a>
             </div>
         </div>
@@ -666,7 +666,6 @@
                 let moisture = moistureElem ? moistureElem.value : 'neutraal';
                 let mat = materialsData[key];
                 
-                // Reken emmers om naar kruiwagens (ervan uitgaande dat 1 kruiwagen ca. 3,5 emmers is, of direct optellen indien kruiwagen)
                 let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
 
@@ -700,7 +699,6 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        // Correcte volumeberekening: 12,5 kruiwagens = 1 m³
         let totalCubicMeters = (totalKruiwagens / 12.5).toFixed(2);
 
         let volumeInfoHTML = `<br>📦 <strong>Totale hoeveelheid:</strong> ~${totalKruiwagens.toFixed(1)} kruiwagens (~<strong>${totalCubicMeters} m³</strong>)`;
@@ -966,7 +964,7 @@
                 box.innerHTML = `
                     <strong style="color: #c62828; font-size: 1rem;">${item.symptom}</strong><br><br>
                     <strong>🔍 Mogelijke Oorzaak:</strong><br>${item.causes}<br><br>
-                    <strong>🛠️️ Correctie-actie / Oplossing:</strong><br>${item.actions}
+                    <strong>🛠 Correctie-actie / Oplossing:</strong><br>${item.actions}
                 `;
             });
             grid.appendChild(card);
