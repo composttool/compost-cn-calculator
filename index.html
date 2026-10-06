@@ -323,19 +323,25 @@
 
         .trouble-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
             margin-bottom: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .trouble-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
         }
 
         .trouble-card {
             background: #fafafa;
             border: 1px solid #ccc;
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: var(--primary-dark);
             text-align: center;
@@ -473,13 +479,13 @@
         </div>
     </div>
 
-    <!-- Kolom 4: Interactief Determinatieschema & Storingsgids -->
+    <!-- Kolom 4: Sturingsschema -->
     <div class="card">
-        <h2>Interactief Determinatieschema (Storingsgids)</h2>
+        <h2>Sturingsschema</h2>
         <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaart voor gerichte oorzaken en oplossingen:</p>
         
         <div class="trouble-grid" id="troubleGrid">
-            <!-- Dynamische storingsknoppen -->
+            <!-- Dynamische sturingsknoppen -->
         </div>
 
         <div id="solutionBox" class="solution-box">
@@ -988,6 +994,8 @@
                     <strong>🔍 Mogelijke Oorzaak:</strong><br>${item.causes}<br><br>
                     <strong>🛠 Correctie-actie / Oplossing:</strong><br>${item.actions}
                 `;
+
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             });
             grid.appendChild(card);
         });
