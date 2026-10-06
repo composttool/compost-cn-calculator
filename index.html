@@ -1,139 +1,219 @@
-<script>
-// 1. Uitgebreide Materialendatabank
-const MATERIALEN = {
-    // STIKSTOFRIJK (GROEN)
-    'urine': { naam: 'Urine (kickstarter/activator)', cn: 1, type: 'groen', gewichtKw: 80 },
-    'bloedmeel': { naam: 'Bloed- / Botmeel', cn: 3.5, type: 'groen', gewichtKw: 10 },
-    'kippenmest': { naam: 'Kippenmest (geconcentreerd)', cn: 10, type: 'groen', gewichtKw: 45 },
-    'kroos': { naam: 'Slootkroos (uitgelekt)', cn: 12, type: 'groen', gewichtKw: 40 },
-    'groente': { naam: 'Vers Groente- & Fruitafval', cn: 15, type: 'groen', gewichtKw: 45 },
-    'gras': { naam: 'Grasmaaisel (vers)', cn: 18, type: 'groen', gewichtKw: 35 },
-    'onkruid': { naam: 'Vers Onkruid / Smeerwortel / Brandnetel', cn: 19, type: 'groen', gewichtKw: 30 },
-    'koffiedik': { naam: 'Koffiedik & Theezakjes', cn: 20, type: 'groen', gewichtKw: 40 },
-    'mest_paard': { naam: 'Paardenmest (vers met stro)', cn: 25, type: 'groen', gewichtKw: 50 },
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compostcalculator - Stadslandbouw Arnhem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 { color: #2e7d32; margin-top: 0; }
+        .material-group {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .material-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        label { font-size: 14px; font-weight: bold; }
+        input[type="number"] {
+            width: 70px;
+            padding: 6px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .checkbox-container {
+            margin: 15px 0;
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        button {
+            width: 100%;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #1b5e20; }
+        #resultaat { margin-top: 20px; }
+        .tag-groen { color: #2e7d32; font-size: 12px; }
+        .tag-bruin { color: #e65100; font-size: 12px; }
+    </style>
+</head>
+<body>
 
-    // KOOLSTOFRIJK (BRUIN)
-    'blad': { naam: 'Droge Herfstbladeren', cn: 60, type: 'bruin', gewichtKw: 15 },
-    'stro': { naam: 'Stro / Gehakseld Riet', cn: 78, type: 'bruin', gewichtKw: 12 },
-    'krantenpapier': { naam: 'Versnipperd Krantenpapier', cn: 175, type: 'bruin', gewichtKw: 15 },
-    'karton': { naam: 'Versnipperd Karton / Papier', cn: 350, type: 'bruin', gewichtKw: 15 },
-    'zaagsel': { naam: 'Houtzaagsel / Houtkrullen (stank-stopper)', cn: 400, type: 'bruin', gewichtKw: 20 },
-    'houtsnippers': { naam: 'Houtsnippers / Takken (Eliet gehakseld)', cn: 400, type: 'bruin', gewichtKw: 25 }
+<div class="container">
+    <h2>🌱 Compostcalculator</h2>
+    <p>Vul het aantal kruiwagens per materiaal in:</p>
+
+    <form id="compostForm">
+        <!-- STIKSTOFRIJK (GROEN) -->
+        <h3 style="color:#2e7d32; font-size:16px;">Groen (Stikstofrijk)</h3>
+        
+        <div class="material-group">
+            <div class="material-row">
+                <label for="groente">Vers Groente- & Fruitafval <br><span class="tag-groen">C:N 15:1</span></label>
+                <input type="number" id="groente" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="gras">Grasmaaisel (vers) <br><span class="tag-groen">C:N 18:1</span></label>
+                <input type="number" id="gras" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="onkruid">Vers Onkruid / Smeerwortel <br><span class="tag-groen">C:N 19:1</span></label>
+                <input type="number" id="onkruid" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="mest_paard">Paardenmest (vers) <br><span class="tag-groen">C:N 25:1</span></label>
+                <input type="number" id="mest_paard" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="kroos">Slootkroos (uitgelekt) <br><span class="tag-groen">C:N 12:1</span></label>
+                <input type="number" id="kroos" min="0" step="0.5" placeholder="0">
+            </div>
+        </div>
+
+        <!-- KOOLSTOFRIJK (BRUIN) -->
+        <h3 style="color:#e65100; font-size:16px;">Bruin (Koolstofrijk)</h3>
+        
+        <div class="material-group">
+            <div class="material-row">
+                <label for="stro">Stro / Gehakseld Riet <br><span class="tag-bruin">C:N 78:1</span></label>
+                <input type="number" id="stro" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="blad">Droge Herfstbladeren <br><span class="tag-bruin">C:N 60:1</span></label>
+                <input type="number" id="blad" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="houtsnippers">Houtsnippers (Eliet 4S) <br><span class="tag-bruin">C:N 400:1</span></label>
+                <input type="number" id="houtsnippers" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="karton">Versnipperd Karton <br><span class="tag-bruin">C:N 350:1</span></label>
+                <input type="number" id="karton" min="0" step="0.5" placeholder="0">
+            </div>
+            <div class="material-row">
+                <label for="zaagsel">Houtzaagsel / Houtkrullen <br><span class="tag-bruin">C:N 400:1</span></label>
+                <input type="number" id="zaagsel" min="0" step="0.5" placeholder="0">
+            </div>
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="isVrijdag">
+            <label for="isVrijdag"> 📌 Wordt deze hoop op <strong>vrijdag</strong> opgebouwd? (Vrijdag-protocol)</label>
+        </div>
+
+        <button type="button" onclick="voerBerekeningUit()">Bereken C:N & Advies</button>
+    </form>
+
+    <div id="resultaat"></div>
+</div>
+
+<script>
+const MATERIALEN = {
+    'groente': { cn: 15, type: 'groen' },
+    'gras': { cn: 18, type: 'groen' },
+    'onkruid': { cn: 19, type: 'groen' },
+    'mest_paard': { cn: 25, type: 'groen' },
+    'kroos': { cn: 12, type: 'groen' },
+    'stro': { cn: 78, type: 'bruin' },
+    'blad': { cn: 60, type: 'bruin' },
+    'houtsnippers': { cn: 400, type: 'bruin' },
+    'karton': { cn: 350, type: 'bruin' },
+    'zaagsel': { cn: 400, type: 'bruin' }
 };
 
-// 2. Hoofdfunctie: Bereken C:N verhouding, Volume en Vrijdag-advies
-function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
+function voerBerekeningUit() {
     let totaalKruiwagens = 0;
     let totaalGewogenCN = 0;
-    let totaalGroenKw = 0;
-    let totaalBruinKw = 0;
 
-    if (!Array.isArray(invoerMaterialen)) {
-        return "<p>Ongeldige invoer.</p>";
-    }
-
-    invoerMaterialen.forEach(item => {
-        const mat = MATERIALEN[item.id];
-        // Veilige omzetting van tekst naar getal
-        const aantal = Math.max(0, parseFloat(item.kruiwagens) || 0);
-        
-        if (mat && aantal > 0) {
-            totaalKruiwagens += aantal;
-            totaalGewogenCN += (mat.cn * aantal);
-            if (mat.type === 'groen') totaalGroenKw += aantal;
-            if (mat.type === 'bruin') totaalBruinKw += aantal;
+    Object.keys(MATERIALEN).forEach(id => {
+        const inputElem = document.getElementById(id);
+        if (inputElem) {
+            const aantal = parseFloat(inputElem.value) || 0;
+            if (aantal > 0) {
+                totaalKruiwagens += aantal;
+                totaalGewogenCN += (MATERIALEN[id].cn * aantal);
+            }
         }
     });
 
+    const resultaatDiv = document.getElementById('resultaat');
+
     if (totaalKruiwagens === 0) {
-        return "<p>Voer het aantal kruiwagens in om de berekening te starten.</p>";
+        resultaatDiv.innerHTML = "<p style='color:red;'><strong>Voer bij minstens één materiaal een aantal kruiwagens in.</strong></p>";
+        return;
     }
 
     const berekendeCN = Math.round(totaalGewogenCN / totaalKruiwagens);
-    const volumeLiters = totaalKruiwagens * 80; // 1 kw = 80 liter
+    const volumeLiters = totaalKruiwagens * 80;
     const volumeM3 = (volumeLiters / 1000).toFixed(2);
+    const isVrijdag = document.getElementById('isVrijdag').checked;
 
-    let statusKleur = "#2e7d32"; // Groen (optimaal)
+    let statusKleur = "#2e7d32";
     let statusTekst = "";
     let bijstuurAdvies = "";
 
-    // C:N Drempelwaarden (Streefwaarde 25:1 - 30:1)
     if (berekendeCN < 25) {
-        statusKleur = "#d32f2f"; // Rood
-        statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op ammoniakstank, dichtzakken en gierlucht.";
-        
-        // Gedifferentieerd advies voor Stro (78:1) vs Houtsnippers (400:1)
+        statusKleur = "#d32f2f";
+        statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op stank, dichtzakken en gierlucht.";
         const nodigStro = Math.max(1, Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (78 - 28)));
         const nodigSnippers = (Math.ceil(((28 * totaalKruiwagens - totaalGewogenCN) / (400 - 28)) * 10) / 10).toFixed(1);
-        
-        bijstuurAdvies = `Voeg ca. <strong>${nodigStro} kw stro</strong> OF slechts <strong>${nodigSnippers} kw houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
+        bijstuurAdvies = `Voeg ca. <strong>${nodigStro} kw stro</strong> OF <strong>${nodigSnippers} kw houtsnippers</strong> toe om op ~28:1 uit te komen.`;
     } else if (berekendeCN > 30) {
-        statusKleur = "#ed6c02"; // Oranje
-        statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Het proces zal erg traag verlopen of koud blijven.";
+        statusKleur = "#ed6c02";
+        statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Proces verloopt erg traag of blijft koud.";
         const nodigGras = Math.max(1, Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18)));
-        
-        bijstuurAdvies = `Voeg ca. <strong>${nodigGras} kw vers gras of mest</strong> (of een gieter urine als activator) toe om op ~28:1 uit te komen.`;
+        bijstuurAdvies = `Voeg ca. <strong>${nodigGras} kw vers gras of mest</strong> toe om op ~28:1 uit te komen.`;
     } else {
         statusTekst = "✅ OPTIMAAL BALANS (25:1 - 30:1) — Perfecte verhouding voor hete compostering!";
-        bijstuurAdvies = "Geen bijsturing van materialen nodig. Bouw de hoop op in dunne afwisselende lagen.";
+        bijstuurAdvies = "Geen bijsturing nodig. Bouw de hoop op in dunne afwisselende lagen.";
     }
 
-    // Live Volumecheck (Minimaal 1 m³ = 12.5 kruiwagens van 80L)
-    let volumeWaarschuwing = "";
-    if (volumeM3 < 1.0) {
-        volumeWaarschuwing = `<div style="background:#fff3e0; color:#e65100; padding:8px; border-radius:4px; margin-top:8px;">
-            ⚠️ <strong>Volume Attentie:</strong> Het geschatte volume is ${volumeM3} m³ (${totaalKruiwagens} kruiwagens). Voor een hete composthoop volgens de Berkeley-methode is minimaal <strong>1 m³ (12,5 kruiwagens)</strong> nodig om warmte vast te houden. Vul aan!
-        </div>`;
-    } else {
-        volumeWaarschuwing = `<div style="background:#e8f5e9; color:#2e7d32; padding:8px; border-radius:4px; margin-top:8px;">
-            ✅ <strong>Volume OK:</strong> ${volumeM3} m³ (${totaalKruiwagens} kruiwagens) is voldoende massa voor het vasthouden van de kerntemperatuur (55–65 °C).
-        </div>`;
-    }
+    let volumeCheck = volumeM3 < 1.0 
+        ? `<div style="background:#fff3e0; color:#e65100; padding:10px; border-radius:4px; margin-top:8px;">⚠️ <strong>Volume Attentie:</strong> Geschat volume is ${volumeM3} m³ (${totaalKruiwagens} kw). Minimaal <strong>1 m³ (12,5 kruiwagens)</strong> nodig voor een hete hoop!</div>`
+        : `<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:4px; margin-top:8px;">✅ <strong>Volume OK:</strong> ${volumeM3} m³ (${totaalKruiwagens} kw) is voldoende massa voor hete compostering!</div>`;
 
-    // Vrijdagse Koolstofbuffer / Koolstofnest Protocol
-    let vrijdagAdvies = "";
-    if (isVrijdagOpbouw) {
-        vrijdagAdvies = `<div style="background:#e3f2fd; color:#0d47a1; padding:10px; border-radius:4px; margin-top:10px; border-left:4px solid #1976d2;">
-            📌 <strong>Vrijdag Protocol Stadslandbouw:</strong> Omdat de hoop tot woensdag 5 dagen stilstaat, breng je in de kern van de hoop een extra 'koolstofnest' van stro of houtsnippers aan rond de starter. Dek de hoop vrijdagmiddag af met <strong>UV-bestendig landbouwplastic</strong> tegen inwatering en uitdrogen! <em>(Let op: plastic uitsluitend op het compostterrein gebruiken, nooit op de teeltbedden).</em>
-        </div>`;
-    }
+    let vrijdagAdvies = isVrijdag 
+        ? `<div style="background:#e3f2fd; color:#0d47a1; padding:10px; border-radius:4px; margin-top:10px; border-left:4px solid #1976d2;">📌 <strong>Vrijdag Protocol:</strong> Breng een extra 'koolstofnest' van stro/houtsnippers aan in de kern en dek de hoop af met <strong>UV-bestendig landbouwplastic</strong> tegen het weekend.</div>`
+        : '';
 
-    return `
-        <div style="border-left: 5px solid ${statusKleur}; padding-left: 12px; margin-top: 10px;">
-            <h4>Berekende C/N-verhouding: <strong>${berekendeCN}:1</strong></h4>
-            <p style="color: ${statusKleur}; font-weight: bold;">${statusTekst}</p>
-            <p><strong>Bijstuuradvies:</strong> ${bijstuurAdvies}</p>
-            ${volumeWaarschuwing}
+    resultaatDiv.innerHTML = `
+        <div style="border-left: 5px solid ${statusKleur}; padding-left: 12px; background:#fafafa; padding: 10px; border-radius: 4px;">
+            <h3 style="margin:0 0 5px 0;">Berekende C:N-ratio: <strong>${berekendeCN}:1</strong></h3>
+            <p style="color:${statusKleur}; font-weight:bold; margin:5px 0;">${statusTekst}</p>
+            <p style="margin:5px 0;"><strong>Bijstuuradvies:</strong> ${bijstuurAdvies}</p>
+            ${volumeCheck}
             ${vrijdagAdvies}
         </div>
     `;
 }
-
-// 3. Stadslandbouw Arnhem Woensdag/Vrijdag Keerschema met datums
-function genereerKeerschema(startDatumStr, methode = 'stadslandbouw') {
-    const startDatum = startDatumStr ? new Date(startDatumStr) : new Date();
-    
-    function optellenDagen(datum, dagen) {
-        const d = new Date(datum);
-        d.setDate(d.getDate() + dagen);
-        return d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-
-    let schemaHTML = "<h4>Planning Keerschema:</h4><ul>";
-
-    if (methode === 'stadslandbouw') {
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 0)} (Dag 1):</strong> Opbouw hoop (lagen groen/bruin, bevochtigen volgens 50%-sponsregel).</li>`;
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 2)} (Dag 3):</strong> 1e keerbeurt / controle & afdekken met UV-landbouwplastic voor het weekend.</li>`;
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 7)} (Dag 8):</strong> 2e grote keerbeurt (buitenste laag naar de hete kern verplaatsen).</li>`;
-        schemaHTML += `<li><strong>Vervolg (Elke Wo & Vr):</strong> Blijven keren tot de temperatuur zakt en de compost egaal en donker ruikt (doorlooptijd ca. 4–6 weken).</li>`;
-    } else {
-        // Theoretische Berkeley 18-dagen
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 0)} (Dag 1):</strong> Opbouw hoop (4 dagen laten rusten).</li>`;
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 4)} (Dag 5):</strong> 1e keerbeurt (buitenste laag naar binnen).</li>`;
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 6)} (Dag 7):</strong> 2e keerbeurt.</li>`;
-        schemaHTML += `<li><strong>${optellenDagen(startDatum, 17)} (Dag 18):</strong> Oogst rijpe compost (na kiemtest met tuinkers).</li>`;
-    }
-    schemaHTML += "</ul>";
-    return schemaHTML;
-}
 </script>
+
+</body>
+</html>
