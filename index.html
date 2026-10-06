@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:41)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:48)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -359,7 +359,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:41</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:48</span></p>
     </header>
 
     <div class="grid-2">
@@ -699,11 +699,16 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
+        // Bereken totaal volume in kuub (1 kruiwagen is ca. 0.28 m³ / 3.5 kruiwagen = 1 m³)
+        let totalCubicMeters = (totalBuckets / 3.5).toFixed(2);
+
+        let volumeInfoHTML = `<br>📦 <strong>Totale hoeveelheid:</strong> ~${totalBuckets.toFixed(1)} kruiwagens (~<strong>${totalCubicMeters} m³</strong>)`;
+
         let volumeWarningHTML = '';
         if (totalBuckets < 12.5) {
-            volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (~${totalBuckets.toFixed(1)} kruiwagens / < 1 m³):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
+            volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (< 1 m³):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
         } else {
-            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (~${totalBuckets.toFixed(1)} kruiwagens / ≥ 1 m³):</strong> Voldoende massa voor warmtebehoud.</span>`;
+            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (≥ 1 m³):</strong> Voldoende massa voor warmtebehoud.</span>`;
         }
 
         let fridayChecked = document.getElementById('fridayProtocol');
@@ -712,7 +717,7 @@
             fridayHTML = `<br><div style="margin-top: 8px; padding: 6px; background: #fff3e0; border-radius: 4px; border-left: 4px solid #ef6c00;"><strong>📅 Vrijdag-protocol actief:</strong> Breng in het hart van de hoop een extra <em>koolstofnest</em> aan (stro/houtsnippers) en dek de hoop strak af met UV-bestendig landbouwplastic ter bescherming tegen het 5-daagse rustweekend (uitsluitend op het compostterrein toepassen!).</div>`;
         }
 
-        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong>${volumeWarningHTML}<br>`;
+        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong>${volumeInfoHTML}${volumeWarningHTML}<br>`;
 
         if (roundedCN < 25) {
             resultBox.className = 'result-box danger';
