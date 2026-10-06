@@ -341,7 +341,32 @@
         </div>
     </div>
 
-    <!-- Kolom 3: Uitgebreide Storingsgids & Stuurmatrix -->
+    <!-- Kolom 3: Veldgids: Hand-Knijptest & Tuinkers-Kiemtest -->
+    <div class="card">
+        <h2>Veldgids: Vochttest & Rijpheidstest</h2>
+        <div class="grid-2">
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">💧 De Hand-Knijptest (50% Vocht)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Neem een handvol compost en knijp krachtig dicht:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li><strong>Correct:</strong> Er verschijnt precies <em>1 druppel water</em> tussen de vingers.</li>
+                    <li><strong>Te nat:</strong> Er stromen stroompjes water uit ➔ <em>Voeg droog structuurmateriaal toe.</em></li>
+                    <li><strong>Te droog:</strong> De massa veert elastisch open zonder vocht ➔ <em>Sproei bij met de gieter.</em></li>
+                </ul>
+            </div>
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">🌱 De Tuinkers-Kiemtest (Dag 18 Check)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Test of de compost vrij is van gifstoffen vóór gebruik:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li>Vul een vlootje met gezeefde compost en zaai <strong>100 tuinkerszaadjes</strong> (7 dagen vochtig houden).</li>
+                    <li><strong>Rijp & Veilig:</strong> Kieming $\ge$ 90% met frisse groene blaadjes en rechte, witte worteltjes.</li>
+                    <li><strong>Onrijp:</strong> Kieming &lt; 80% of verbrande wortels ➔ <em>Laat nog 3-4 weken rijpen.</em></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kolom 4: Uitgebreide Storingsgids & Stuurmatrix -->
     <div class="card">
         <h2>Storingsgids & Volledige Stuurmatrix</h2>
         <p style="font-size: 0.9rem; color: #666;">Operationele richtlijnen en correctie-acties conform de Stadslandbouw Arnhem handleiding:</p>
@@ -768,3 +793,19 @@
 
         let percentage = Math.round((completed / total) * 100);
         let bar = document.getElementById('progressBar');
+        let text = document.getElementById('progressText');
+
+        if (bar && text) {
+            bar.style.width = percentage + '%';
+            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
+        }
+    }
+
+    function formatDate(date) {
+        if (!date || isNaN(date)) return '';
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
+</script>
+
+</body>
+</html>
