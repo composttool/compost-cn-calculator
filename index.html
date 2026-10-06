@@ -157,12 +157,13 @@
             background: transparent;
             color: var(--primary);
             border: 2px dashed var(--primary);
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
             margin-bottom: 15px;
+            font-size: 1rem;
         }
 
         button.outline-btn:hover {
@@ -201,7 +202,7 @@
 
         .pile-selector {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 15px;
             overflow-x: auto;
             padding-bottom: 5px;
@@ -216,6 +217,7 @@
             cursor: pointer;
             white-space: nowrap;
             width: auto;
+            font-weight: bold;
         }
 
         .pile-btn.active {
@@ -266,7 +268,7 @@
         <!-- Kolom 2: 18-daagse Hete Compost (Max 10 hopen) -->
         <div class="card">
             <h2>Hete Composthopen Beheer</h2>
-            <label for="pileSelect">Selecteer hoop (1 t/m 10):</label>
+            <label>Selecteer hoop (1 t/m 10):</label>
             <div class="pile-selector" id="pileSelectorContainer">
                 <!-- Dynamische knoppen voor hopen 1-10 -->
             </div>
@@ -308,7 +310,7 @@
 </div>
 
 <script>
-    // Uitgebreide database van alle materialen
+    // Volledige database van alle materialen
     const materialsData = {
         grasmaaisel: { name: "Grasmaaisel (vers)", cn: 20, weightPerBucket: 7 },
         groenteafval: { name: "Groente- en fruitafval", cn: 15, weightPerBucket: 8 },
@@ -339,13 +341,14 @@
         const defaultSelections = ['grasmaaisel', 'groenteafval', 'houtsnippers', 'bladeren', 'stalmest'];
         
         defaultSelections.forEach((matKey, index) => {
-            addMaterialRow(matKey, index === 0 ? 1 : 0);
+            // Geef de eerste rij standaard 1 kruiwagen als handig voorbeeld, de rest 0
+            addMaterialRow(matKey, index === 0 ? 1 : 0, 'kruiwagen');
         });
     }
 
     function addMaterialRow(selectedMat = 'grasmaaisel', amountVal = 0, unitVal = 'kruiwagen') {
         const container = document.getElementById('materials-inputs');
-        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+        const uniqueId = 'row_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
         
         let optionsHTML = '';
         for (let [key, mat] of Object.entries(materialsData)) {
@@ -355,17 +358,17 @@
 
         let rowDiv = document.createElement('div');
         rowDiv.className = 'material-row';
-        rowDiv.id = rowId;
+        rowDiv.id = uniqueId;
         rowDiv.innerHTML = `
-            <select class="material-select" id="mat_${rowId}">
+            <select class="material-select" id="mat_${uniqueId}">
                 ${optionsHTML}
             </select>
-            <input type="number" id="amount_${rowId}" value="${amountVal}" min="0" max="500">
-            <select class="unit-select" id="unit_${rowId}">
+            <input type="number" id="amount_${uniqueId}" value="${amountVal}" min="0" max="500">
+            <select class="unit-select" id="unit_${uniqueId}">
                 <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
                 <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
             </select>
-            <button class="btn-remove" onclick="document.getElementById('${rowId}').remove()">✕</button>
+            <button class="btn-remove" onclick="document.getElementById('${uniqueId}').remove()">✕</button>
         `;
         container.appendChild(rowDiv);
     }
@@ -383,19 +386,26 @@
         const rows = document.querySelectorAll('.material-row');
 
         rows.forEach(row => {
-            const id = row.id.replace('row_', '');
-            const matKey = document.getElementById(`mat_row_${id}`).value;
-            const amount = parseFloat(document.getElementById(`amount_row_${id}`).value) || 0;
-            const unit = document.getElementById(`unit_row_${id}`).value;
+            const uniqueId = row.id;
+            const matSelect = document.getElementById(`mat_${uniqueId}`);
+            const amountInput = document.getElementById(`amount_${uniqueId}`);
+            const unitSelect = document.getElementById(`unit_${uniqueId}`);
 
-            if (amount > 0) {
-                let mat = materialsData[matKey];
-                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+            if (matSelect && amountInput && unitSelect) {
+                const matKey = matSelect.value;
+                const amount = parseFloat(amountInput.value) || 0;
+                const unit = unitSelect.value;
 
-                let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
-                totalCarbonScore += estimatedWeight * mat.cn;
-                totalNitrogenScore += estimatedWeight;
-                totalItemsEntered += amount;
+                if (amount > 0) {
+                    let mat = materialsData[matKey];
+                    // Omrekening: 1 kruiwagen = ~3.5 emmers volume naar gewicht
+                    let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+
+                    let estimatedWeight = effectiveBuckets * mat.weightPerBucket;
+                    totalCarbonScore += estimatedWeight * mat.cn;
+                    totalNitrogenScore += estimatedWeight;
+                    totalItemsEntered += amount;
+                }
             }
         });
 
@@ -475,3 +485,30 @@
         let start = new Date(startDateStr);
         
         let d4 = new Date(start); d4.setDate(start.getDate() + 3);
+        let d7 = new Date(start); d7.setDate(start.getDate() + 6);
+        let d10 = new Date(start); d10.setDate(start.getDate() + 9);
+        let d13 = new Date(start); d13.setDate(start.getDate() + 12);
+        let d16 = new Date(start); d16.setDate(start.getDate() + 15);
+        let d18 = new Date(start); d18.setDate(start.getDate() + 18);
+
+        output.innerHTML = `
+            <strong>Berkeley 18-dagen Schema (Hoop ${activePile}):</strong>
+            <ul style="margin-top:5px; padding-left:15px;">
+                <li><strong>Dag 1:</strong> Opzetten hoop (C:N ~30:1, vochtig)</li>
+                <li><strong>Dag 4 (${formatDate(d4)}):</strong> 1e keer omzetten</li>
+                <li><strong>Dag 7 (${formatDate(d7)}):</strong> 2e keer omzetten</li>
+                <li><strong>Dag 10 (${formatDate(d10)}):</strong> 3e keer omzetten</li>
+                <li><strong>Dag 13 (${formatDate(d13)}):</strong> 4e keer omzetten</li>
+                <li><strong>Dag 16 (${formatDate(d16)}):</strong> 5e keer omzetten</li>
+                <li><strong>Dag 18 (${formatDate(d18)}):</strong> 🟢 Rijpe compost gereed!</li>
+            </ul>
+        `;
+    }
+
+    function formatDate(date) {
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
+</script>
+
+</body>
+</html>
