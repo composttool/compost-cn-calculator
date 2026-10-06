@@ -491,7 +491,8 @@
 <script>
     const materialsData = {
         // Groen / Stikstofrijk
-        groenteresten: { name: "Groente- & Fruitafval (vers/vochtig)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
+        groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
         grasmaaisel: { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
         smeerwortel_brandnetel: { name: "Smeerwortel & Brandnetel (blad)", cn: 19, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
         koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
@@ -500,7 +501,6 @@
         kippenmest: { name: "Kippenmest (vers / oud)", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
         urine: { name: "Humane urine (verduunt 1:5 of puur 1:1 kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
         bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
-        onkruid: { name: "Onkruid (vers, zonder zaad)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
 
         // Bruin / Koolstofrijk
         stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
@@ -516,8 +516,9 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        addMaterialRow('paardenmest', 6, 'kruiwagen');
-        addMaterialRow('groenteresten', 4, 'kruiwagen');
+        // Standaard rijen bij laden van de pagina (inclusief Moestuingroenten als belangrijkste stroom)
+        addMaterialRow('moestuingroenten', 5, 'kruiwagen');
+        addMaterialRow('paardenmest', 4, 'kruiwagen');
         addMaterialRow('stro', 3, 'kruiwagen');
 
         renderPileSelector();
@@ -607,7 +608,7 @@
         let totalCarbonScore = 0;
         let totalNitrogenScore = 0;
         let totalItemsEntered = 0;
-        let totalBuckets = 0; // 1 kruiwagen = 3.5 emmers. 1 m³ = ca. 12.5 kruiwagens
+        let totalBuckets = 0;
 
         const rows = document.querySelectorAll('.material-row');
 
@@ -666,13 +667,12 @@
         if (roundedCN < 25) {
             resultBox.className = 'result-box danger';
             let diffN = 25 - roundedCN;
-            // Gedifferentieerd bijstuuradvies: hoeveel stro (78:1) of houtsnippers (400:1)
             let extraStro = (diffN * 0.5).toFixed(1);
             let extraSnippers = (diffN * 0.1).toFixed(1);
             adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg koolstof toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
         } else if (roundedCN > 30) {
             resultBox.className = 'result-box warning';
-            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. grasmaaisel, urine of vers groenteafval).`;
+            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. grasmaaisel, urine of moestuingroenten).`;
         } else {
             resultBox.className = 'result-box';
             adviceHTML += `🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.`;
@@ -793,7 +793,6 @@
         let steps = [];
 
         if (scheduleType === 'berkeley') {
-            // Theoretische Berkeley-methode (18 dagen)
             let d1 = new Date(start);
             let d4 = new Date(start); d4.setDate(start.getDate() + 3);
             let d7 = new Date(start); d7.setDate(start.getDate() + 6);
@@ -812,13 +811,12 @@
                 { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
             ];
         } else {
-            // Stadslandbouw Arnhem Schema (Wo/Vr - 4 tot 6 weken)
             let d1 = new Date(start);
-            let w1_keer = new Date(start); w1_keer.setDate(start.getDate() + 4); // Na 4-5 dagen
+            let w1_keer = new Date(start); w1_keer.setDate(start.getDate() + 4);
             let w2_keer = new Date(start); w2_keer.setDate(start.getDate() + 9);
             let w3_keer = new Date(start); w3_keer.setDate(start.getDate() + 14);
             let w4_keer = new Date(start); w4_keer.setDate(start.getDate() + 21);
-            let oogst = new Date(start); oogst.setDate(start.getDate() + 35); // ca 5 weken
+            let oogst = new Date(start); oogst.setDate(start.getDate() + 35);
 
             steps = [
                 { label: `Start (${formatDate(d1)}): Opzetten hoop (Woensdag/Vrijdag protocol)` },
