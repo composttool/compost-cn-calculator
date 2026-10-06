@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 13:10)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -187,6 +187,26 @@
             background-color: #b71c1c;
         }
 
+        .weather-link-btn {
+            display: inline-block;
+            background-color: #0288d1;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.2s;
+        }
+
+        .weather-link-btn:hover {
+            background-color: #01579b;
+        }
+
         .result-box {
             margin-top: 15px;
             padding: 15px;
@@ -339,7 +359,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator</p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 13:10</span></p>
     </header>
 
     <div class="grid-2">
@@ -417,10 +437,36 @@
         </div>
     </div>
 
+    <!-- Kolom 5: Praktijkregels & Terreinbeheer Arnhem -->
+    <div class="card">
+        <h2>📋 Praktijkregels & Terreinbeheer Arnhem</h2>
+        <div class="grid-2">
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">👥 Prioriteit bij lage opkomst (Wo/Vr)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Wanneer de opkomst op het terrein een keer lager is:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li>Geef absolute prioriteit aan het keren van de <strong>hete actieve hopen (Fase 1 & 2)</strong>.</li>
+                    <li>Hopen die al in de afkoelings- of afrijpingsfase zitten (Fase 3) kunnen prima een keerbeurt overstaan.</li>
+                </ul>
+            </div>
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <strong style="color: var(--primary-dark);">🌧️ Koppeling met het Weerbericht (&gt;10 mm)</strong>
+                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Bij verwachte zware neerslag volgens de weersites:</p>
+                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
+                    <li>Dek actieve hopen, wachthopen en afrijpvakken op tijd af met <strong>UV-bestendig landbouwplastic</strong>.</li>
+                    <li>Voorkomt dat hopen verzuren/verzuipt raken en dat kostbare stikstof uitspoelt.</li>
+                </ul>
+                <a href="https://www.buienradar.nl/nederland/weerbericht/arnhem" target="_blank" class="weather-link-btn">
+                    🌧️ Check Actueel Weer Arnhem (Buienradar) ➔
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Kolom 4: Interactief Determinatieschema & Storingsgids -->
     <div class="card">
         <h2>Interactief Determinatieschema (Storingsgids)</h2>
-        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaart voor gerichte oorzaken en oplossingen:</p>
+        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervarart voor gerichte oorzaken en oplossingen:</p>
         
         <div class="trouble-grid" id="troubleGrid">
             <!-- Dynamische storingsknoppen -->
@@ -574,7 +620,7 @@
                 <span>Vochtoestand / Status:</span>
                 <select class="moisture-select">
                     <option value="nat" ${moistureVal === 'nat' ? 'selected' : ''}>💧 Nat / Vers (Meer stikstof)</option>
-                    <option value="neutraal" ${moistureVal === 'neutraal' ? 'selected' : ''}>⚖️ Neutraal / Normaal</option>
+                    <option value="neutraal" ${moistureVal === 'neutraal' ? 'selected' : ''}>⚖️️ Neutraal / Normaal</option>
                     <option value="droog" ${moistureVal === 'droog' ? 'selected' : ''}>☀️ Droog / Ouder (Meer koolstof)</option>
                 </select>
             </div>
@@ -623,18 +669,15 @@
                 let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
                 let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
 
-                // Basis C:N en gewicht aanpassen op basis van handmatige vochtstatus
                 let adjustedCN = mat.cn;
                 let adjustedWeight = effectiveBuckets * mat.weightPerBucket;
 
                 if (moisture === 'nat') {
-                    // Nat / vers: iets actiever / meer stikstof, gewicht zwaarder door vocht
-                    adjustedCN = Math.max(5, mat.cn * 0.85);
-                    adjustedWeight *= 1.15;
+                    adjustedCN = Math.max(5, mat.cn * 0.80);
+                    adjustedWeight *= 1.20;
                 } else if (moisture === 'droog') {
-                    // Droog / ouder: stikstof is deels weg, effectieve C:N schuift op naar meer koolstof
-                    adjustedCN = mat.cn * 1.35;
-                    adjustedWeight *= 0.80;
+                    adjustedCN = mat.cn * 1.30;
+                    adjustedWeight *= 0.85;
                 }
 
                 totalCarbonScore += adjustedWeight * adjustedCN;
