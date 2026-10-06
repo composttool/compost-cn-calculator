@@ -1,5 +1,5 @@
 <script>
-// 1. Uitgebreide Materialendatabank met C:N-waarden en gewichten (80L per kruiwagen)
+// 1. Uitgebreide Materialendatabank
 const MATERIALEN = {
     // STIKSTOFRIJK (GROEN)
     'urine': { naam: 'Urine (kickstarter/activator)', cn: 1, type: 'groen', gewichtKw: 80 },
@@ -28,13 +28,20 @@ function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
     let totaalGroenKw = 0;
     let totaalBruinKw = 0;
 
+    if (!Array.isArray(invoerMaterialen)) {
+        return "<p>Ongeldige invoer.</p>";
+    }
+
     invoerMaterialen.forEach(item => {
         const mat = MATERIALEN[item.id];
-        if (mat && item.kruiwagens > 0) {
-            totaalKruiwagens += item.kruiwagens;
-            totaalGewogenCN += (mat.cn * item.kruiwagens);
-            if (mat.type === 'groen') totaalGroenKw += item.kruiwagens;
-            if (mat.type === 'bruin') totaalBruinKw += item.kruiwagens;
+        // Veilige omzetting van tekst naar getal
+        const aantal = Math.max(0, parseFloat(item.kruiwagens) || 0);
+        
+        if (mat && aantal > 0) {
+            totaalKruiwagens += aantal;
+            totaalGewogenCN += (mat.cn * aantal);
+            if (mat.type === 'groen') totaalGroenKw += aantal;
+            if (mat.type === 'bruin') totaalBruinKw += aantal;
         }
     });
 
@@ -54,13 +61,18 @@ function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
     if (berekendeCN < 25) {
         statusKleur = "#d32f2f"; // Rood
         statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op ammoniakstank, dichtzakken en gierlucht.";
-        const nodigBruin = Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (80 - 28));
-        bijstuurAdvies = `Voeg ca. <strong>${nodigBruin > 0 ? nodigBruin : 1} kruiwagen(s) stro, zaagsel of houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
+        
+        // Gedifferentieerd advies voor Stro (78:1) vs Houtsnippers (400:1)
+        const nodigStro = Math.max(1, Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (78 - 28)));
+        const nodigSnippers = (Math.ceil(((28 * totaalKruiwagens - totaalGewogenCN) / (400 - 28)) * 10) / 10).toFixed(1);
+        
+        bijstuurAdvies = `Voeg ca. <strong>${nodigStro} kw stro</strong> OF slechts <strong>${nodigSnippers} kw houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
     } else if (berekendeCN > 30) {
         statusKleur = "#ed6c02"; // Oranje
         statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Het proces zal erg traag verlopen of koud blijven.";
-        const nodigGroen = Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18));
-        bijstuurAdvies = `Voeg ca. <strong>${nodigGroen > 0 ? nodigGroen : 1} kruiwagen(s) vers gras, mest of een gieter urine (activator)</strong> toe om op ~28:1 uit te komen.`;
+        const nodigGras = Math.max(1, Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18)));
+        
+        bijstuurAdvies = `Voeg ca. <strong>${nodigGras} kw vers gras of mest</strong> (of een gieter urine als activator) toe om op ~28:1 uit te komen.`;
     } else {
         statusTekst = "✅ OPTIMAAL BALANS (25:1 - 30:1) — Perfecte verhouding voor hete compostering!";
         bijstuurAdvies = "Geen bijsturing van materialen nodig. Bouw de hoop op in dunne afwisselende lagen.";
@@ -97,20 +109,29 @@ function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
     `;
 }
 
-// 3. Stadslandbouw Arnhem Woensdag/Vrijdag Keerschema
+// 3. Stadslandbouw Arnhem Woensdag/Vrijdag Keerschema met datums
 function genereerKeerschema(startDatumStr, methode = 'stadslandbouw') {
+    const startDatum = startDatumStr ? new Date(startDatumStr) : new Date();
+    
+    function optellenDagen(datum, dagen) {
+        const d = new Date(datum);
+        d.setDate(d.getDate() + dagen);
+        return d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
     let schemaHTML = "<h4>Planning Keerschema:</h4><ul>";
 
     if (methode === 'stadslandbouw') {
-        schemaHTML += `<li><strong>Woensdag (Dag 1):</strong> Opbouw hoop (lagen groen/bruin, bevochtigen volgens 50%-sponsregel).</li>`;
-        schemaHTML += `<li><strong>Vrijdag (Dag 3):</strong> 1e keerbeurt / controle & afdekken met UV-landbouwplastic voor het weekend.</li>`;
-        schemaHTML += `<li><strong>Woensdag (Dag 8):</strong> 2e grote keerbeurt (buitenste laag naar de hete kern verplaatsen).</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 0)} (Dag 1):</strong> Opbouw hoop (lagen groen/bruin, bevochtigen volgens 50%-sponsregel).</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 2)} (Dag 3):</strong> 1e keerbeurt / controle & afdekken met UV-landbouwplastic voor het weekend.</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 7)} (Dag 8):</strong> 2e grote keerbeurt (buitenste laag naar de hete kern verplaatsen).</li>`;
         schemaHTML += `<li><strong>Vervolg (Elke Wo & Vr):</strong> Blijven keren tot de temperatuur zakt en de compost egaal en donker ruikt (doorlooptijd ca. 4–6 weken).</li>`;
     } else {
         // Theoretische Berkeley 18-dagen
-        schemaHTML += `<li><strong>Dag 1:</strong> Opbouw hoop (4 dagen laten rusten).</li>`;
-        schemaHTML += `<li><strong>Dag 5, 7, 9, 11, 13, 15, 17:</strong> Elke 2 dagen keren van buiten naar binnen.</li>`;
-        schemaHTML += `<li><strong>Dag 18:</strong> Oogst rijpe compost (na kiemtest met tuinkers).</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 0)} (Dag 1):</strong> Opbouw hoop (4 dagen laten rusten).</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 4)} (Dag 5):</strong> 1e keerbeurt (buitenste laag naar binnen).</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 6)} (Dag 7):</strong> 2e keerbeurt.</li>`;
+        schemaHTML += `<li><strong>${optellenDagen(startDatum, 17)} (Dag 18):</strong> Oogst rijpe compost (na kiemtest met tuinkers).</li>`;
     }
     schemaHTML += "</ul>";
     return schemaHTML;
