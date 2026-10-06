@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
         }
 
@@ -269,6 +269,32 @@
             margin-top: 5px;
             text-align: right;
         }
+
+        /* Stuurmatrix Tabel Styling */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 10px;
+            background: white;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .matrix-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .matrix-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
     </style>
 </head>
 <body>
@@ -315,24 +341,111 @@
         </div>
     </div>
 
-    <!-- Kolom 3: Storingsgids -->
+    <!-- Kolom 3: Uitgebreide Storingsgids & Stuurmatrix -->
     <div class="card">
-        <h2>Storingsgids & Kwaliteitscontrole</h2>
-        <div class="grid-2">
-            <div>
-                <strong>Te nat / Stinkt (Ammoniak of Rot):</strong>
-                <ul>
-                    <li>Te veel stikstofrijk materiaal of te weinig zuurstof.</li>
-                    <li><strong>Actie:</strong> Omkeren en extra droge houtsnippers of versnipperd karton toevoegen.</li>
-                </ul>
-            </div>
-            <div>
-                <strong>Komt niet op temperatuur (Blijft koud):</strong>
-                <ul>
-                    <li>Te droog of te veel grof koolstof (hout).</li>
-                    <li><strong>Actie:</strong> Vocht toevoegen (handvochtig) en extra stikstof (gras/groente) erdoor mengen.</li>
-                </ul>
-            </div>
+        <h2>Storingsgids & Volledige Stuurmatrix</h2>
+        <p style="font-size: 0.9rem; color: #666;">Operationele richtlijnen en correctie-acties conform de Stadslandbouw Arnhem handleiding:</p>
+        
+        <div style="overflow-x: auto;">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Symptoom / Probleem</th>
+                        <th style="width: 35%;">Mogelijke Oorzaak</th>
+                        <th style="width: 40%;">Correctie-actie / Maatregel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Temperatuur blijft te laag (&lt;50 °C)</strong></td>
+                        <td>
+                            1. Materialen te droog.<br>
+                            2. Materialen te nat.<br>
+                            3. Stikstoftekort (C/N &gt; 50:1).<br>
+                            4. Fysiek volume te klein (&lt;1 m³).<br>
+                            5. pH te laag (&lt;5,5; verzuring).
+                        </td>
+                        <td>
+                            1. Water toevoegen tijdens keren tot knijptest 1 druppel geeft.<br>
+                            2. Hoop omzetten en droog, structuurrijk bruin materiaal inmengen.<br>
+                            3. Stikstof toevoegen: vers maaisel, bloedmeel, urine of kippenmest.<br>
+                            4. Hoop vergroten tot minimaal 1m x 1m x 1m (1 m³ fysieke massa).<br>
+                            5. Licht bufferen met wat oude, rijpe compost of kleimeel.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temperatuur daalt te snel</strong></td>
+                        <td>
+                            1. Zuurstoftekort in de kern.<br>
+                            2. Hoop is te ver uitgedroogd.
+                        </td>
+                        <td>
+                            1. Hoop direct omzetten en luchtig heropbouwen.<br>
+                            2. Gelijkmatig water toevoegen gedurende het omzetten.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temperatuur te hoog (&gt;65–71 °C)</strong></td>
+                        <td>
+                            1. Te weinig warmteafvoer / massa te compact.<br>
+                            2. Vochtgehalte te laag.<br>
+                            3. Hoop te luchtig of te hoog.
+                        </td>
+                        <td>
+                            1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>
+                            2. Water toevoegen tijdens het keren.<br>
+                            3. Hoop iets lager opbouwen en licht aandrukken met de vork.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Witte "schimmel" / Vuurziekte</strong></td>
+                        <td>Kerntemperatuur &gt;65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).</td>
+                        <td>Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ammoniakgeur (NH₃)</strong></td>
+                        <td>
+                            1. Stikstofoverschot (C/N &lt; 20:1).<br>
+                            2. Te hoge pH (door kalk/eierschalen).<br>
+                            3. Koolstof is te stabiel/houtig.
+                        </td>
+                        <td>
+                            1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>
+                            2. Bufferen met oude compost of klei.<br>
+                            3. Licht verteerbare C-bronnen (zoals fijne droge bladeren) toevoegen.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rotte eieren geur / Stank (H₂S)</strong></td>
+                        <td>Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.</td>
+                        <td>Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vliegen of muggen rond de hoop</strong></td>
+                        <td>
+                            1. Verse mest of keukenafval ligt aan het oppervlak.<br>
+                            2. Plasvorming/uitlopend percolaatwater aan de voet.
+                        </td>
+                        <td>
+                            1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>
+                            2. Draineer het compostterrein; voorkom stilstaand water.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Veel grove, onverteerde delen op Dag 18</strong></td>
+                        <td>
+                            1. Materialen vooraf onvoldoende verkleind.<br>
+                            2. Onregelmatige beluchting/menging.<br>
+                            3. Proces nog niet afgerond.
+                        </td>
+                        <td>
+                            1. In het vervolg Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>
+                            2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop.<br>
+                            3. Rijpingsperiode met enkele weken verlengen onder plastic.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -371,7 +484,6 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Standaard rijen bij opstarten
         addMaterialRow('paardenmest', 2, 'kruiwagen');
         addMaterialRow('houtsnippers', 1, 'kruiwagen');
 
@@ -420,7 +532,6 @@
             <button type="button" class="delete-row-btn">🗑️</button>
         `;
 
-        // Direct live herberekenen bij elke wijziging in deze rij
         const inputs = rowDiv.querySelectorAll('select, input');
         inputs.forEach(input => {
             input.addEventListener('input', calculateMix);
@@ -657,19 +768,3 @@
 
         let percentage = Math.round((completed / total) * 100);
         let bar = document.getElementById('progressBar');
-        let text = document.getElementById('progressText');
-
-        if (bar && text) {
-            bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
-        }
-    }
-
-    function formatDate(date) {
-        if (!date || isNaN(date)) return '';
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    }
-</script>
-
-</body>
-</html>
