@@ -166,6 +166,8 @@
             border-radius: 6px;
             background: #e8f5e9;
             border-left: 5px solid var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .result-box.warning {
@@ -278,10 +280,10 @@
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met dynamische rijen & live berekening -->
+        <!-- Kolom 1: C:N Calculator met live advies -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Voeg materialen toe. Het resultaat berekent automatisch live mee.</p>
+            <p style="font-size: 0.9rem; color: #666;">Pas materialen of hoeveelheden aan voor direct live advies:</p>
             
             <div id="dynamic-materials-container">
                 <!-- Dynamische rijen komen hier -->
@@ -290,7 +292,7 @@
             <button type="button" id="addRowBtn" class="add-row-btn">+ Voeg materiaal toe</button>
 
             <div id="cn-result" class="result-box">
-                <!-- Live resultaten komen hier -->
+                <!-- Live resultaten en advies komen hier -->
             </div>
         </div>
 
@@ -369,7 +371,7 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Start met twee standaard rijen gevuld voor direct gebruiksgemak
+        // Standaard rijen bij opstarten
         addMaterialRow('paardenmest', 2, 'kruiwagen');
         addMaterialRow('houtsnippers', 1, 'kruiwagen');
 
@@ -418,21 +420,20 @@
             <button type="button" class="delete-row-btn">🗑️</button>
         `;
 
-        // Live triggers bij wijzigingen in deze rij
+        // Direct live herberekenen bij elke wijziging in deze rij
         const inputs = rowDiv.querySelectorAll('select, input');
         inputs.forEach(input => {
             input.addEventListener('input', calculateMix);
             input.addEventListener('change', calculateMix);
         });
 
-        // Verwijder-knop functionaliteit
         rowDiv.querySelector('.delete-row-btn').addEventListener('click', function() {
             rowDiv.remove();
             calculateMix();
         });
 
         container.appendChild(rowDiv);
-        calculateMix(); // Direct doorrekenen na toevoegen
+        calculateMix();
     }
 
     function calculateMix() {
@@ -466,24 +467,24 @@
 
         if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
             resultBox.className = 'result-box warning';
-            resultBox.innerHTML = '<strong>Voeg minimaal één materiaal en geldige hoeveelheid toe.</strong>';
+            resultBox.innerHTML = '<strong>Voeg materialen toe om de C:N-ratio live te berekenen.</strong>';
             return;
         }
 
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        let adviceHTML = `<strong>Gewogen C:N-ratio van je mengsel: ~${roundedCN}:1</strong><br>`;
+        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong><br>`;
 
         if (roundedCN < 25) {
             resultBox.className = 'result-box danger';
-            adviceHTML += '⚠️ <em>Te veel stikstof!</em> Risico op ammoniaklucht en zuurstoftekort. Voeg extra houtsnippers of karton toe.';
-        } else if (roundedCN > 35) {
+            adviceHTML += '⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg meer <em>koolstof (bruin)</em> toe, zoals houtsnippers, stro of karton.';
+        } else if (roundedCN > 30) {
             resultBox.className = 'result-box warning';
-            adviceHTML += '⚠️ <em>Te veel koolstof!</em> De hoop komt vermoedelijk traag op temperatuur. Voeg wat grasmaaisel of groenteafval toe.';
+            adviceHTML += '⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>Voeg meer <em>stikstof (groen)</em> toe, zoals grasmaaisel, groenteresten of mest.';
         } else {
             resultBox.className = 'result-box';
-            adviceHTML += '🎉 <em>Ideale C:N-ratio!</em> Perfecte balans voor een snelle, actieve composthoop.';
+            adviceHTML += '🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.';
         }
 
         resultBox.innerHTML = adviceHTML;
@@ -624,7 +625,6 @@
 
         output.innerHTML = html;
 
-        // Event listeners koppelen voor de actieve hoop
         steps.forEach((step, index) => {
             const chkElem = document.getElementById(`stepChk_${index}`);
             if (chkElem) {
