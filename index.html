@@ -198,25 +198,32 @@
             }
         }
 
+        /* Responsief Grid voor de Hopenknoppen (5 kolommen op desktop, past zich automatisch aan op mobiel) */
         .pile-selector {
-            display: flex;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
             margin-bottom: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
+        }
+
+        @media (max-width: 500px) {
+            .pile-selector {
+                grid-template-columns: repeat(5, 1fr); /* Blijft netjes compact op telefoons */
+            }
         }
 
         .pile-btn {
-            background: #ddd;
+            background: #e0e0e0;
             color: #333;
             border: none;
-            padding: 6px 10px;
+            padding: 8px 4px;
             border-radius: 4px;
             cursor: pointer;
-            white-space: nowrap;
-            width: auto;
+            text-align: center;
+            width: 100%;
             margin-top: 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         .pile-btn.active {
@@ -332,9 +339,9 @@
         <!-- Kolom 2: 18-daagse Hete Compost (Vaste hopen 1 t/m 10) -->
         <div class="card">
             <h2>Hete Composthopen Beheer</h2>
-            <label>Selecteer composthoop:</label>
+            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Selecteer composthoop (1 t/m 10):</label>
             <div class="pile-selector" id="pileSelectorContainer">
-                <!-- Dynamische knoppen voor hopen 1-10 -->
+                <!-- Dynamische knoppen grid (5 kolommen) komt hier -->
             </div>
 
             <div id="pileDetails">
@@ -490,7 +497,6 @@
 
 <script>
     const materialsData = {
-        // Groen / Stikstofrijk
         moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid (vers)", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
         groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
         grasmaaisel: { name: "Gemaaid gras (vers)", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
@@ -502,7 +508,6 @@
         urine: { name: "Humane urine (verduunt 1:5 of puur 1:1 kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
         bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
 
-        // Bruin / Koolstofrijk
         stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
         riet: { name: "Gehakseld riet", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.2 },
         herfstbladeren: { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
@@ -516,7 +521,6 @@
     let activePile = 1;
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Standaard rijen bij laden van de pagina (inclusief Moestuingroenten als belangrijkste stroom)
         addMaterialRow('moestuingroenten', 5, 'kruiwagen');
         addMaterialRow('paardenmest', 4, 'kruiwagen');
         addMaterialRow('stro', 3, 'kruiwagen');
@@ -647,7 +651,6 @@
         let finalCN = totalCarbonScore / totalNitrogenScore;
         let roundedCN = Math.round(finalCN);
 
-        // Volume check: 1 m³ is ca. 12.5 kruiwagens
         let volumeWarningHTML = '';
         if (totalBuckets < 12.5) {
             volumeWarningHTML = `<br><span style="color: #c62828;">⚠️ <strong>Volume te klein (~${totalBuckets.toFixed(1)} kruiwagens / < 1 m³):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
@@ -655,7 +658,6 @@
             volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (~${totalBuckets.toFixed(1)} kruiwagens / ≥ 1 m³):</strong> Voldoende massa voor warmtebehoud.</span>`;
         }
 
-        // Vrijdag-protocol melding
         let fridayChecked = document.getElementById('fridayProtocol');
         let fridayHTML = '';
         if (fridayChecked && fridayChecked.checked) {
@@ -843,13 +845,13 @@
         html += `</ul>`;
         
         html += `
-            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop ${activePile}:</div>
+            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop <em>${activePile}</em>:</div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="progress-text" id="progressText">0 / ${steps.length} stappen voltooid (0%)</div>
 
-            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset deze hoop (Hoop ${activePile}) naar Dag 1</button>
+            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset Hoop ${activePile} naar Dag 1</button>
         `;
 
         output.innerHTML = html;
@@ -866,7 +868,7 @@
         const resetBtn = document.getElementById('resetPileBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
-                resetCurrentPile();
+                resetCurrentPlate();
             });
         }
 
@@ -895,7 +897,7 @@
     }
 
     function formatDate(date) {
-        if (!date || isNaN(date)) return '';
+        if (!date || isNaN(date)) return {};
         return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
     }
 </script>
