@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 14:02)</title>
+    <title>Stadslandbouw Arnhem - Compost & C:N Calculator (Gegenereerd: 6 okt. 2026, 17:02)</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -359,14 +359,14 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 14:02</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 17:02</span></p>
     </header>
 
     <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met live advies & Vochtoestand sturing -->
+        <!-- Kolom 1: C:N Calculator met live advies & Vochttoestand sturing -->
         <div class="card">
             <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Pas materialen, hoeveelheden en vochtoestand aan voor direct live advies:</p>
+            <p style="font-size: 0.9rem; color: #666;">Pas materialen, hoeveelheden en vochttoestand aan voor direct live advies:</p>
             
             <div id="dynamic-materials-container">
                 <!-- Dynamische rijen komen hier -->
@@ -466,7 +466,7 @@
     <!-- Kolom 4: Interactief Determinatieschema & Storingsgids -->
     <div class="card">
         <h2>Interactief Determinatieschema (Storingsgids)</h2>
-        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaat voor gerichte oorzaken en oplossingen:</p>
+        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaart voor gerichte oorzaken en oplossingen:</p>
         
         <div class="trouble-grid" id="troubleGrid">
             <!-- Dynamische storingsknoppen -->
@@ -481,4 +481,215 @@
 <script>
     const materialsData = {
         moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
-        groenteresten: { name: "Groente- & Fruitaf
+        groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        grasmaaisel: { name: "Gemaaid gras", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
+        smeerwortel_brandnetel: { name: "Smeerwortel & Brandnetel (blad)", cn: 19, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
+        koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
+        koemest: { name: "Koemest", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        kippenmest: { name: "Kippenmest", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
+        urine: { name: "Humane urine (kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+        bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
+
+        stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
+        riet: { name: "Gehakseld riet", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.8 },
+        herfstbladeren: { name: "Herfstbladeren", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 4.5 },
+        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
+        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
+        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.0 },
+        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 250, category: "Koolstofrijk (Bruin)", weightPerBucket: 8.0 },
+        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.5 }
+    };
+
+    const troubleshootingData = [
+        {
+            symptom: "🌡️ Temperatuur blijft te laag (<50 °C)",
+            causes: "1. Materialen te droog of te nat.<br>2. Stikstoftekort (C/N > 50:1).<br>3. Fysiek volume te klein (<1 m³).<br>4. pH te laag (<5,5; verzuring).",
+            actions: "1. Vochttest uitvoeren (streefdruppel toevoegen indien te droog).<br>2. Omzetten en droog structuurmateriaal of stikstof (urine/maaisel) toevoegen.<br>3. Hoop vergroten tot minimaal 1m x 1m x 1m.<br>4. Licht bufferen met oude compost of kleimeel."
+        },
+        {
+            symptom: "📉 Temperatuur daalt te snel",
+            causes: "1. Zuurstoftekort in de kern.<br>2. Hoop is te ver uitgedroogd.",
+            actions: "1. Hoop direct omzetten en luchtig heropbouwen.<br>2. Gelijkmatig water toevoegen tijdens het omzetten."
+        },
+        {
+            symptom: "🔥 Temperatuur te hoog (>65–71 °C)",
+            causes: "1. Te weinig warmteafvoer / massa te compact.<br>2. Vochtgehalte te laag.<br>3. Hoop te luchtig of te hoog.",
+            actions: "1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>2. Water toevoegen tijdens het keren.<br>3. Hoop iets lager opbouwen en licht aandrukken met de vork."
+        },
+        {
+            symptom: "🦠 Witte 'schimmel' / Vuurziekte",
+            causes: "Kerntemperatuur >65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).",
+            actions: "Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C."
+        },
+        {
+            symptom: "💨 Ammoniakgeur (NH₃)",
+            causes: "1. Stikstofoverschot (C/N < 20:1).<br>2. Te hoge pH (door kalk/eierschalen).<br>3. Koolstof is te stabiel/houtig.",
+            actions: "1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>2. Bufferen met oude compost of klei."
+        },
+        {
+            symptom: "🦨 Rotte eieren geur / Stank (H₂S)",
+            causes: "Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.",
+            actions: "Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen."
+        },
+        {
+            symptom: "🪰 Vliegen of muggen rond de hoop",
+            causes: "1. Verse mest of keukenafval ligt aan het oppervlak.<br>2. Plasvorming/uitlopend percolaatwater aan de voet.",
+            actions: "1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>2. Draineer het compostterrein; voorkom stilstaand water."
+        },
+        {
+            symptom: "🌿 Veel grove delen op Dag 18",
+            causes: "1. Materialen vooraf onvoldoende verkleind.<br>2. Onregelmatige beluchting/menging.<br>3. Proces nog niet afgerond.",
+            actions: "1. Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop."
+        }
+    ];
+
+    let activePile = 1;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        addMaterialRow('moestuingroenten', 11, 'kruiwagen', 'nat');
+        addMaterialRow('houtsnippers', 1, 'kruiwagen', 'neutraal');
+
+        renderPileSelector();
+        loadPileData(activePile);
+        renderTroubleshootingSchema();
+
+        const addRowBtn = document.getElementById('addRowBtn');
+        if (addRowBtn) {
+            addRowBtn.addEventListener('click', function() {
+                addMaterialRow();
+            });
+        }
+
+        const startDateInput = document.getElementById('startDate');
+        if (startDateInput) {
+            startDateInput.addEventListener('change', function() {
+                savePileData();
+            });
+        }
+
+        const scheduleTypeSelect = document.getElementById('scheduleType');
+        if (scheduleTypeSelect) {
+            scheduleTypeSelect.addEventListener('change', function() {
+                savePileData();
+            });
+        }
+
+        const fridayCheckbox = document.getElementById('fridayProtocol');
+        if (fridayCheckbox) {
+            fridayCheckbox.addEventListener('change', calculateMix);
+        }
+    });
+
+    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen', moistureVal = 'nat') {
+        const container = document.getElementById('dynamic-materials-container');
+        if (!container) return;
+
+        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+
+        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
+        let currentCategory = '';
+
+        for (let [key, mat] of Object.entries(materialsData)) {
+            if (mat.category !== currentCategory) {
+                if (currentCategory !== '') optionsHTML += '</optgroup>';
+                currentCategory = mat.category;
+                optionsHTML += `<optgroup label="${currentCategory}">`;
+            }
+            let isSelected = (key === selectedKey) ? 'selected' : '';
+            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
+        }
+        if (currentCategory !== '') optionsHTML += '</optgroup>';
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'material-row';
+        rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <div class="material-main-line">
+                <select class="material-select">
+                    ${optionsHTML}
+                </select>
+                <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
+                <select class="unit-select">
+                    <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
+                    <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+                </select>
+                <button type="button" class="delete-row-btn">🗑️</button>
+            </div>
+            <div class="moisture-control">
+                <span>Vochttest / Vochttoestand:</span>
+                <select class="moisture-select">
+                    <option value="nat" ${moistureVal === 'nat' ? 'selected' : ''}>💧 Nat / Vers (Meer stikstof)</option>
+                    <option value="neutraal" ${moistureVal === 'neutraal' ? 'selected' : ''}>⚖ Neutraal / Normaal</option>
+                    <option value="droog" ${moistureVal === 'droog' ? 'selected' : ''}>☀ Droog / Ouder (Meer koolstof)</option>
+                </select>
+            </div>
+        `;
+
+        const inputs = rowDiv.querySelectorAll('select, input');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateMix);
+            input.addEventListener('change', calculateMix);
+        });
+
+        const deleteBtn = rowDiv.querySelector('.delete-row-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                rowDiv.remove();
+                calculateMix();
+            });
+        }
+
+        container.appendChild(rowDiv);
+        calculateMix();
+    }
+
+    function calculateMix() {
+        let totalCarbonScore = 0;
+        let totalNitrogenScore = 0;
+        let totalItemsEntered = 0;
+        let totalKruiwagens = 0;
+
+        const rows = document.querySelectorAll('.material-row');
+
+        rows.forEach(row => {
+            let selectElem = row.querySelector('.material-select');
+            let amountElem = row.querySelector('.material-amount');
+            let unitElem = row.querySelector('.unit-select');
+            let moistureElem = row.querySelector('.moisture-select');
+
+            let key = selectElem ? selectElem.value : '';
+            let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
+
+            if (key && amount > 0 && materialsData[key]) {
+                let unit = unitElem ? unitElem.value : 'kruiwagen';
+                let moisture = moistureElem ? moistureElem.value : 'neutraal';
+                let mat = materialsData[key];
+                
+                let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
+                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
+
+                let adjustedCN = mat.cn;
+                let adjustedWeight = effectiveBuckets * mat.weightPerBucket;
+
+                if (moisture === 'nat') {
+                    adjustedCN = Math.max(5, mat.cn * 0.80);
+                    adjustedWeight *= 1.20;
+                } else if (moisture === 'droog') {
+                    adjustedCN = mat.cn * 1.30;
+                    adjustedWeight *= 0.85;
+                }
+
+                totalCarbonScore += adjustedWeight * adjustedCN;
+                totalNitrogenScore += adjustedWeight;
+                totalItemsEntered += amount;
+                totalKruiwagens += kruiwagensEq;
+            }
+        });
+
+        const resultBox = document.getElementById('cn-result');
+        if (!resultBox) return;
+
+        if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
+            resultBox.className = 'result-box warning';
+            resultBox.innerHTML = '<strong>Vo
