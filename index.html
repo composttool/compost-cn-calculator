@@ -198,18 +198,12 @@
             }
         }
 
-        /* Responsief Grid voor de Hopenknoppen (5 kolommen op desktop, past zich automatisch aan op mobiel) */
+        /* 2 rijen van 5 knoppen voor mobiel en pc */
         .pile-selector {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 6px;
             margin-bottom: 15px;
-        }
-
-        @media (max-width: 500px) {
-            .pile-selector {
-                grid-template-columns: repeat(5, 1fr); /* Blijft netjes compact op telefoons */
-            }
         }
 
         .pile-btn {
@@ -868,7 +862,7 @@
         const resetBtn = document.getElementById('resetPileBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
-                resetCurrentPlate();
+                resetCurrentPile(); // Gecorrigeerd van resetCurrentPlate naar resetCurrentPile
             });
         }
 
@@ -897,7 +891,7 @@
     }
 
     function formatDate(date) {
-        if (!date || isNaN(date)) return {};
+        if (!date || isNaN(date)) return '';
         return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
     }
 </script>
