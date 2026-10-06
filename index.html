@@ -1,487 +1,110 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator</title>
-    <style>
-        :root {
-            --primary: #2e7d32;
-            --primary-dark: #1b5e20;
-            --bg-color: #f4f6f4;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-radius: 8px;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-        }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            margin: 0 0 10px 0;
-            font-size: 1.8rem;
-        }
-
-        header p {
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            color: var(--primary-dark);
-            margin-top: 0;
-            font-size: 1.3rem;
-            border-bottom: 2px solid var(--bg-color);
-            padding-bottom: 8px;
-        }
-
-        .material-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 10px;
-            background: #fafafa;
-            border-radius: 6px;
-            gap: 10px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .material-select {
-            flex: 2;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.9rem;
-        }
-
-        input[type="number"] {
-            width: 55px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        select.unit-select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.9rem;
-        }
-
-        .delete-row-btn {
-            background-color: #d32f2f;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            width: auto;
-            margin-top: 0;
-        }
-
-        .delete-row-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        .add-row-btn {
-            background-color: #388e3c;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            width: 100%;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        .add-row-btn:hover {
-            background-color: #2e7d32;
-        }
-
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            width: 100%;
-            transition: background 0.2s;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .reset-btn {
-            background-color: #d32f2f;
-            margin-top: 15px;
-        }
-
-        .reset-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        .result-box {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 6px;
-            background: #e8f5e9;
-            border-left: 5px solid var(--primary);
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .result-box.warning {
-            background: #fff3e0;
-            border-left-color: #ef6c00;
-        }
-
-        .result-box.danger {
-            background: #ffebee;
-            border-left-color: #c62828;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 700px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .material-row {
-                flex-wrap: wrap;
-            }
-            .material-select {
-                flex: 100%;
-            }
-        }
-
-        .pile-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .pile-btn {
-            background: #ddd;
-            color: #333;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-            width: auto;
-            margin-top: 0;
-            font-size: 0.9rem;
-        }
-
-        .pile-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .schedule-list {
-            list-style: none;
-            padding: 0;
-            margin: 5px 0 15px 0;
-        }
-
-        .schedule-list li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            background: white;
-            padding: 8px 10px;
-            border-radius: 4px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .schedule-list input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .progress-container {
-            background: #e0e0e0;
-            border-radius: 4px;
-            height: 12px;
-            width: 100%;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            background-color: var(--primary);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 5px;
-            text-align: right;
-        }
-
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.88rem;
-            margin-top: 10px;
-            background: white;
-        }
-
-        .matrix-table th, .matrix-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .matrix-table th {
-            background-color: var(--primary);
-            color: white;
-            font-weight: bold;
-        }
-
-        .matrix-table tr:nth-child(even) {
-            background-color: #fafafa;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <header>
-        <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator</p>
-    </header>
-
-    <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met live advies -->
-        <div class="card">
-            <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Pas materialen of hoeveelheden aan voor direct live advies:</p>
-            
-            <div id="dynamic-materials-container">
-                <!-- Dynamische rijen komen hier -->
-            </div>
-
-            <button type="button" id="addRowBtn" class="add-row-btn">+ Voeg materiaal toe</button>
-
-            <div id="cn-result" class="result-box">
-                <!-- Live resultaten en advies komen hier -->
-            </div>
-        </div>
-
-        <!-- Kolom 2: 18-daagse Hete Compost (Vaste hopen 1 t/m 10) -->
-        <div class="card">
-            <h2>Hete Composthopen Beheer</h2>
-            <label>Selecteer composthoop:</label>
-            <div class="pile-selector" id="pileSelectorContainer">
-                <!-- Dynamische knoppen voor hopen 1-10 -->
-            </div>
-
-            <div id="pileDetails">
-                <label for="startDate">Startdatum (Dag 1) voor deze hoop:</label>
-                <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
-
-                <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
-                    <!-- Schema planning info -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kolom 3: Veldgids: Hand-Knijptest & Tuinkers-Kiemtest -->
-    <div class="card">
-        <h2>Veldgids: Vochttest & Rijpheidstest</h2>
-        <div class="grid-2">
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-                <strong style="color: var(--primary-dark);">💧 De Hand-Knijptest (50% Vocht)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Neem een handvol compost en knijp krachtig dicht:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li><strong>Correct:</strong> Er verschijnt precies <em>1 druppel water</em> tussen de vingers.</li>
-                    <li><strong>Te nat:</strong> Er stromen stroompjes water uit ➔ <em>Voeg droog structuurmateriaal toe.</em></li>
-                    <li><strong>Te droog:</strong> De massa veert elastisch open zonder vocht ➔ <em>Sproei bij met de gieter.</em></li>
-                </ul>
-            </div>
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-                <strong style="color: var(--primary-dark);">🌱 De Tuinkers-Kiemtest (Dag 18 Check)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Test of de compost vrij is van gifstoffen vóór gebruik:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li>Vul een vlootje met gezeefde compost en zaai <strong>100 tuinkerszaadjes</strong> (7 dagen vochtig houden).</li>
-                    <li><strong>Rijp & Veilig:</strong> Kieming &ge; 90% met frisse groene blaadjes en rechte, witte worteltjes.</li>
-                    <li><strong>Onrijp:</strong> Kieming &lt; 80% of verbrande wortels ➔ <em>Laat nog 3-4 weken rijpen.</em></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kolom 4: Uitgebreide Storingsgids & Stuurmatrix -->
-    <div class="card">
-        <h2>Storingsgids & Volledige Stuurmatrix</h2>
-        <p style="font-size: 0.9rem; color: #666;">Operationele richtlijnen en correctie-acties conform de Stadslandbouw Arnhem handleiding:</p>
-        
-        <div style="overflow-x: auto;">
-            <table class="matrix-table">
-                <thead>
-                    <tr>
-                        <th style="width: 25%;">Symptoom / Probleem</th>
-                        <th style="width: 35%;">Mogelijke Oorzaak</th>
-                        <th style="width: 40%;">Correctie-actie / Maatregel</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Temperatuur blijft te laag (&lt;50 °C)</strong></td>
-                        <td>
-                            1. Materialen te droog.<br>
-                            2. Materialen te nat.<br>
-                            3. Stikstoftekort (C/N &gt; 50:1).<br>
-                            4. Fysiek volume te klein (&lt;1 m³).<br>
-                            5. pH te laag (&lt;5,5; verzuring).
-                        </td>
-                        <td>
-                            1. Water toevoegen tijdens keren tot knijptest 1 druppel geeft.<br>
-                            2. Hoop omzetten en droog, structuurrijk bruin materiaal inmengen.<br>
-                            3. Stikstof toevoegen: vers maaisel, bloedmeel, urine of kippenmest.<br>
-                            4. Hoop vergroten tot minimaal 1m x 1m x 1m (1 m³ fysieke massa).<br>
-                            5. Licht bufferen met wat oude, rijpe compost of kleimeel.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Temperatuur daalt te snel</strong></td>
-                        <td>
-                            1. Zuurstoftekort in de kern.<br>
-                            2. Hoop is te ver uitgedroogd.
-                        </td>
-                        <td>
-                            1. Hoop direct omzetten en luchtig heropbouwen.<br>
-                            2. Gelijkmatig water toevoegen gedurende het omzetten.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Temperatuur te hoog (&gt;65–71 °C)</strong></td>
-                        <td>
-                            1. Te weinig warmteafvoer / massa te compact.<br>
-                            2. Vochtgehalte te laag.<br>
-                            3. Hoop te luchtig of te hoog.
-                        </td>
-                        <td>
-                            1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>
-                            2. Water toevoegen tijdens het keren.<br>
-                            3. Hoop iets lager opbouwen en licht aandrukken met de vork.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Witte "schimmel" / Vuurziekte</strong></td>
-                        <td>Kerntemperatuur &gt;65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).</td>
-                        <td>Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ammoniakgeur (NH₃)</strong></td>
-                        <td>
-                            1. Stikstofoverschot (C/N &lt; 20:1).<br>
-                            2. Te hoge pH (door kalk/eierschalen).<br>
-                            3. Koolstof is te stabiel/houtig.
-                        </td>
-                        <td>
-                            1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>
-                            2. Bufferen met oude compost of klei.<br>
-                            3. Licht verteerbare C-bronnen (zoals fijne droge bladeren) toevoegen.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Rotte eieren geur / Stank (H₂S)</strong></td>
-                        <td>Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.</td>
-                        <td>Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Vliegen of muggen rond de hoop</strong></td>
-                        <td>
-                            1. Verse mest of keukenafval ligt aan het oppervlak.<br>
-                            2. Plasvorming/uitlopend percolaatwater aan de voet.
-                        </td>
-                        <td>
-                            1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>
-                            2. Draineer het compostterrein; voorkom stilstaand water.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Veel grove, onverteerde delen op Dag 18</strong></td>
-                        <td>
-                            1. Materialen vooraf onvoldoende verkleind.<br>
-                            2. Onregelmatige beluchting/menging.<br>
-                            3. Proces nog niet afgerond.
-                        </td>
-                        <td>
-                            1. In het vervolg Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>
-                            2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop.<br>
-                            3. Rijpingsperiode met enkele weken verlengen onder plastic.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
 <script>
-    const materialsData = {
-        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
-        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 1.5 },
-        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 325, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
-        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
-        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
-        stro: { name: "Stro (tarwe / gerst)", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.0 },
-        dennennaalden: { name: "Dennennaalden", cn: 80, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
-        herfstbladeren: { name: "Herfstbladeren (gedroogd)", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
-        maisstengels: { name: "Maïsstengels (
+// 1. Materialendatabank met gecorrigeerde C:N-waarden en gewichten (80L per kruiwagen)
+const MATERIALEN = {
+    'groente': { naam: 'Vers Groente- & Fruitafval', cn: 15, type: 'groen', gewichtKw: 45 },
+    'gras': { naam: 'Grasmaaisel (vers)', cn: 18, type: 'groen', gewichtKw: 35 },
+    'onkruid': { naam: 'Vers Onkruid / Plantenresten', cn: 20, type: 'groen', gewichtKw: 30 },
+    'mest_paard': { naam: 'Paardenmest (vers met stro)', cn: 25, type: 'groen', gewichtKw: 50 },
+    'kroos': { naam: 'Slootkroos (uitgelekt)', cn: 12, type: 'groen', gewichtKw: 40 },
+    'houtsnippers': { naam: 'Houtsnippers / Takken (Eliet gehakseld)', cn: 400, type: 'bruin', gewichtKw: 25 },
+    'stro': { naam: 'Stro', cn: 80, type: 'bruin', gewichtKw: 12 },
+    'blad': { naam: 'Droge Herfstbladeren', cn: 60, type: 'bruin', gewichtKw: 15 },
+    'karton': { naam: 'Versnipperd Karton / Papier', cn: 350, type: 'bruin', gewichtKw: 15 }
+};
+
+// 2. Hoofdfunctie: Bereken C:N verhouding, Volume en Vrijdag-advies
+function berekenCompostMix(invoerMaterialen, isVrijdagOpbouw = false) {
+    let totaalKruiwagens = 0;
+    let totaalGewogenCN = 0;
+    let totaalGroenKw = 0;
+    let totaalBruinKw = 0;
+
+    invoerMaterialen.forEach(item => {
+        const mat = MATERIALEN[item.id];
+        if (mat && item.kruiwagens > 0) {
+            totaalKruiwagens += item.kruiwagens;
+            totaalGewogenCN += (mat.cn * item.kruiwagens);
+            if (mat.type === 'groen') totaalGroenKw += item.kruiwagens;
+            if (mat.type === 'bruin') totaalBruinKw += item.kruiwagens;
+        }
+    });
+
+    if (totaalKruiwagens === 0) {
+        return "<p>Voer het aantal kruiwagens in om de berekening te starten.</p>";
+    }
+
+    const berekendeCN = Math.round(totaalGewogenCN / totaalKruiwagens);
+    const volumeLiters = totaalKruiwagens * 80; // 1 kw = 80 liter
+    const volumeM3 = (volumeLiters / 1000).toFixed(2);
+
+    let statusKleur = "#2e7d32"; // Groen (optimaal)
+    let statusTekst = "";
+    let bijstuurAdvies = "";
+
+    // C:N Drempelwaarden (Streefwaarde 25:1 - 30:1)
+    if (berekendeCN < 25) {
+        statusKleur = "#d32f2f"; // Rood
+        statusTekst = "⚠️ TE STIKSTOFRIJK (Te groen) — Risico op ammoniakstank, dichtzakken en gierlucht.";
+        const nodigBruin = Math.ceil((28 * totaalKruiwagens - totaalGewogenCN) / (80 - 28));
+        bijstuurAdvies = `Voeg ca. <strong>${nodigBruin > 0 ? nodigBruin : 1} kruiwagen(s) stro of houtsnippers</strong> toe om op een optimale balans (~28:1) uit te komen.`;
+    } else if (berekendeCN > 30) {
+        statusKleur = "#ed6c02"; // Oranje
+        statusTekst = "⚠️ TE KOOLSTOFRIJK (Te bruin) — Het proces zal erg traag verlopen of koud blijven.";
+        const nodigGroen = Math.ceil((totaalGewogenCN - 28 * totaalKruiwagens) / (28 - 18));
+        bijstuurAdvies = `Voeg ca. <strong>${nodigGroen > 0 ? nodigGroen : 1} kruiwagen(s) vers gras of mest</strong> toe om op ~28:1 uit te komen.`;
+    } else {
+        statusTekst = "✅ OPTIMAAL BALANS (25:1 - 30:1) — Perfecte verhouding voor hete compostering!";
+        bijstuurAdvies = "Geen bijsturing van materialen nodig. Bouw de hoop op in dunne afwisselende lagen.";
+    }
+
+    // Live Volumecheck (Minimaal 1 m³ = 12.5 kruiwagens van 80L)
+    let volumeWaarschuwing = "";
+    if (volumeM3 < 1.0) {
+        volumeWaarschuwing = `<div style="background:#fff3e0; color:#e65100; padding:8px; border-radius:4px; margin-top:8px;">
+            ⚠️ <strong>Volume Attentie:</strong> Het geschatte volume is ${volumeM3} m³ (${totaalKruiwagens} kruiwagens). Voor een hete composthoop volgens de Berkeley-methode is minimaal <strong>1 m³ (12,5 kruiwagens)</strong> nodig om warmte vast te houden. Vul aan!
+        </div>`;
+    } else {
+        volumeWaarschuwing = `<div style="background:#e8f5e9; color:#2e7d32; padding:8px; border-radius:4px; margin-top:8px;">
+            ✅ <strong>Volume OK:</strong> ${volumeM3} m³ (${totaalKruiwagens} kruiwagens) is voldoende massa voor het vasthouden van de kerntemperatuur (55–65 °C).
+        </div>`;
+    }
+
+    // Vrijdagse Koolstofbuffer / Koolstofnest Protocol
+    let vrijdagAdvies = "";
+    if (isVrijdagOpbouw) {
+        vrijdagAdvies = `<div style="background:#e3f2fd; color:#0d47a1; padding:10px; border-radius:4px; margin-top:10px; border-left:4px solid #1976d2;">
+            📌 <strong>Vrijdag Protocol Stadslandbouw:</strong> Omdat de hoop tot woensdag 5 dagen stilstaat, breng je in de kern van de hoop een extra 'koolstofnest' van stro of houtsnippers aan rond de starter. Dek de hoop vrijdagmiddag af met <strong>UV-bestendig landbouwplastic</strong> tegen inwatering en uitdrogen! <em>(Let op: plastic uitsluitend op het compostterrein gebruiken, nooit op de teeltbedden).</em>
+        </div>`;
+    }
+
+    return `
+        <div style="border-left: 5px solid ${statusKleur}; padding-left: 12px; margin-top: 10px;">
+            <h4>Berekende C/N-verhouding: <strong>${berekendeCN}:1</strong></h4>
+            <p style="color: ${statusKleur}; font-weight: bold;">${statusTekst}</p>
+            <p><strong>Bijstuuradvies:</strong> ${bijstuurAdvies}</p>
+            ${volumeWaarschuwing}
+            ${vrijdagAdvies}
+        </div>
+    `;
+}
+
+// 3. Stadslandbouw Arnhem Woensdag/Vrijdag Keerschema
+function genereerKeerschema(startDatumStr, methode = 'stadslandbouw') {
+    const d = new Date(startDatumStr);
+    let schemaHTML = "<h4>Planning Keerschema:</h4><ul>";
+
+    if (methode === 'stadslandbouw') {
+        schemaHTML += `<li><strong>Woensdag (Dag 1):</strong> Opbouw hoop (lagen groen/bruin, bevochtigen volgens 50%-sponsregel).</li>`;
+        schemaHTML += `<li><strong>Vrijdag (Dag 3):</strong> 1e keerbeurt / controle & afdekken met UV-landbouwplastic voor het weekend.</li>`;
+        schemaHTML += `<li><strong>Woensdag (Dag 8):</strong> 2e grote keerbeurt (buitenste laag naar de hete kern verplaatsen).</li>`;
+        schemaHTML += `<li><strong>Vervolg (Elke Wo & Vr):</strong> Blijven keren tot de temperatuur zakt en de compost egaal en donker ruikt (doorlooptijd ca. 4–6 weken).</li>`;
+    } else {
+        // Theoretische Berkeley 18-dagen
+        schemaHTML += `<li><strong>Dag 1:</strong> Opbouw hoop (4 dagen laten rusten).</li>`;
+        schemaHTML += `<li><strong>Dag 5, 7, 9, 11, 13, 15, 17:</strong> Elke 2 dagen keren van buiten naar binnen.</li>`;
+        schemaHTML += `<li><strong>Dag 18:</strong> Oogst rijpe compost (na kiemtest met tuinkers).</li>`;
+    }
+    schemaHTML += "</ul>";
+    return schemaHTML;
+}
+</script>
