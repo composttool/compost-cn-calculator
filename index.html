@@ -14,50 +14,58 @@
             --border-radius: 8px;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 950px;
+            width: 100%;
             margin: 0 auto;
+            padding: 0 5px;
         }
 
         header {
             background-color: var(--primary);
             color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: var(--border-radius);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         header h1 {
-            margin: 0 0 10px 0;
-            font-size: 1.8rem;
+            margin: 0 0 5px 0;
+            font-size: 1.5rem;
         }
 
         header p {
             margin: 0;
             opacity: 0.9;
+            font-size: 0.85rem;
         }
 
         .card {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         h2 {
             color: var(--primary-dark);
             margin-top: 0;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             border-bottom: 2px solid var(--bg-color);
             padding-bottom: 8px;
         }
@@ -76,13 +84,13 @@
         .material-main-line {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .material-select {
             flex: 2;
-            min-width: 180px;
+            min-width: 140px;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -91,7 +99,7 @@
         }
 
         input[type="number"] {
-            width: 55px;
+            width: 50px;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -115,6 +123,7 @@
             color: #555;
             padding-top: 4px;
             border-top: 1px dashed #e0e0e0;
+            flex-wrap: wrap;
         }
 
         .moisture-select {
@@ -123,13 +132,14 @@
             border-radius: 4px;
             background: white;
             font-size: 0.85rem;
+            width: 100%;
         }
 
         .delete-row-btn {
             background-color: #d32f2f;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -230,10 +240,10 @@
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
             }
@@ -242,7 +252,7 @@
         .pile-selector {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
+            gap: 5px;
             margin-bottom: 15px;
         }
 
@@ -250,13 +260,13 @@
             background: #e0e0e0;
             color: #333;
             border: none;
-            padding: 8px 4px;
+            padding: 8px 2px;
             border-radius: 4px;
             cursor: pointer;
             text-align: center;
             width: 100%;
             margin-top: 0;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
@@ -313,7 +323,7 @@
 
         .trouble-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
             margin-bottom: 15px;
         }
@@ -359,7 +369,7 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator — <span style="font-size:0.85rem; opacity:0.8;">Versie: 6 okt. 2026, 17:02</span></p>
+        <p>Compost & Hete Compostering (18-dagenmethode) Calculator</p>
     </header>
 
     <div class="grid-2">
@@ -416,7 +426,7 @@
     <div class="card">
         <h2>Veldgids: Vochttest & Rijpheidstest</h2>
         <div class="grid-2">
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 10px;">
                 <strong style="color: var(--primary-dark);">💧 De Hand-Knijptest (50% Vocht)</strong>
                 <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Neem een handvol compost en knijp krachtig dicht:</p>
                 <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
@@ -441,7 +451,7 @@
     <div class="card">
         <h2>📋 Praktijkregels & Terreinbeheer Arnhem</h2>
         <div class="grid-2">
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 10px;">
                 <strong style="color: var(--primary-dark);">👥 Prioriteit bij lage opkomst van mensen (Wo/Vr)</strong>
                 <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Wanneer de hoeveelheid mensen bij de composthoek een keer lager is:</p>
                 <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
@@ -611,8 +621,8 @@
                 </select>
                 <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
                 <select class="unit-select">
-                    <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kruiwagen(s)</option>
-                    <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer(s)</option>
+                    <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kw.</option>
+                    <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer</option>
                 </select>
                 <button type="button" class="delete-row-btn">🗑️</button>
             </div>
@@ -745,7 +755,7 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
-            btn.innerText = `Hoop ${i}`;
+            btn.innerText = `H${i}`;
             btn.addEventListener('click', function() {
                 switchPile(i);
             });
@@ -882,7 +892,6 @@
             ];
         }
 
-        // Automatische winterwaarschuwing (Nov, Dec, Jan, Feb)
         let startMonth = start.getMonth() + 1;
         let isWinterMonth = [11, 12, 1, 2].includes(startMonth);
         let winterWarningHTML = '';
@@ -890,7 +899,7 @@
             winterWarningHTML = `
                 <div style="margin-bottom: 12px; padding: 10px; background: #e3f2fd; border-left: 4px solid #0288d1; border-radius: 4px; font-size: 0.88rem;">
                     ❄️ <strong>Winterse periode gedetecteerd (${start.toLocaleDateString('nl-NL', {month: 'long'})}):</strong> 
-                    De buitentemperatuur is laag. Zorg dat de buitenzijde van de hoop extra goed wordt geïsoleerd met een dikke laag <strong>stro</strong> en strak wordt afgedekt met <strong>landbouwplastic</strong> om warmteverlies tegen te gaan!
+                    De buitentemperatuur is laag. Zorg dat de buitenzijde van de hoop extra goed wordt geïsoleerd met een dikke laag <strong>stro</strong> en strak wordt afgedekt met <strong>landbouwplastic</strong>!
                 </div>
             `;
         }
@@ -902,7 +911,7 @@
             html += `
                 <li>
                     <input type="checkbox" id="stepChk_${index}" ${isChecked}>
-                    <label for="stepChk_${index}" style="cursor:pointer; flex:1;">${step.label}</label>
+                    <label for="stepChk_${index}" style="cursor:pointer; flex:1; font-size: 0.85rem;">${step.label}</label>
                 </li>
             `;
         });
