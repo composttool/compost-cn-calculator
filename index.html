@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stadslandbouw Arnhem - Compost & C:N Calculator</title>
+    <title>Stadslandbouw Arnhem - Compost & Kruiden Beheer</title>
     <style>
         :root {
             --primary: #2e7d32;
@@ -14,9 +14,7 @@
             --border-radius: 8px;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: Arial, sans-serif;
@@ -43,16 +41,8 @@
             margin-bottom: 15px;
         }
 
-        header h1 {
-            margin: 0 0 5px 0;
-            font-size: 1.5rem;
-        }
-
-        header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.85rem;
-        }
+        header h1 { margin: 0 0 5px 0; font-size: 1.5rem; }
+        header p { margin: 0; opacity: 0.9; font-size: 0.85rem; }
 
         .card {
             background-color: var(--card-bg);
@@ -70,104 +60,67 @@
             padding-bottom: 8px;
         }
 
-        .material-row {
+        /* Zoekfunctie & Registratie Styling */
+        .search-box-container {
             display: flex;
-            flex-direction: column;
-            margin-bottom: 12px;
-            padding: 10px;
-            background: #fafafa;
-            border-radius: 6px;
             gap: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .material-main-line {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
-        .material-select {
-            flex: 2;
-            min-width: 140px;
-            padding: 8px;
+        .search-input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            background: white;
-            font-size: 0.9rem;
-        }
-
-        input[type="number"] {
-            width: 50px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
             font-size: 1rem;
         }
 
-        select.unit-select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.9rem;
-        }
-
-        .moisture-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            color: #555;
-            padding-top: 4px;
-            border-top: 1px dashed #e0e0e0;
-            flex-wrap: wrap;
-        }
-
-        .moisture-select {
-            padding: 4px 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-
-        .delete-row-btn {
-            background-color: #d32f2f;
+        .search-btn {
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 8px 10px;
+            padding: 10px 16px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-weight: bold;
+            font-size: 1rem;
             width: auto;
             margin-top: 0;
-            margin-left: auto;
         }
 
-        .delete-row-btn:hover {
-            background-color: #b71c1c;
+        .search-btn:hover { background-color: var(--primary-dark); }
+
+        .search-results {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            display: none;
         }
 
-        .add-row-btn {
-            background-color: #388e3c;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            width: 100%;
-            padding: 10px 20px;
-            color: white;
-            border: none;
+        .search-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-left: 4px solid var(--primary);
             border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 0.9rem;
+            display: none;
         }
 
-        .add-row-btn:hover {
-            background-color: #2e7d32;
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
         }
 
         button {
@@ -183,191 +136,7 @@
             transition: background 0.2s;
             margin-top: 15px;
         }
-
-        button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .reset-btn {
-            background-color: #d32f2f;
-            margin-top: 15px;
-        }
-
-        .reset-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        .weather-link-btn {
-            display: inline-block;
-            background-color: #0288d1;
-            color: white;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 8px;
-            width: 100%;
-            box-sizing: border-box;
-            transition: background 0.2s;
-        }
-
-        .weather-link-btn:hover {
-            background-color: #01579b;
-        }
-
-        .result-box {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 6px;
-            background: #e8f5e9;
-            border-left: 5px solid var(--primary);
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .result-box.warning {
-            background: #fff3e0;
-            border-left-color: #ef6c00;
-        }
-
-        .result-box.danger {
-            background: #ffebee;
-            border-left-color: #c62828;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .pile-selector {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .pile-btn {
-            background: #e0e0e0;
-            color: #333;
-            border: none;
-            padding: 8px 2px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            width: 100%;
-            margin-top: 0;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .pile-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .schedule-list {
-            list-style: none;
-            padding: 0;
-            margin: 5px 0 15px 0;
-        }
-
-        .schedule-list li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            background: white;
-            padding: 8px 10px;
-            border-radius: 4px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .schedule-list input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .progress-container {
-            background: #e0e0e0;
-            border-radius: 4px;
-            height: 12px;
-            width: 100%;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            background-color: var(--primary);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 5px;
-            text-align: right;
-        }
-
-        .trouble-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .trouble-grid {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
-        }
-
-        .trouble-card {
-            background: #fafafa;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 10px 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--primary-dark);
-            text-align: center;
-        }
-
-        .trouble-card:hover {
-            background: #e8f5e9;
-            border-color: var(--primary);
-        }
-
-        .trouble-card.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-        }
-
-        .solution-box {
-            background: #fff3e0;
-            border-left: 5px solid #ef6c00;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 0.92rem;
-            line-height: 1.5;
-            display: none;
-        }
+        button:hover { background-color: var(--primary-dark); }
     </style>
 </head>
 <body>
@@ -375,688 +144,107 @@
 <div class="container">
     <header>
         <h1>Stadslandbouw Arnhem</h1>
-        <p>Compost & Hete Compostering (18-dagenmethode) Calculator</p>
+        <p>Compost & Kruiden Zoekmodule</p>
     </header>
 
-    <div class="grid-2">
-        <!-- Kolom 1: C:N Calculator met live advies & Vochttoestand sturing -->
-        <div class="card">
-            <h2>C:N Mengsel Calculator</h2>
-            <p style="font-size: 0.9rem; color: #666;">Pas materialen, hoeveelheden en vochttoestand aan voor direct live advies:</p>
-            
-            <div id="dynamic-materials-container">
-                <!-- Dynamische rijen komen hier -->
-            </div>
-
-            <button type="button" id="addRowBtn" class="add-row-btn">+ Voeg materiaal toe</button>
-
-            <!-- Vrijdag-protocol optie -->
-            <div style="margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 6px; font-size: 0.9rem;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="fridayProtocol" style="width: 18px; height: 18px; cursor: pointer;">
-                    <span><strong>Wordt de hoop op vrijdag opgebouwd?</strong> (Activeert Koolstofnest & plastic afdekking tegen het 5-daagse weekend)</span>
-                </label>
-            </div>
-
-            <div id="cn-result" class="result-box">
-                <!-- Live resultaten en advies komen hier -->
-            </div>
-        </div>
-
-        <!-- Kolom 2: 18-daagse Hete Compost (Vaste hopen 1 t/m 10) -->
-        <div class="card">
-            <h2>Hete Composthopen Beheer</h2>
-            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Selecteer composthoop (1 t/m 10):</label>
-            <div class="pile-selector" id="pileSelectorContainer">
-                <!-- Dynamische knoppen grid (5 kolommen) komt hier -->
-            </div>
-
-            <div id="pileDetails">
-                <label for="startDate">Startdatum (Dag 1) voor deze hoop:</label>
-                <input type="date" id="startDate" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;">
-
-                <label for="scheduleType" style="font-size: 0.9rem; font-weight: bold; color: var(--primary-dark);">Keerschema / Methode:</label>
-                <select id="scheduleType" style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px; background:white;">
-                    <option value="arnhem">Stadslandbouw Arnhem Schema (Wo/Vr - 4 tot 6 weken)</option>
-                    <option value="berkeley">Berkeley-methode (18 dagen - elke 2 dagen keren)</option>
-                </select>
-
-                <div id="scheduleOutput" style="background: #fafafa; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
-                    <!-- Schema planning info -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kolom 3: Veldgids: Hand-Knijptest & Tuinkers-Kiemtest -->
+    <!-- Nieuwe Kruiden Zoek- en Registratie Card -->
     <div class="card">
-        <h2>Veldgids: Vochttest & Rijpheidstest</h2>
-        <div class="grid-2">
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 10px;">
-                <strong style="color: var(--primary-dark);">💧 De Hand-Knijptest (50% Vocht)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Neem een handvol compost en knijp krachtig dicht:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li><strong>Correct:</strong> Er verschijnt precies <em>1 druppel water</em> tussen de vingers.</li>
-                    <li><strong>Te nat:</strong> Er stromen stroompjes water uit ➔ <em>Voeg droog structuurmateriaal toe.</em></li>
-                    <li><strong>Te droog:</strong> De massa veert elastisch open zonder vocht ➔ <em>Sproei bij met de gieter.</em></li>
-                </ul>
-            </div>
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-                <strong style="color: var(--primary-dark);">🌱 De Tuinkers-Kiemtest (Dag 18 Check)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Test of de compost vrij is van gifstoffen vóór gebruik:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li>Vul een vlootje met gezeefde compost en zaai <strong>100 tuinkerszaadjes</strong> (7 dagen vochtig houden).</li>
-                    <li><strong>Rijp & Veilig:</strong> Kieming &ge; 90% met frisse groene blaadjes en rechte, witte worteltjes.</li>
-                    <li><strong>Onrijp:</strong> Kieming &lt; 80% of verbrande wortels ➔ <em>Laat nog 3-4 weken rijpen.</em></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kolom 5: Praktijkregels & Terreinbeheer Arnhem -->
-    <div class="card">
-        <h2>📋 Praktijkregels & Terreinbeheer Arnhem</h2>
-        <div class="grid-2">
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 10px;">
-                <strong style="color: var(--primary-dark);">👥 Prioriteit bij lage opkomst van mensen (Wo/Vr)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Wanneer de hoeveelheid mensen bij de composthoek een keer lager is:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li>Geef absolute prioriteit aan het keren van de <strong>hete actieve hopen (Fase 1 & 2)</strong>.</li>
-                    <li>Hopen die al in de afkoelings- of afrijpingsfase zitten (Fase 3) kunnen prima een keerbeurt overstaan.</li>
-                </ul>
-            </div>
-            <div style="background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-                <strong style="color: var(--primary-dark);">🌧️ Koppeling met het Weerbericht (&gt;10 mm)</strong>
-                <p style="font-size: 0.88rem; margin: 6px 0 0 0;">Bij verwachte zware neerslag volgens de weersites:</p>
-                <ul style="font-size: 0.85rem; margin: 6px 0 0 0; padding-left: 18px;">
-                    <li>Dek actieve hopen, wachthopen en afrijpvakken op tijd af met <strong>UV-bestendig landbouwplastic</strong>.</li>
-                    <li>Voorkomt dat hopen verzuren/verzuipt raken en dat kostbare stikstof uitspoelt.</li>
-                </ul>
-                <a href="https://www.buienradar.nl/weer/arnhem/nl/2759661?radarType=rain&radarLocationVariant=NL" target="_blank" class="weather-link-btn">
-                    🌧 Check Actueel Weer Arnhem (Buienradar) ➔
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kolom 4: Sturingsschema -->
-    <div class="card">
-        <h2>Sturingsschema</h2>
-        <p style="font-size: 0.9rem; color: #666;">Klik hieronder op het symptoom dat je op het terrein ervaart voor gerichte oorzaken en oplossingen:</p>
+        <h2>🌿 Kruiden Zoeken & Registreren</h2>
+        <p style="font-size: 0.9rem; color: #666;">Typ direct om live te zoeken. Staat het kruid er niet tussen? Klik op de zoekknop om uw invoer automatisch te registreren voor aanvulling:</p>
         
-        <div class="trouble-grid" id="troubleGrid">
-            <!-- Dynamische sturingsknoppen -->
+        <div class="search-box-container">
+            <input type="text" id="kruidSearchInput" class="search-input" placeholder="Typ kruidsoorten (bijv. Tijm, Munt)...">
+            <button type="button" id="kruidSearchBtn" class="search-btn">🔍 Zoek / Registreer</button>
         </div>
 
-        <div id="solutionBox" class="solution-box">
-            <!-- Oplossingen verschijnen hier -->
-        </div>
+        <div id="searchResults" class="search-results"></div>
+        <div id="searchFeedback" class="search-feedback"></div>
     </div>
+
 </div>
 
 <script>
-    // Jouw unieke Google Apps Script Web App URL voor centrale synchronisatie
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxqDLa2yAw2RL_XYewi5UzRCq71lBW4ZZsNLqIBSOlGzT4JaXDi7PQ_c8I6GFK0N3zgng/exec";
+    const WEB_APP_URL = "JOUW_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HIER";
 
-    // Cache object om alle hopen lokaal in het geheugen te houden na de eerste laadbeurt
-    let allPilesData = {};
-
-    const materialsData = {
-        moestuingroenten: { name: "Moestuingroenten, gewasresten & onkruid", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 6.5 },
-        groenteresten: { name: "Groente- & Fruitafval (keuken/markt)", cn: 15, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
-        grasmaaisel: { name: "Gemaaid gras", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 7.0 },
-        smeerwortel_brandnetel: { name: "Smeerwortel & Brandnetel (blad)", cn: 19, category: "Stikstofrijk (Groen)", weightPerBucket: 6.0 },
-        koffiedik: { name: "Koffiedik / Koffiepads", cn: 20, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
-        paardenmest: { name: "Paardenmest (met stro)", cn: 25, category: "Stikstofrijk (Groen)", weightPerBucket: 9.0 },
-        koemest: { name: "Koemest", cn: 18, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
-        kippenmest: { name: "Kippenmest", cn: 10, category: "Stikstofrijk (Groen)", weightPerBucket: 8.5 },
-        urine: { name: "Humane urine (kickstarter)", cn: 1, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
-        bloedmeel: { name: "Bloedmeel / Beendermeel", cn: 4, category: "Stikstofrijk (Groen)", weightPerBucket: 10.0 },
-
-        stro: { name: "Stro (tarwe / gerst)", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.5 },
-        riet: { name: "Gehakseld riet", cn: 78, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.8 },
-        herfstbladeren: { name: "Herfstbladeren", cn: 60, category: "Koolstofrijk (Bruin)", weightPerBucket: 4.5 },
-        krantenpapier: { name: "Krantenpapier (versnipperd)", cn: 175, category: "Koolstofrijk (Bruin)", weightPerBucket: 3.0 },
-        karton: { name: "Karton (versnipperd, bruin)", cn: 350, category: "Koolstofrijk (Bruin)", weightPerBucket: 2.5 },
-        houtzaagsel: { name: "Houtzaagsel / Houtkrullen", cn: 400, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.0 },
-        houtsnippers: { name: "Houtsnippers / Snoeihout (grof)", cn: 250, category: "Koolstofrijk (Bruin)", weightPerBucket: 8.0 },
-        boomschors: { name: "Boomschors (gehakseld)", cn: 120, category: "Koolstofrijk (Bruin)", weightPerBucket: 6.5 }
-    };
-
-    const troubleshootingData = [
-        {
-            symptom: "🌡️ Temperatuur blijft te laag (<50 °C)",
-            causes: "1. Materialen te droog of te nat.<br>2. Stikstoftekort (C/N > 50:1).<br>3. Fysiek volume te klein (<1 m³).<br>4. pH te laag (<5,5; verzuring).",
-            actions: "1. Vochttest uitvoeren (streefdruppel toevoegen indien te droog).<br>2. Omzetten en droog structuurmateriaal of stikstof (urine/maaisel) toevoegen.<br>3. Hoop vergroten tot minimaal 1m x 1m x 1m.<br>4. Licht bufferen met oude compost of gesteentemeel."
-        },
-        {
-            symptom: "📉 Temperatuur daalt te snel",
-            causes: "1. Zuurstoftekort in de kern.<br>2. Hoop is te ver uitgedroogd.",
-            actions: "1. Hoop direct omzetten en luchtig heropbouwen.<br>2. Gelijkmatig water toevoegen tijdens het omzetten."
-        },
-        {
-            symptom: "🔥 Temperatuur te hoog (>65–71 °C)",
-            causes: "1. Te weinig warmteafvoer / massa te compact.<br>2. Vochtgehalte te laag.<br>3. Hoop te luchtig of te hoog.",
-            actions: "1. Direct omzetten om overtollige warmte te laten ontsnappen.<br>2. Water toevoegen tijdens het keren.<br>3. Hoop iets lager opbouwen en licht aandrukken met de vork."
-        },
-        {
-            symptom: "🦠 Witte 'schimmel' / Vuurziekte",
-            causes: "Kerntemperatuur >65 °C in combinatie met lokaal zuurstoftekort (opbouw anaërobe thermofiele bacteriën).",
-            actions: "Direct omzetten, de massa goed losvorken en beluchten. Kerntemperatuur laten zakken tot het optimale bereik van 55–65 °C."
-        },
-        {
-            symptom: "💨 Ammoniakgeur (NH₃)",
-            causes: "1. Stikstofoverschot (C/N < 20:1).<br>2. Te hoge pH (door kalk/eierschalen).<br>3. Koolstof is te stabiel/houtig.",
-            actions: "1. Snel afbreekbaar koolstofmateriaal (houtzaagsel, stro, karton) inmengen.<br>2. Bufferen met oude compost of klei."
-        },
-        {
-            symptom: "🦨 Rotte eieren geur / Stank (H₂S)",
-            causes: "Anaërobe condities / zuurstofgebrek door overmatig vocht of te snelle verdichting.",
-            actions: "Meteen de hele hoop omzetten en uitspreiden ter beluchting. Hakselhout, stro en droog structuurmateriaal inmengen."
-        },
-        {
-            symptom: "🪰 Vliegen of muggen rond de hoop",
-            causes: "1. Verse mest of keukenafval ligt aan het oppervlak.<br>2. Plasvorming/uitlopend percolaatwater aan de voet.",
-            actions: "1. Hoop omzetten en de buitenlaag afdekken met een laag bruin materiaal of plastic.<br>2. Draineer het compostterrein; voorkom stilstaand water."
-        },
-        {
-            symptom: "🌿 Veel grove delen op Dag 18",
-            causes: "1. Materialen vooraf onvoldoende verkleind.<br>2. Onregelmatige beluchting/menging.<br>3. Proces nog niet afgerond.",
-            actions: "1. Eliet Major 4S versnipperaar scherper afstellen (1,30–3,80 cm).<br>2. Zeven over 2 cm maaswijdte; grove delen terug op de wachthoop."
-        }
+    // Voorbeeld database van bekende kruiden (of haal dit uit je centrale dataset)
+    const bekendeKruiden = [
+        { naam: "Tijm", vak: "Vak A", functie: "Bodembedekker / Culinair" },
+        { naam: "Munt", vak: "Vak B", functie: "Thee / Sterk woekerend" },
+        { naam: "Rozemarijn", vak: "Vak A", functie: "Heester / Medicinaal" },
+        { naam: "Salie", vak: "Vak C", functie: "Geneeskrachtig" }
     ];
 
-    let activePile = 1;
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('kruidSearchInput');
+        const btn = document.getElementById('kruidSearchBtn');
+        const resultsBox = document.getElementById('searchResults');
+        const feedbackBox = document.getElementById('searchFeedback');
 
-    document.addEventListener('DOMContentLoaded', async function() {
-        addMaterialRow('moestuingroenten', 11, 'kruiwagen', 'nat');
-        addMaterialRow('houtsnippers', 1, 'kruiwagen', 'neutraal');
+        // Live zoeken tijdens typen
+        input.addEventListener('input', function() {
+            const query = input.value.trim().toLowerCase();
+            feedbackBox.style.display = 'none';
 
-        renderPileSelector();
-        
-        // Haal direct alle gegevens op uit de Google Sheet bij het laden
-        await laadAllePijlenData();
+            if (query.length === 0) {
+                resultsBox.style.display = 'none';
+                return;
+            }
 
-        renderTroubleshootingSchema();
+            const matches = bekendeKruiden.filter(k => k.naam.toLowerCase().includes(query) || k.functie.toLowerCase().includes(query));
+            
+            if (matches.length > 0) {
+                resultsBox.style.display = 'block';
+                resultsBox.innerHTML = matches.map(m => `<div><strong>${m.naam}</strong> (${m.vak}) - ${m.functie}</div>`).join('<hr style="margin:5px 0; border:0; border-top:1px solid #ddd;">');
+            } else {
+                resultsBox.style.display = 'block';
+                resultsBox.innerHTML = `<em>Geen direct resultaat in de lijst. Klik op 'Zoek / Registreer' om toe te voegen.</em>`;
+            }
+        });
 
-        const addRowBtn = document.getElementById('addRowBtn');
-        if (addRowBtn) {
-            addRowBtn.addEventListener('click', function() {
-                addMaterialRow();
-            });
-        }
+        // Actie bij klikken op de zoek-/registratieknop (ook als er geen Enter is gebruikt)
+        btn.addEventListener('click', function() {
+            const query = input.value.trim();
+            if (!query) {
+                alert("Typ eerst een kruidnaam in.");
+                return;
+            }
 
-        const startDateInput = document.getElementById('startDate');
-        if (startDateInput) {
-            startDateInput.addEventListener('change', function() {
-                savePileData();
-            });
-        }
+            const matches = bekendeKruiden.filter(k => k.naam.toLowerCase().includes(query.toLowerCase()));
 
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (scheduleTypeSelect) {
-            scheduleTypeSelect.addEventListener('change', function() {
-                savePileData();
-            });
-        }
+            if (matches.length > 0) {
+                resultsBox.style.display = 'block';
+                resultsBox.innerHTML = matches.map(m => `<div><strong>${m.naam}</strong> (${m.vak}) - ${m.functie}</div>`).join('');
+                feedbackBox.style.display = 'none';
+            } else {
+                resultsBox.style.display = 'none';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = `🔍 Geen direct resultaat gevonden voor '<strong>${query}</strong>'. Uw zoekopdracht is geregistreerd, we gaan dit kruid binnenkort toevoegen aan de database!`;
 
-        const fridayCheckbox = document.getElementById('fridayProtocol');
-        if (fridayCheckbox) {
-            fridayCheckbox.addEventListener('change', calculateMix);
-        }
+                // Verstuur naar Google Apps Script backend
+                stuurGemisteZoekopdrachtNaarSheet(query);
+            }
+        });
     });
 
-    // Functie om data op te halen uit de Google Sheet (met robuuste redirect opvolging)
-    async function laadAllePijlenData() {
-        const output = document.getElementById('scheduleOutput');
-        if (output) output.innerHTML = `<strong>Gegevens ophalen uit Google Sheet...</strong>`;
-
-        try {
-            let response = await fetch(WEB_APP_URL + "?action=getData", {
-                method: "GET",
-                redirect: "follow"
-            });
-            let data = await response.json();
-            allPilesData = data || {};
-            loadPileData(activePile);
-        } catch (error) {
-            console.error("Fout bij ophalen Google Sheet:", error);
-            if (output) output.innerHTML = `<span style="color:red;">Kon geen verbinding maken met de Google Sheet. Controleer internet.</span>`;
-        }
-    }
-
-    // Functie om data op te slaan naar de Google Sheet (met no-cors configuratie)
-    async function slaHoopOpNaarSheet(hoopNum, date, scheduleType, checks) {
+    async function stuurGemisteZoekopdrachtNaarSheet(zoekterm) {
         try {
             let payload = {
-                action: "saveData",
-                hoopNum: hoopNum,
-                date: date || "",
-                scheduleType: scheduleType || "arnhem",
-                checks: JSON.stringify(checks || {})
+                action: "gemisteZoekopdracht",
+                namedValues: {
+                    kruidsoort: zoekterm,
+                    timestamp: new Date().toISOString()
+                }
             };
 
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams(payload)
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "gemisteZoekopdracht", kruidsoort: zoekterm })
             });
-        } catch (error) {
-            console.error("Fout bij opslaan naar Google Sheet:", error);
+        } catch (e) {
+            console.error("Fout bij verzenden gemiste zoekopdracht:", e);
         }
-    }
-
-    function addMaterialRow(selectedKey = '', amountVal = 1, unitVal = 'kruiwagen', moistureVal = 'nat') {
-        const container = document.getElementById('dynamic-materials-container');
-        if (!container) return;
-
-        const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
-
-        let optionsHTML = '<option value="" disabled selected>-- Kies materiaal --</option>';
-        let currentCategory = '';
-
-        for (let [key, mat] of Object.entries(materialsData)) {
-            if (mat.category !== currentCategory) {
-                if (currentCategory !== '') optionsHTML += '</optgroup>';
-                currentCategory = mat.category;
-                optionsHTML += `<optgroup label="${currentCategory}">`;
-            }
-            let isSelected = (key === selectedKey) ? 'selected' : '';
-            optionsHTML += `<option value="${key}" ${isSelected}>${mat.name} (C:N ${mat.cn}:1)</option>`;
-        }
-        if (currentCategory !== '') optionsHTML += '</optgroup>';
-
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'material-row';
-        rowDiv.id = rowId;
-        rowDiv.innerHTML = `
-            <div class="material-main-line">
-                <select class="material-select">
-                    ${optionsHTML}
-                </select>
-                <input type="number" class="material-amount" value="${amountVal}" min="0" max="500">
-                <select class="unit-select">
-                    <option value="kruiwagen" ${unitVal === 'kruiwagen' ? 'selected' : ''}>kw.</option>
-                    <option value="emmer" ${unitVal === 'emmer' ? 'selected' : ''}>emmer</option>
-                </select>
-                <button type="button" class="delete-row-btn">🗑️</button>
-            </div>
-            <div class="moisture-control">
-                <span>Vochttest / Vochttoestand:</span>
-                <select class="moisture-select">
-                    <option value="nat" ${moistureVal === 'nat' ? 'selected' : ''}>💧 Nat / Vers (Meer stikstof)</option>
-                    <option value="neutraal" ${moistureVal === 'neutraal' ? 'selected' : ''}>⚖ Neutraal / Normaal</option>
-                    <option value="droog" ${moistureVal === 'droog' ? 'selected' : ''}>☀ Droog / Ouder (Meer koolstof)</option>
-                </select>
-            </div>
-        `;
-
-        const inputs = rowDiv.querySelectorAll('select, input');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateMix);
-            input.addEventListener('change', calculateMix);
-        });
-
-        const deleteBtn = rowDiv.querySelector('.delete-row-btn');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function() {
-                rowDiv.remove();
-                calculateMix();
-            });
-        }
-
-        container.appendChild(rowDiv);
-        calculateMix();
-    }
-
-    function calculateMix() {
-        let totalCarbonScore = 0;
-        let totalNitrogenScore = 0;
-        let totalItemsEntered = 0;
-        let totalKruiwagens = 0;
-
-        const rows = document.querySelectorAll('.material-row');
-
-        rows.forEach(row => {
-            let selectElem = row.querySelector('.material-select');
-            let amountElem = row.querySelector('.material-amount');
-            let unitElem = row.querySelector('.unit-select');
-            let moistureElem = row.querySelector('.moisture-select');
-
-            let key = selectElem ? selectElem.value : '';
-            let amount = amountElem ? parseFloat(amountElem.value) || 0 : 0;
-
-            if (key && amount > 0 && materialsData[key]) {
-                let unit = unitElem ? unitElem.value : 'kruiwagen';
-                let moisture = moistureElem ? moistureElem.value : 'neutraal';
-                let mat = materialsData[key];
-                
-                let kruiwagensEq = (unit === 'kruiwagen') ? amount : amount / 3.5;
-                let effectiveBuckets = (unit === 'kruiwagen') ? amount * 3.5 : amount;
-
-                let adjustedCN = mat.cn;
-                let adjustedWeight = effectiveBuckets * mat.weightPerBucket;
-
-                if (moisture === 'nat') {
-                    adjustedCN = Math.max(5, mat.cn * 0.80);
-                    adjustedWeight *= 1.20;
-                } else if (moisture === 'droog') {
-                    adjustedCN = mat.cn * 1.30;
-                    adjustedWeight *= 0.85;
-                }
-
-                totalCarbonScore += adjustedWeight * adjustedCN;
-                totalNitrogenScore += adjustedWeight;
-                totalItemsEntered += amount;
-                totalKruiwagens += kruiwagensEq;
-            }
-        });
-
-        const resultBox = document.getElementById('cn-result');
-        if (!resultBox) return;
-
-        if (totalItemsEntered === 0 || totalNitrogenScore === 0) {
-            resultBox.className = 'result-box warning';
-            resultBox.innerHTML = '<strong>Voeg materialen toe om de C:N-ratio live te berekenen.</strong>';
-            return;
-        }
-
-        let finalCN = totalCarbonScore / totalNitrogenScore;
-        let roundedCN = Math.round(finalCN);
-
-        let totalCubicMeters = (totalKruiwagens / 12.5).toFixed(2);
-
-        let volumeInfoHTML = `<br>📦 <strong>Totale hoeveelheid:</strong> ~${totalKruiwagens.toFixed(1)} kruiwagens (~<strong>${totalCubicMeters} m³</strong>)`;
-
-        let volumeWarningHTML = '';
-        if (totalKruiwagens < 12.5) {
-            volumeWarningHTML = `<br><span style="color: #c62828;">⚠ <strong>Volume te klein (< 1 m³ / < 12,5 kr.):</strong> De hoop zal te snel afkoelen! Streef naar minimaal 12,5 kruiwagens (1 m³).</span>`;
-        } else {
-            volumeWarningHTML = `<br><span style="color: #2e7d32;">✅ <strong>Volume optimaal (≥ 1 m³ / ≥ 12,5 kr.):</strong> Voldoende massa voor warmtebehoud.</span>`;
-        }
-
-        let fridayChecked = document.getElementById('fridayProtocol');
-        let fridayHTML = '';
-        if (fridayChecked && fridayChecked.checked) {
-            fridayHTML = `<br><div style="margin-top: 8px; padding: 6px; background: #fff3e0; border-radius: 4px; border-left: 4px solid #ef6c00;"><strong>📅 Vrijdag-protocol actief:</strong> Breng in het hart van de hoop een extra <em>koolstofnest</em> aan (stro/houtsnippers) en dek de hoop strak af met UV-bestendig landbouwplastic ter bescherming tegen het 5-daagse rustweekend (uitsluitend op het compostterrein toepassen!).</div>`;
-        }
-
-        let adviceHTML = `<strong>Gewogen C:N-ratio: ~${roundedCN}:1</strong>${volumeInfoHTML}${volumeWarningHTML}<br>`;
-
-        if (roundedCN < 25) {
-            resultBox.className = 'result-box danger';
-            let diffN = 25 - roundedCN;
-            let extraStro = (diffN * 0.4).toFixed(1);
-            let extraSnippers = (diffN * 0.2).toFixed(1);
-            adviceHTML += `⚠️ <strong>Te veel stikstof! (< 25:1)</strong><br>Voeg bruin materiaal toe om te corrigeren (bijv. ca. <strong>${extraStro} kruiwagen stro</strong> OF ca. <strong>${extraSnippers} kruiwagen houtsnippers</strong>).`;
-        } else if (roundedCN > 30) {
-            resultBox.className = 'result-box warning';
-            adviceHTML += `⚠️ <strong>Te veel koolstof! (> 30:1)</strong><br>De hoop komt traag op temperatuur. Voeg meer <em>stikstof (groen)</em> toe (bijv. vers grasmaaisel, urine of moestuingroenten).`;
-        } else {
-            resultBox.className = 'result-box';
-            adviceHTML += `🎉 <strong>Ideale balans! (25:1 - 30:1)</strong><br>Perfect mengsel voor een snelle, hete compostering.`;
-        }
-
-        adviceHTML += fridayHTML;
-        resultBox.innerHTML = adviceHTML;
-    }
-
-    function renderPileSelector() {
-        const container = document.getElementById('pileSelectorContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        for (let i = 1; i <= 10; i++) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = `pile-btn ${i === activePile ? 'active' : ''}`;
-            btn.innerText = `H${i}`;
-            btn.addEventListener('click', function() {
-                switchPile(i);
-            });
-            container.appendChild(btn);
-        }
-    }
-
-    function switchPile(pileNum) {
-        activePile = pileNum;
-        renderPileSelector();
-        loadPileData(pileNum);
-    }
-
-    function savePileData() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!startDateInput) return;
-
-        const date = startDateInput.value;
-        const scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem';
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-
-        allPilesData[activePile] = { date, scheduleType, checks };
-        slaHoopOpNaarSheet(activePile, date, scheduleType, checks);
-
-        updateScheduleDisplay(date, scheduleType, checks);
-    }
-
-    function saveCheckboxState() {
-        const startDateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        let pileData = allPilesData[activePile] || { date: startDateInput ? startDateInput.value : '', scheduleType: scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem' };
-
-        let checks = {};
-        for (let i = 0; i < 10; i++) {
-            let chk = document.getElementById(`stepChk_${i}`);
-            if (chk) {
-                checks[i] = chk.checked;
-            }
-        }
-        pileData.checks = checks;
-        allPilesData[activePile] = pileData;
-
-        slaHoopOpNaarSheet(activePile, pileData.date, pileData.scheduleType, checks);
-        updateProgress();
-    }
-
-    function loadPileData(pileNum) {
-        const data = allPilesData[pileNum];
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (!dateInput) return;
-
-        if (data) {
-            dateInput.value = data.date || '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = data.scheduleType || 'arnhem';
-            updateScheduleDisplay(data.date, data.scheduleType || 'arnhem', data.checks || {});
-        } else {
-            dateInput.value = '';
-            if (scheduleTypeSelect) scheduleTypeSelect.value = 'arnhem';
-            updateScheduleDisplay('', 'arnhem', {});
-        }
-    }
-
-    function resetCurrentPile() {
-        if (!confirm(`Weet je zeker dat je Hoop ${activePile} wilt resetten? Alle vinkjes van deze specifieke hoop worden gewist en de startdatum wordt ingesteld op vandaag.`)) {
-            return;
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('startDate');
-        const scheduleTypeSelect = document.getElementById('scheduleType');
-        if (dateInput) dateInput.value = today;
-
-        let scheduleType = scheduleTypeSelect ? scheduleTypeSelect.value : 'arnhem';
-        let checks = {};
-        
-        allPilesData[activePile] = { date: today, scheduleType, checks };
-        slaHoopOpNaarSheet(activePile, today, scheduleType, checks);
-
-        updateScheduleDisplay(today, scheduleType, checks);
-    }
-
-    function updateScheduleDisplay(startDateStr, scheduleType = 'arnhem', checks = {}) {
-        const output = document.getElementById('scheduleOutput');
-        if (!output) return;
-
-        if (!startDateStr) {
-            output.innerHTML = `<strong>Hoop ${activePile}:</strong><br><em>Kies een startdatum om het beheerschema te genereren.</em>`;
-            return;
-        }
-
-        let start = new Date(startDateStr);
-        let steps = [];
-
-        if (scheduleType === 'berkeley') {
-            let d1 = new Date(start);
-            let d4 = new Date(start); d4.setDate(start.getDate() + 3);
-            let d7 = new Date(start); d7.setDate(start.getDate() + 6);
-            let d10 = new Date(start); d10.setDate(start.getDate() + 9);
-            let d13 = new Date(start); d13.setDate(start.getDate() + 12);
-            let d16 = new Date(start); d16.setDate(start.getDate() + 15);
-            let d18 = new Date(start); d18.setDate(start.getDate() + 18);
-
-            steps = [
-                { label: `Dag 1 (${formatDate(d1)}): Opzetten hoop (C:N ~30:1, vochtig)` },
-                { label: `Dag 4 (${formatDate(d4)}): 1e keer omzetten` },
-                { label: `Dag 7 (${formatDate(d7)}): 2e keer omzetten` },
-                { label: `Dag 10 (${formatDate(d10)}): 3e keer omzetten` },
-                { label: `Dag 13 (${formatDate(d13)}): 4e keer omzetten` },
-                { label: `Dag 16 (${formatDate(d16)}): 5e keer omzetten` },
-                { label: `Dag 18 (${formatDate(d18)}): 🟢 Rijpe compost gereed!` }
-            ];
-        } else {
-            let d1 = new Date(start);
-            let w1_keer = new Date(start); w1_keer.setDate(start.getDate() + 4);
-            let w2_keer = new Date(start); w2_keer.setDate(start.getDate() + 9);
-            let w3_keer = new Date(start); w3_keer.setDate(start.getDate() + 14);
-            let w4_keer = new Date(start); w4_keer.setDate(start.getDate() + 21);
-            let oogst = new Date(start); oogst.setDate(start.getDate() + 35);
-
-            steps = [
-                { label: `Start (${formatDate(d1)}): Opzetten hoop (Woensdag/Vrijdag protocol)` },
-                { label: `Keer 1 (${formatDate(w1_keer)}): Eerste omzetting & vochttest` },
-                { label: `Keer 2 (${formatDate(w2_keer)}): Tweede omzetting (temperatuurpiek)` },
-                { label: `Keer 3 (${formatDate(w3_keer)}): Derde omzetting` },
-                { label: `Keer 4 (${formatDate(w4_keer)}): Vierde omzetting & rijping` },
-                { label: `Oogst & Zeven (${formatDate(oogst)}): 🟢 Zeven over 2cm maaswijdte` }
-            ];
-        }
-
-        let startMonth = start.getMonth() + 1;
-        let isWinterMonth = [11, 12, 1, 2].includes(startMonth);
-        let winterWarningHTML = '';
-        if (isWinterMonth) {
-            winterWarningHTML = `
-                <div style="margin-bottom: 12px; padding: 10px; background: #e3f2fd; border-left: 4px solid #0288d1; border-radius: 4px; font-size: 0.88rem;">
-                    ❄️ <strong>Winterse periode gedetecteerd (${start.toLocaleDateString('nl-NL', {month: 'long'})}):</strong> 
-                    De buitentemperatuur is laag. Zorg dat de buitenzijde van de hoop extra goed wordt geïsoleerd met een dikke laag <strong>stro</strong> en strak wordt afgedekt met <strong>landbouwplastic</strong>!
-                </div>
-            `;
-        }
-
-        let html = winterWarningHTML + `<strong>Schema (${scheduleType === 'arnhem' ? 'Arnhem Wo/Vr' : 'Berkeley 18-daags'})</strong><ul class="schedule-list">`;
-        
-        steps.forEach((step, index) => {
-            let isChecked = checks[index] ? 'checked' : '';
-            html += `
-                <li>
-                    <input type="checkbox" id="stepChk_${index}" ${isChecked}>
-                    <label for="stepChk_${index}" style="cursor:pointer; flex:1; font-size: 0.85rem;">${step.label}</label>
-                </li>
-            `;
-        });
-
-        html += `</ul>`;
-        
-        html += `
-            <div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 4px;">Voortgang Hoop <em>${activePile}</em>:</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 / ${steps.length} stappen voltooid (0%)</div>
-
-            <button type="button" id="resetPileBtn" class="reset-btn">🔄 Reset Hoop ${activePile} naar Dag 1</button>
-        `;
-
-        output.innerHTML = html;
-
-        steps.forEach((step, index) => {
-            const chkElem = document.getElementById(`stepChk_${index}`);
-            if (chkElem) {
-                chkElem.addEventListener('change', function() {
-                    saveCheckboxState();
-                });
-            }
-        });
-
-        const resetBtn = document.getElementById('resetPileBtn');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                resetCurrentPile();
-            });
-        }
-
-        updateProgress();
-    }
-
-    function updateProgress() {
-        let completed = 0;
-        const checkboxes = document.querySelectorAll('.schedule-list input[type="checkbox"]');
-        const total = checkboxes.length || 6;
-        
-        checkboxes.forEach(chk => {
-            if (chk.checked) completed++;
-        });
-
-        let percentage = Math.round((completed / total) * 100);
-        let bar = document.getElementById('progressBar');
-        let text = document.getElementById('progressText');
-
-        if (bar && text) {
-            bar.style.width = percentage + '%';
-            text.innerText = `${completed} / ${total} stappen voltooid (${percentage}%)`;
-        }
-    }
-
-    function renderTroubleshootingSchema() {
-        const grid = document.getElementById('troubleGrid');
-        const box = document.getElementById('solutionBox');
-        if (!grid || !box) return;
-
-        grid.innerHTML = '';
-        troubleshootingData.forEach((item) => {
-            const card = document.createElement('div');
-            card.className = 'trouble-card';
-            card.innerText = item.symptom;
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.trouble-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-
-                box.style.display = 'block';
-                box.innerHTML = `
-                    <strong style="color: #c62828; font-size: 1rem;">${item.symptom}</strong><br><br>
-                    <strong>🔍 Mogelijke Oorzaak:</strong><br>${item.causes}<br><br>
-                    <strong>🛠 Correctie-actie / Oplossing:</strong><br>${item.actions}
-                `;
-
-                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            });
-            grid.appendChild(card);
-        });
-    }
-
-    function formatDate(date) {
-        if (!date || isNaN(date)) return '';
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
     }
 </script>
 
